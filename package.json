@@ -1,0 +1,46 @@
+{
+  "name": "@brig-id/site",
+  "description": "brig·id — public marketing/landing site",
+  "engines": {
+    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
+  },
+  "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
+  "packageManager": "pnpm@11.9.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "qwik build",
+    "build.client": "vite build",
+    "build.preview": "vite build --ssr src/entry.preview.tsx",
+    "build.server": "qwik check-client src dist && vite build -c adapters/static/vite.config.ts",
+    "build.types": "tsc --incremental --noEmit",
+    "fmt": "prettier --write .",
+    "fmt.check": "prettier --check .",
+    "lint": "oxlint src",
+    "test": "vitest run",
+    "typecheck": "tsc --incremental --noEmit",
+    "preview": "qwik build preview && vite preview --open",
+    "start": "vite --open --mode ssr",
+    "qwik": "qwik",
+    "deploy": "wrangler deploy",
+    "cf.dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "@builder.io/qwik": "1.20.0",
+    "@builder.io/qwik-city": "1.20.0",
+    "@types/node": "20.19.0",
+    "ignore": "^7.0.6",
+    "oxlint": "^1.76.0",
+    "prettier": "3.6.2",
+    "typescript": "7.0.2",
+    "typescript-plugin-css-modules": "5.2.0",
+    "undici": "8.9.0",
+    "vite": "^7.3.1",
+    "vite-tsconfig-paths": "4.3.2",
+    "vitest": "4.1.10",
+    "wrangler": "4.129.1"
+  },
+  "dependencies": {
+    "@web.awesome.me/webawesome-pro": "3.11.0"
+  }
+}

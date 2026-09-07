@@ -1,0 +1,20 @@
+allowBuilds:
+  "@parcel/watcher": false
+  esbuild: true
+  sharp: true
+  "@tailwindcss/oxide": true
+  workerd: true
+minimumReleaseAgeExclude:
+  - "@web.awesome.me/webawesome-pro@3.11.0"
+  - "@cloudflare/workerd-darwin-64@1.20260907.1"
+  - "@cloudflare/workerd-darwin-arm64@1.20260907.1"
+  - "@cloudflare/workerd-linux-64@1.20260907.1"
+  - "@cloudflare/workerd-linux-arm64@1.20260907.1"
+  - "@cloudflare/workerd-windows-64@1.20260907.1"
+  - miniflare@5.20260907.0-alpha
+  - workerd@1.20260907.1
+  - wrangler@4.129.1
+overrides:
+  # postcss (via vite/qwik) pins an old nanoid with an infinite-loop bug on
+  # zero-size custom generators (GHSA-2v37-7h3g-55p8). Dev-only build tool.
+  nanoid: ">=3.3.18"

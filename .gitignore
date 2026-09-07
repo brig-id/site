@@ -2,3 +2,42 @@
 .history
 # macOS
 .DS_Store
+
+# Build
+/dist
+/lib
+/lib-types
+/server
+
+# Development
+node_modules
+.pnpm-store
+.env
+*.local
+
+# Cache
+.cache
+.mf
+.rollup.cache
+tsconfig.tsbuildinfo
+tmp/
+
+# Cloudflare Workers
+.wrangler
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
