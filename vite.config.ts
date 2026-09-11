@@ -31,6 +31,11 @@ export default defineConfig(() => {
     optimizeDeps: {
       exclude: [],
     },
+    server: {
+      // Vite's default dev host isn't reachable through the devcontainer's
+      // port forwarding — same reasoning as app's vite.config.ts.
+      host: "0.0.0.0",
+    },
     test: {
       environment: "node",
       include: ["src/**/*.spec.ts", "src/**/*.spec.tsx"],

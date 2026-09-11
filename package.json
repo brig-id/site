@@ -14,16 +14,16 @@
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "qwik check-client src dist && vite build -c adapters/static/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
+    "deploy": "wrangler deploy",
+    "dev": "vite --mode ssr",
+    "dev.cf": "wrangler dev --ip 0.0.0.0",
     "fmt": "prettier --write .",
     "fmt.check": "prettier --check .",
     "lint": "oxlint src",
     "test": "vitest run",
     "typecheck": "tsc --incremental --noEmit",
     "preview": "qwik build preview && vite preview --open",
-    "start": "vite --open --mode ssr",
-    "qwik": "qwik",
-    "deploy": "wrangler deploy",
-    "cf.dev": "wrangler dev --ip 0.0.0.0"
+    "qwik": "qwik"
   },
   "devDependencies": {
     "@builder.io/qwik": "1.20.0",
