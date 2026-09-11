@@ -15,6 +15,12 @@ minimumReleaseAgeExclude:
   - workerd@1.20260907.1
   - wrangler@4.129.1
 overrides:
+  # vite-imagetools (via qwik-city) and wrangler's miniflare both pin an
+  # older sharp with known libvips/libheif CVEs (GHSA-f88m-g3jw-g9cj,
+  # GHSA-rgj7-g3m4-5g8c, GHSA-g89c-p67h-r497, GHSA-2jg2-4ch7-h545); force the
+  # patched line. Dev-only build tool (image asset processing, local
+  # Workers simulator), never shipped to the browser.
+  sharp: ">=0.35.4"
   # postcss (via vite/qwik) pins an old nanoid with an infinite-loop bug on
   # zero-size custom generators (GHSA-2v37-7h3g-55p8). Dev-only build tool.
   nanoid: ">=3.3.18"
