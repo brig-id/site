@@ -43,7 +43,7 @@ pnpm build.server    # Static adapter — produces dist/
 pnpm typecheck
 pnpm lint
 pnpm test
-pnpm cf.dev          # wrangler dev — serve dist/ through the Worker locally
+pnpm dev.cf          # wrangler dev — serve dist/ through the Worker locally
 pnpm deploy          # wrangler deploy (manual deploy; normally handled by Workers Builds on push)
 ```
 
