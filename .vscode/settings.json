@@ -3,6 +3,8 @@
   "conventionalCommits.scopes": [
     "site",
     "ci",
-    "deps"
+    "deps",
+    "ai",
+    "docs"
   ]
 }
