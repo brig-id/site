@@ -31,7 +31,7 @@ interactive preview-link comment on every PR automatically.
 `UNSPLASH_ACCESS_KEY` and `FONT_AWESOME_KIT_ID` must be set as build
 environment variables in the Cloudflare project itself (they're inlined into
 the client bundle at build time, same as `app`'s Docker build-arg) — see
-Bitwarden's `Credentials` project for the values.
+OpenBao's `kv/orgs/brig-id` for the values.
 
 ## Common commands
 
