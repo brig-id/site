@@ -21,17 +21,18 @@ Same stack as [`brig-id/app`](https://github.com/brig-id/app):
 ## Deployment
 
 Deployed to **Cloudflare Workers** (static assets + a small `worker/index.ts`
-that layers security headers on top of the built `dist/`). The GitHub↔Cloudflare
-connection itself (Workers Builds) is set up once from the Cloudflare
-dashboard — not from a GitHub Actions workflow — the same way
-[`helpers4/website`](https://github.com/helpers4/website) is connected. Once
-connected, Cloudflare's own GitHub App posts the build/preview status and an
-interactive preview-link comment on every PR automatically.
+that layers security headers on top of the built `dist/`), as the Worker `site`
+with `brig.id` and `www.brig.id` as its custom domains (`workers.dev` and preview
+URLs are off).
 
-`UNSPLASH_ACCESS_KEY` and `FONT_AWESOME_KIT_ID` must be set as build
-environment variables in the Cloudflare project itself (they're inlined into
-the client bundle at build time, same as `app`'s Docker build-arg) — see
-OpenBao's `kv/orgs/brig-id` for the values.
+`.github/workflows/deploy.yml` builds and deploys on every push to `main`
+(and on demand). It is not Workers Builds: the Cloudflare dashboard has no Git
+connection for this Worker, and PRs get no preview deployment. The workflow
+reads these secrets of the `production` environment, whose values are in
+OpenBao's `kv/orgs/brig-id`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`,
+`WEBAWESOME_NPM_TOKEN`, `UNSPLASH_ACCESS_KEY` and `FONT_AWESOME_KIT_ID` (the last
+two are inlined into the client bundle at build time, same as `app`'s Docker
+build-arg).
 
 ## Common commands
 
@@ -44,7 +45,7 @@ pnpm typecheck
 pnpm lint
 pnpm test
 pnpm dev.cf          # wrangler dev — serve dist/ through the Worker locally
-pnpm deploy          # wrangler deploy (manual deploy; normally handled by Workers Builds on push)
+pnpm deploy          # wrangler deploy (manual deploy; normally done by the Deploy workflow on push to main)
 ```
 
 ## Commit conventions
