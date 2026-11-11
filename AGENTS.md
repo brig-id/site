@@ -28,7 +28,7 @@ URLs are off).
 `.github/workflows/deploy.yml` builds and deploys on every push to `main`
 (and on demand). It is not Workers Builds: the Cloudflare dashboard has no Git
 connection for this Worker, and PRs get no preview deployment. The workflow
-reads these secrets of the `production` environment, whose values are in
+reads these repository and organization secrets, whose values are in
 OpenBao's `kv/orgs/brig-id`: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`,
 `WEBAWESOME_NPM_TOKEN`, `UNSPLASH_ACCESS_KEY` and `FONT_AWESOME_KIT_ID` (the last
 two are inlined into the client bundle at build time, same as `app`'s Docker
