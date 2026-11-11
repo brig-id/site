@@ -1,4 +1,6 @@
 allowBuilds:
+  # Optional native file watcher: its build script is not needed.
+  "@parcel/watcher": false
   esbuild: true
   sharp: true
   workerd: true
