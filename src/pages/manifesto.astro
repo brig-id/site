@@ -1,0 +1,193 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import { GITHUB } from "~/data/nav";
+
+const articles = [
+  {
+    title: "A person is not an account.",
+    text: [
+      "We are a colleague, a parent, a neighbour and a stranger on a forum, sometimes within the same hour. None of these is a mask, and none is the real one hiding behind the others.",
+      "A system that allows one account per person is describing its database. It is not describing people.",
+    ],
+  },
+  {
+    title: "The self is private.",
+    text: [
+      "Behind the identities there is someone who chooses between them. That someone signs in, and is seen by no one else.",
+      "The private self has no profile page, no public name and no identifier to hand out. It is not concealed data. It is simply nobody else's business.",
+    ],
+  },
+  {
+    title: "Identities are declared, not deduced.",
+    text: [
+      "An identity says what you wrote in it: a name, a picture, a few words. Nothing is inferred, scored or completed on your behalf.",
+      "When a system knows more about one of your identities than you told it, that identity has stopped being yours.",
+    ],
+  },
+  {
+    title: "Separation is built in, or it is not there.",
+    text: [
+      "A privacy policy is a promise, and promises change with owners. Keeping two identities apart has to follow from how the system is made, so that it holds on the days when nobody is being careful.",
+      "A website should be unable to connect what it knows of you to anything else, because the connection exists nowhere it can reach.",
+    ],
+  },
+  {
+    title: "No passwords.",
+    text: [
+      "A password is a secret people are asked to invent, remember and never reuse, hundreds of times over. They cannot, and that is not their failing.",
+      "A passkey asks for a gesture instead. There will be no password added just in case.",
+    ],
+  },
+  {
+    title: "Your server, or one you chose.",
+    text: [
+      "Somebody has to know which identities are yours: the server that signs you in. So that server should answer to you.",
+      "brig·id is software to run, not a service to join. There is no central registry, no company account, and nothing for anyone to acquire.",
+    ],
+  },
+  {
+    title: "Open, so that it can be checked.",
+    text: [
+      "The code, the specifications and the decisions are public, with their reasons and their wrong turns. The cryptography is chosen to last, classical and post-quantum together.",
+      "“Trust us” is not an argument. “Here is how to verify” is.",
+    ],
+  },
+  {
+    title: "Say what is not built.",
+    text: [
+      "This project is young. Part of what this site describes exists, part is being written, part is a plan. Every claim carries its label, and the limits are written next to the promises.",
+      "An identity system that oversells itself has already failed at its only job.",
+    ],
+  },
+];
+---
+
+<Base
+  title="Manifesto"
+  description="Eight principles behind brig·id: a person is not an account, the self is private, identities are declared, and separation has to be built in."
+>
+  <section class="page-hero">
+    <div class="shell-narrow">
+      <p class="eyebrow">Manifesto</p>
+      <h1>
+        You are <span class="accent spectrum">plural.</span>
+      </h1>
+      <p class="lead">
+        brig·id starts from an observation and a refusal. The observation: a
+        person is several people, and always was. The refusal: letting whoever
+        owns the sign-in button decide otherwise.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <ol class="shell-narrow articles">
+      {articles.map((article, index) => (
+        <li class="article rise">
+          <p class="n">{String(index + 1).padStart(2, "0")}</p>
+          <div>
+            <h2>{article.title}</h2>
+            {article.text.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow close rise">
+      <p class="sign">
+        If this is the sign-in you want to exist, it is being built in the open,
+        one decision at a time.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/identities/">
+          See how it works
+          <Icon name="arrow-right" />
+        </a>
+        <a class="btn btn-ghost" href={GITHUB}>
+          <Icon name="github-logo" />
+          Read the code
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero h1 {
+    font-size: clamp(3.2rem, 10vw, 7rem);
+  }
+
+  .articles {
+    display: grid;
+    gap: 0;
+    counter-reset: article;
+  }
+
+  .article {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: clamp(2rem, 5vw, 3.25rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .n {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    line-height: 2.6;
+    color: var(--amber);
+  }
+
+  .article div {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .article h2 {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(2rem, 5vw, 3.1rem);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--self);
+  }
+
+  .article p:not(.n) {
+    font-size: 1.12rem;
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+
+  .close {
+    display: grid;
+    gap: 2rem;
+    padding-top: 1rem;
+  }
+
+  .sign {
+    font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 36rem) {
+    .article {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+</style>

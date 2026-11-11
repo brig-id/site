@@ -1,46 +1,39 @@
 {
   "name": "@brig-id/site",
-  "description": "brig·id — public marketing/landing site",
-  "engines": {
-    "node": "^18.17.0 || ^20.3.0 || >=21.0.0"
-  },
-  "engines-annotation": "Mostly required by sharp which needs a Node-API v9 compatible runtime",
-  "packageManager": "pnpm@11.9.0",
+  "description": "brig·id — public website",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "build": "qwik build",
-    "build.client": "vite build",
-    "build.preview": "vite build --ssr src/entry.preview.tsx",
-    "build.server": "qwik check-client src dist && vite build -c adapters/static/vite.config.ts",
-    "build.types": "tsc --incremental --noEmit",
+    "dev": "astro dev --host 0.0.0.0",
+    "build": "astro build && node scripts/check-dist.mjs",
+    "build.server": "pnpm run build",
+    "preview": "wrangler dev --ip 0.0.0.0",
     "deploy": "wrangler deploy",
-    "dev": "vite --mode ssr",
-    "dev.cf": "wrangler dev --ip 0.0.0.0",
-    "fmt": "prettier --write .",
-    "fmt.check": "prettier --check .",
-    "lint": "oxlint src",
+    "typecheck": "astro check && tsc --noEmit -p worker",
+    "lint": "oxlint src worker scripts",
     "test": "vitest run",
-    "typecheck": "tsc --incremental --noEmit",
-    "preview": "qwik build preview && vite preview --open",
-    "qwik": "qwik"
+    "fmt": "prettier --write .",
+    "fmt.check": "prettier --check ."
   },
   "devDependencies": {
-    "@builder.io/qwik": "1.20.3",
-    "@builder.io/qwik-city": "1.20.3",
-    "@types/node": "20.19.0",
-    "ignore": "^7.0.6",
-    "oxlint": "^1.76.0",
-    "prettier": "3.6.2",
-    "typescript": "7.0.2",
-    "typescript-plugin-css-modules": "5.3.0",
-    "undici": "8.12.4",
-    "vite": "^7.3.7",
-    "vite-tsconfig-paths": "4.3.2",
-    "vitest": "4.1.12",
-    "wrangler": "4.158.0"
-  },
-  "dependencies": {
-    "@web.awesome.me/webawesome-pro": "3.11.0"
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/sitemap": "^3.7.4",
+    "@cloudflare/workers-types": "^5.20261110.1",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "@iconify-json/ph": "^1.2.2",
+    "astro": "^7.4.10",
+    "dotted-map": "^3.1.0",
+    "oxlint": "^1.93.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-astro": "^1.1.2",
+    "typescript": "^6.0.3",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.160.0"
   }
 }

@@ -1,0 +1,361 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import StatusTag from "~/components/StatusTag.astro";
+import { RELEASE, feature } from "~/data/features";
+
+const intentions = [
+  {
+    icon: "hand-waving-duotone",
+    title: "Opt-in, always",
+    text: "A server appears because its operator asked for it. Nothing is discovered, crawled or guessed.",
+  },
+  {
+    icon: "map-pin-area-duotone",
+    title: "Roughly where, never exactly",
+    text: "A country or a region is enough to find a server near you. An address is nobody's business.",
+  },
+  {
+    icon: "scales-duotone",
+    title: "No leaderboard",
+    text: "No user counts, no ranking by size. A family's server and a university's are the same kind of dot.",
+  },
+];
+
+const tiers = ["leaf", "grove", "forest"];
+---
+
+<Base
+  title="Servers"
+  description="A future map of the brig·id servers that chose to be listed. Today there is one, run by the project."
+>
+  <section class="page-hero">
+    <div class="shell">
+      <p class="eyebrow">Servers</p>
+      <h1>
+        A map of the <span class="accent spectrum">network.</span>
+      </h1>
+      <p class="lead">
+        brig·id has no centre: every server belongs to whoever runs it. One day
+        this page will show the ones that chose to be listed. Today there is
+        one, and it is ours.
+      </p>
+    </div>
+  </section>
+
+  <section class="section map-section">
+    <div class="shell">
+      <figure class="map card">
+        <div
+          class="world"
+          role="img"
+          aria-label="A dotted map of the world, with no server marked yet."
+        ></div>
+        <figcaption>
+          <StatusTag status={feature("server-map").status} />
+          <p class="count">
+            <b>0</b> servers listed
+          </p>
+          <p>The map fills in when operators ask to be on it.</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">Known servers</p>
+        <h2>
+          The <span class="accent">first</span> one.
+        </h2>
+      </header>
+      <article class="card server rise">
+        <div class="server-main">
+          <span class="server-icon">
+            <Icon name="plant-duotone" />
+          </span>
+          <div>
+            <h3>helm.brig.id</h3>
+            <p>
+              Run by the brig·id project. A single leaf, where each release is
+              tried first. Pre-beta: not a place to keep an identity you care
+              about.
+            </p>
+          </div>
+        </div>
+        <dl>
+          <div>
+            <dt>Edition</dt>
+            <dd>leaf {RELEASE.version}</dd>
+          </div>
+          <div>
+            <dt>Operator</dt>
+            <dd>brig·id project</dd>
+          </div>
+          <div>
+            <dt>State</dt>
+            <dd>
+              <a href="/status/">Live status</a>
+            </dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">What the map should be</p>
+        <h2>
+          Three <span class="accent">intentions.</span>
+        </h2>
+        <p class="lead">
+          Not a specification yet. These are the rules any design for the map
+          will have to respect.
+        </p>
+      </header>
+      <ul class="cards">
+        {intentions.map((item) => (
+          <li class="card tile hue-cyan rise">
+            <Icon name={item.icon} />
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">Three sizes of server</p>
+        <h2>
+          From a leaf to a <span class="accent">forest.</span>
+        </h2>
+      </header>
+      <ul class="cards">
+        {tiers.map((id) => (
+          <li class="card tile hue-green rise">
+            <Icon name={feature(id).icon} />
+            <StatusTag status={feature(id).status} />
+            <h3 class="mono">{id}</h3>
+            <p>{feature(id).summary}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="after rise">
+        <a class="link-arrow" href="https://github.com/brig-id/server-leaf">
+          Run the second server
+          <Icon name="arrow-up-right" />
+        </a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .map-section {
+    padding-top: 0;
+  }
+
+  .map {
+    position: relative;
+    margin: 0;
+    padding: clamp(1rem, 3vw, 2.5rem);
+    background:
+      radial-gradient(
+        40rem 20rem at 50% 0%,
+        rgb(90 215 240 / 0.1),
+        transparent 70%
+      ),
+      var(--bg-1);
+  }
+
+  /* The dots come from /world.svg, used as a mask: the colour is a gradient
+     painted here, with a slow sweep of light across it. */
+  .world {
+    aspect-ratio: 112 / 57;
+    background:
+      linear-gradient(
+        100deg,
+        transparent 40%,
+        rgb(255 255 255 / 0.85) 50%,
+        transparent 60%
+      ),
+      linear-gradient(100deg, #5ad7f0, #a78bff 55%, #ff86c8);
+    background-size:
+      300% 100%,
+      100% 100%;
+    background-position:
+      120% 0,
+      0 0;
+    background-repeat: no-repeat;
+    mask: url("/world.svg") center / contain no-repeat;
+    opacity: 0.55;
+    animation: sweep 9s linear infinite;
+  }
+
+  @keyframes sweep {
+    to {
+      background-position:
+        -20% 0,
+        0 0;
+    }
+  }
+
+  .map figcaption {
+    position: absolute;
+    left: clamp(1rem, 3vw, 2.5rem);
+    bottom: clamp(1rem, 3vw, 2.5rem);
+    display: grid;
+    justify-items: start;
+    gap: 0.5rem;
+    max-width: 17rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius-s);
+    background: rgb(10 12 18 / 0.78);
+    backdrop-filter: blur(12px);
+    font-size: 0.9rem;
+    color: var(--text-2);
+  }
+
+  .count {
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .count b {
+    margin-right: 0.3rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 2.2rem;
+    line-height: 1;
+  }
+
+  .server {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
+    padding: clamp(1.4rem, 3vw, 2rem);
+  }
+
+  .server-main {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.25rem;
+  }
+
+  .server-icon {
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    border: 1px solid rgb(98 227 164 / 0.3);
+    border-radius: 1rem;
+    background: rgb(98 227 164 / 0.08);
+    color: var(--green);
+    font-size: 1.8rem;
+  }
+
+  .server h3 {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .server-main p {
+    max-width: 34rem;
+    margin-top: 0.5rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .server dl {
+    display: grid;
+    gap: 0.6rem;
+    min-width: 14rem;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  .server dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .server dt {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    line-height: 2;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .server dd {
+    margin: 0;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .tile {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 0.7rem;
+    padding: clamp(1.4rem, 2.6vw, 1.9rem);
+  }
+
+  .tile > :global(.icon) {
+    margin-bottom: 0.3rem;
+    font-size: 1.9rem;
+    color: var(--hue);
+  }
+
+  .tile h3 {
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+  }
+
+  .tile h3.mono {
+    font-family: var(--font-mono);
+    font-size: 1.4rem;
+    font-weight: 500;
+  }
+
+  .tile p {
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .after {
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 56rem) {
+    .server,
+    .cards {
+      grid-template-columns: 1fr;
+    }
+
+    .map figcaption {
+      position: static;
+      max-width: none;
+      margin-top: 1rem;
+    }
+  }
+</style>

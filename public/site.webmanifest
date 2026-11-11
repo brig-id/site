@@ -1,0 +1,10 @@
+{
+  "name": "brig·id",
+  "short_name": "brig·id",
+  "description": "One private self, many identities. A self-hosted, passkey-only identity server.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#05060a",
+  "theme_color": "#05060a",
+  "icons": [{ "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" }]
+}

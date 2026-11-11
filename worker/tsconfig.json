@@ -1,0 +1,12 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    // The Workers runtime, not the DOM: `caches.default`, `ExecutionContext`
+    // and `Fetcher` only exist in these types.
+    "lib": ["ES2023"],
+    "types": ["@cloudflare/workers-types"],
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true
+  },
+  "include": ["./**/*.ts"]
+}

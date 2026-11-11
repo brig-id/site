@@ -1,0 +1,193 @@
+---
+// Two drawings of the same person signing in to five websites.
+const sites = [34, 82, 130, 178, 226];
+const identities = [
+  { y: 58, color: "#ffb65c", sites: [34, 82] },
+  { y: 130, color: "#ff86c8", sites: [130] },
+  { y: 202, color: "#5ad7f0", sites: [178, 226] },
+];
+const ids = ["q7Zf", "D1xw", "hY48", "Lp3u", "t0Ne"];
+---
+
+<div class="compare">
+  <figure class="panel card">
+    <svg viewBox="0 0 420 260" role="img" aria-labelledby="cmp-a">
+      <title id="cmp-a">
+        One account connected to five websites, which all hold the same
+        identifier.
+      </title>
+      {sites.map((y) => (
+        <path class="wire wire-same" d={`M96 130C200 130 220 ${y} 318 ${y}`} />
+      ))}
+      <circle class="you" cx="80" cy="130" r="17"></circle>
+      <text class="lbl" x="80" y="172" text-anchor="middle">
+        one account
+      </text>
+      {sites.map((y) => (
+        <g>
+          <rect class="site" x="318" y={y - 15} width="88" height="30" rx="8" />
+          <text class="id id-same" x="362" y={y + 4} text-anchor="middle">
+            id 4821
+          </text>
+        </g>
+      ))}
+    </svg>
+    <figcaption>
+      <h3>One account, everywhere</h3>
+      <p>
+        Every site holds the same you. Whoever gets two of their databases can
+        join them, and your whole life lines up on one key.
+      </p>
+    </figcaption>
+  </figure>
+
+  <figure class="panel card hue-self">
+    <svg viewBox="0 0 420 260" role="img" aria-labelledby="cmp-b">
+      <title id="cmp-b">
+        A private self behind a boundary, three identities, and five websites
+        that each hold a different identifier.
+      </title>
+      <path class="wall" d="M118 16v228"></path>
+      <text class="lbl lbl-wall" x="118" y="256" text-anchor="middle">
+        nothing comes back
+      </text>
+      {identities.map((identity) => (
+        <g>
+          <path
+            class="wire wire-self"
+            d={`M62 130C100 130 120 ${identity.y} 176 ${identity.y}`}
+          />
+          {identity.sites.map((y) => (
+            <path
+              class="wire"
+              stroke={identity.color}
+              d={`M190 ${identity.y}C250 ${identity.y} 260 ${y} 318 ${y}`}
+            />
+          ))}
+          <circle cx="182" cy={identity.y} r="10" fill={identity.color} />
+        </g>
+      ))}
+      <circle class="you you-private" cx="48" cy="130" r="15"></circle>
+      <circle class="halo" cx="48" cy="130" r="26"></circle>
+      <text class="lbl" x="48" y="180" text-anchor="middle">
+        private self
+      </text>
+      {sites.map((y, index) => (
+        <g>
+          <rect class="site" x="318" y={y - 15} width="88" height="30" rx="8" />
+          <text class="id" x="362" y={y + 4} text-anchor="middle">
+            id {ids[index]}
+          </text>
+        </g>
+      ))}
+    </svg>
+    <figcaption>
+      <h3>With brig·id</h3>
+      <p>
+        Each site meets an identity and gets an identifier made for it alone.
+        Two sites have nothing to compare, and nothing points to the self
+        behind.
+      </p>
+    </figcaption>
+  </figure>
+</div>
+
+<style>
+  .compare {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .panel {
+    margin: 0;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .wire {
+    fill: none;
+    stroke-width: 1.5;
+    opacity: 0.85;
+  }
+
+  .wire-same {
+    stroke: var(--coral);
+    opacity: 0.7;
+  }
+
+  .wire-self {
+    stroke: var(--self);
+    stroke-dasharray: 2 5;
+    opacity: 0.55;
+  }
+
+  .wall {
+    stroke: var(--line-2);
+    stroke-width: 1;
+    stroke-dasharray: 4 6;
+  }
+
+  .you {
+    fill: var(--coral);
+  }
+
+  .you-private {
+    fill: var(--self);
+    filter: drop-shadow(0 0 10px rgb(255 243 223 / 0.8));
+  }
+
+  .halo {
+    fill: none;
+    stroke: rgb(255 243 223 / 0.35);
+    stroke-dasharray: 3 5;
+  }
+
+  .site {
+    fill: rgb(255 255 255 / 0.04);
+    stroke: var(--line-2);
+  }
+
+  .lbl,
+  .id {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    fill: var(--text-3);
+  }
+
+  .lbl-wall {
+    font-size: 9px;
+  }
+
+  .id {
+    fill: var(--text-2);
+  }
+
+  .id-same {
+    fill: var(--coral);
+  }
+
+  h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  figcaption p {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 48rem) {
+    .compare {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
