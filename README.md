@@ -1,7 +1,14 @@
 # site
 
-brig·id — public marketing/landing site.
+The public website of brig·id, at [brig.id](https://brig.id).
 
-Qwik + WebAwesome + Font Awesome + Unsplash, built as a static site and
-deployed to Cloudflare Workers. See [AGENTS.md](AGENTS.md) for the full
-stack, deployment, and commit conventions.
+A static Astro site with hand-written CSS, served by a Cloudflare Worker that
+adds the security headers and answers the status page. It loads nothing from a
+third party. See [AGENTS.md](AGENTS.md) for the layout, the rules about
+feature statuses, deployment and commit conventions.
+
+```bash
+pnpm install
+pnpm dev        # http://localhost:4321
+pnpm build && pnpm preview   # the built site, through the Worker
+```
