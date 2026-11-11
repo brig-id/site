@@ -5,9 +5,7 @@
 
 # Build
 /dist
-/lib
-/lib-types
-/server
+.astro
 
 # Development
 node_modules
@@ -19,8 +17,6 @@ node_modules
 .cache
 .mf
 .rollup.cache
-tsconfig.tsbuildinfo
-tmp/
 
 # Cloudflare Workers
 .wrangler

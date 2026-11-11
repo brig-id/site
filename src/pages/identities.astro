@@ -1,0 +1,1033 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import StatusTag from "~/components/StatusTag.astro";
+import { IDENTITIES } from "~/data/identities";
+import { feature } from "~/data/features";
+
+const sites = ["forum.example", "shop.example", "news.example"];
+
+const SPEC = "https://github.com/brig-id/spec/blob/main";
+
+const views = [
+  {
+    what: "Your passkeys",
+    you: { ok: true, text: "On your devices" },
+    server: { ok: true, text: "Public keys only" },
+    site: { ok: false, text: "Never" },
+    sites: { ok: false, text: "Never" },
+  },
+  {
+    what: "Your account",
+    you: { ok: true, text: "Yes" },
+    server: { ok: true, text: "Yes, encrypted at rest" },
+    site: { ok: false, text: "Never" },
+    sites: { ok: false, text: "Never" },
+  },
+  {
+    what: "The list of your identities",
+    you: { ok: true, text: "Yes" },
+    server: { ok: true, text: "Yes" },
+    site: { ok: false, text: "Only the one you chose" },
+    sites: { ok: false, text: "One each, unrelated" },
+  },
+  {
+    what: "A per-site identifier",
+    you: { ok: true, text: "Yes" },
+    server: { ok: true, text: "Computes it" },
+    site: { ok: true, text: "Its own, nothing else" },
+    sites: { ok: false, text: "Two values with nothing in common" },
+  },
+  {
+    what: "That two identities are the same person",
+    you: { ok: true, text: "Yes" },
+    server: { ok: true, text: "Yes" },
+    site: { ok: false, text: "No" },
+    sites: { ok: false, text: "No" },
+  },
+];
+
+const reasons = [
+  {
+    icon: "arrow-bend-down-right-duotone",
+    title: "It only runs forwards",
+    text: "The identifier comes out of a one-way derivation, HKDF. Given the output, there is no computing the inputs.",
+  },
+  {
+    icon: "key-duotone",
+    title: "It is keyed",
+    text: "The derivation uses a secret that only your server holds. Without it, a website cannot even test a guess.",
+  },
+  {
+    icon: "dice-five-duotone",
+    title: "Nothing personal goes in",
+    text: "The inputs are the identity's random id and the website's id. No name, no username, no email, no account id.",
+  },
+  {
+    icon: "user-focus-duotone",
+    title: "The account is not an input",
+    text: "The private self takes no part in the computation. There is nothing of it in the result to find.",
+  },
+];
+
+const layers = [
+  {
+    name: "Declarative",
+    model:
+      "What a person enters about themselves: a name, a picture, a description.",
+    here: "An identity is exactly that and no more: a name, an icon and a description, written by you, one set per identity.",
+  },
+  {
+    name: "Acting",
+    model:
+      "What the platform reports about the person's activity, such as “x and y are now friends”.",
+    here: "A website can only report the doings of the one identity it met. It cannot stitch them to what your other identities do elsewhere.",
+  },
+  {
+    name: "Calculated",
+    model:
+      "Numbers the platform derives and displays: how many friends, how many groups.",
+    here: "brig·id computes one value from an identity: the identifier a website receives, built to carry no meaning. No count, no score, no rank.",
+  },
+];
+
+const limits = [
+  {
+    icon: "hard-drives-duotone",
+    title: "Which server vouches for you",
+    text: "Every website you sign in to learns the address of your server. If you are alone on it, that address is as good as a name. A shared server hides you in a crowd; a personal one gives you control. Choose knowingly.",
+  },
+  {
+    icon: "user-gear-duotone",
+    title: "Your server's operator",
+    text: "The server knows which identities belong to which account. That is the reason brig·id is self-hosted: run it yourself, or pick an operator you would trust with that.",
+  },
+  {
+    icon: "wifi-high-duotone",
+    title: "Your network traces",
+    text: "Your IP address, your browser's fingerprint and the cookies a website sets are outside brig·id's reach. Two websites can still recognise the same browser.",
+  },
+  {
+    icon: "chat-text-duotone",
+    title: "What you say yourself",
+    text: "Use the same email address, the same photo or the same turn of phrase under two identities, and you have linked them. brig·id separates sign-ins, not habits.",
+  },
+];
+---
+
+<Base
+  title="How identities work"
+  description="One private account you sign in to, several identities you show, and a different identifier for every website. How brig·id keeps them apart, and what it does not hide."
+>
+  <section class="page-hero">
+    <div class="shell">
+      <p class="eyebrow">How identities work</p>
+      <h1>
+        One way in. <span class="accent spectrum">Many</span> ways to be seen.
+      </h1>
+      <p class="lead">
+        Nobody has a single digital identity. You have a public one, a private
+        one, a professional one, and a few you would rather keep apart. brig·id
+        gives each of them a place, behind a self that stays yours alone.
+      </p>
+    </div>
+  </section>
+
+  <!-- Three layers -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">The structure</p>
+        <h2>
+          Three layers, and a <span class="accent">one-way</span> street.
+        </h2>
+        <p class="lead">
+          Information flows down this page and never back up. Each layer knows
+          only what the one above chose to give it.
+        </p>
+      </header>
+
+      <ol class="stack">
+        <li class="card layer hue-self rise">
+          <div class="layer-text">
+            <p class="layer-step">01 · private</p>
+            <h3>The private self</h3>
+            <p>
+              Your account. You sign in to it with a passkey, and it holds your
+              passkeys, your identities and your settings. It has no public
+              name, and it is never presented to a website.
+            </p>
+          </div>
+          <div class="layer-viz">
+            <span class="orb">
+              <Icon name="fingerprint" />
+            </span>
+          </div>
+        </li>
+
+        <li class="stack-link" aria-hidden="true">
+          <Icon name="arrow-down" />
+          <span>you create and name them</span>
+        </li>
+
+        <li class="card layer hue-rose rise">
+          <div class="layer-text">
+            <p class="layer-step">02 · chosen</p>
+            <h3>Your identities</h3>
+            <p>
+              What others meet. An identity is a name, an icon and a
+              description, nothing you did not write. A new account starts with
+              three; you add, rename and delete them freely.
+            </p>
+          </div>
+          <div class="layer-viz chips">
+            {IDENTITIES.map((identity) => (
+              <span class:list={["chip", `hue-${identity.hue}`]}>
+                <Icon name={identity.icon} />
+                {identity.name}
+              </span>
+            ))}
+          </div>
+        </li>
+
+        <li class="stack-link" aria-hidden="true">
+          <Icon name="arrow-down" />
+          <span>your server derives, per website</span>
+        </li>
+
+        <li class="card layer hue-violet rise">
+          <div class="layer-text">
+            <p class="layer-step">03 · derived</p>
+            <h3>What a website holds</h3>
+            <p>
+              One opaque identifier, made for that identity at that website. It
+              is stable, so the site recognises you next time, and it means
+              nothing anywhere else.
+            </p>
+          </div>
+          <div class="layer-viz ids">
+            <p>
+              <span>forum.example</span>
+              <code>Lp3uQ0fZ…Xv6s</code>
+            </p>
+            <p>
+              <span>shop.example</span>
+              <code>8aRmT2yK…c41J</code>
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Who sees what -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">Who sees what</p>
+        <h2>
+          The same person, from <span class="accent">four</span> seats.
+        </h2>
+      </header>
+
+      <div class="table-wrap card rise">
+        <table>
+          <thead>
+            <tr>
+              <td></td>
+              <th scope="col">You</th>
+              <th scope="col">Your server</th>
+              <th scope="col">A website</th>
+              <th scope="col">Two websites comparing notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {views.map((row) => (
+              <tr>
+                <th scope="row">{row.what}</th>
+                {[row.you, row.server, row.site, row.sites].map((cell) => (
+                  <td class:list={[cell.ok ? "yes" : "no"]}>
+                    <Icon
+                      name={cell.ok ? "check-circle-duotone" : "prohibit"}
+                    />
+                    <span>{cell.text}</span>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo -->
+  <section class="section">
+    <div class="shell demo">
+      <header class="section-head rise">
+        <p class="eyebrow">Try it</p>
+        <h2>
+          Four identities, three websites, <span class="accent">twelve</span>{" "}
+          strangers.
+        </h2>
+        <p class="lead">
+          This table is computed in your browser, the way a brig·id server
+          derives identifiers. Look for a pattern along a row or down a column:
+          there is none to find.
+        </p>
+        <ul class="demo-notes">
+          <li>
+            <Icon name="equals" />
+            <span>
+              Compute again: every value comes back the same. A website
+              recognises you.
+            </span>
+          </li>
+          <li>
+            <Icon name="shuffle" />
+            <span>
+              Change the server's secret: every value changes. Without it,
+              nothing can be recomputed.
+            </span>
+          </li>
+        </ul>
+      </header>
+
+      <div class="demo-box card rise" data-derive>
+        <div class="demo-bar">
+          <p>
+            Server secret <code data-secret>random</code>
+          </p>
+          <div class="demo-actions">
+            <button class="btn btn-ghost" type="button" data-again>
+              Compute again
+            </button>
+            <button class="btn btn-primary" type="button" data-reroll>
+              <Icon name="shuffle" />
+              New secret
+            </button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <td></td>
+              {sites.map((site) => (
+                <th scope="col">{site}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {IDENTITIES.map((identity) => (
+              <tr class={`hue-${identity.hue}`}>
+                <th scope="row">
+                  <Icon name={identity.icon} />
+                  <span>{identity.name}</span>
+                </th>
+                {sites.map((site) => (
+                  <td>
+                    <code
+                      tabindex="0"
+                      data-cell
+                      data-identity={identity.id}
+                      data-identity-name={identity.name}
+                      data-site={site}
+                    >
+                      ········
+                    </code>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="demo-full" data-full aria-live="polite">
+          Point at a value to read it in full: 43 characters, 256 bits.
+        </p>
+        <p class="demo-fine">
+          A demonstration with a throwaway secret that stays in this page. The
+          server uses HKDF-SHA3-256 with a secret stored encrypted; browsers
+          only offer SHA-256, which is what runs here. Needs JavaScript.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- No way back -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">No way back</p>
+        <h2>
+          Why an identity does not lead <span class="accent">to you.</span>
+        </h2>
+        <p class="lead">
+          Separation is not a setting someone could switch off. It follows from
+          how the identifier is made.
+        </p>
+      </header>
+
+      <div class="formula card rise">
+        <StatusTag status={feature("pairwise").status} />
+        <pre><code><span class="f-out">identifier</span> = HKDF-SHA3-256(
+    <span class="f-key">server secret</span>,
+    "brigid-vsid-v2" ‖ <span class="f-id">identity id</span> ‖ <span class="f-site">website id</span>
+)</code></pre>
+        <p>
+          The form decided in
+          <a href={`${SPEC}/decisions/007-identifiers.md`}>ADR-007</a>. Today's
+          server derives the same way from an earlier input; the final form
+          lands together with sign-in to websites.
+        </p>
+      </div>
+
+      <ul class="reasons">
+        {reasons.map((reason) => (
+          <li class="card reason rise">
+            <Icon name={reason.icon} />
+            <h3>{reason.title}</h3>
+            <p>{reason.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- The model -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">The idea behind it</p>
+        <h2>
+          A <span class="accent">semiotic</span> model of digital identity.
+        </h2>
+        <p class="lead">
+          brig·id grew out of a 2009 study of Facebook and MySpace led by Fanny
+          Georges, which reads a person's digital identity in three layers. Here
+          is that model, and what brig·id makes of each layer.
+        </p>
+      </header>
+
+      <div class="model">
+        {layers.map((layer, index) => (
+          <article class="card model-row rise">
+            <p class="model-n">{index + 1}</p>
+            <h3>{layer.name} identity</h3>
+            <div>
+              <p class="model-k">In the model</p>
+              <p>{layer.model}</p>
+            </div>
+            <div>
+              <p class="model-k model-k-here">In brig·id</p>
+              <p class="model-here">{layer.here}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="aside rise">
+        This is our reading of the model, applied to signing in. The paper
+        studies social networks and does not describe brig·id.
+        <a class="link-arrow" href="/history/">
+          How one led to the other
+          <Icon name="arrow-right" />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Limits -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">The limits</p>
+        <h2>
+          What brig·id does <span class="accent">not</span> hide.
+        </h2>
+        <p class="lead">
+          A sign-in system separates sign-ins. It is not an invisibility cloak,
+          and saying otherwise would be the first lie.
+        </p>
+      </header>
+      <ul class="limits">
+        {limits.map((limit) => (
+          <li class="card limit rise">
+            <Icon name={limit.icon} />
+            <div>
+              <h3>{limit.title}</h3>
+              <p>{limit.text}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Status -->
+  <section class="section">
+    <div class="shell-narrow">
+      <p class="note rise">
+        <Icon name="hourglass-medium-duotone" />
+        <span>
+          <strong>Where this stands.</strong> Accounts and identities are
+          separate in the server today, and you can create and manage identities
+          in the web app. Signing in to a website with one of them, and the
+          identifier that goes with it, are being built: until then no website
+          receives anything.
+          <a href="/features/#identities">See the status of each part.</a>
+        </span>
+      </p>
+    </div>
+  </section>
+
+  <script>
+    import "~/scripts/derive-demo";
+  </script>
+</Base>
+
+<style>
+  /* -- Layers -------------------------------------------------------------- */
+
+  .stack {
+    display: grid;
+    gap: 0;
+  }
+
+  .layer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 17rem);
+    align-items: center;
+    gap: 2rem;
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+    border-left: 2px solid var(--hue);
+  }
+
+  .layer-text {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .layer-step {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--hue);
+  }
+
+  .layer h3 {
+    font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  }
+
+  .layer-text p:last-child {
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  .layer-viz {
+    display: grid;
+    place-items: center;
+  }
+
+  .orb {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 30%,
+      #fff,
+      var(--self) 55%,
+      #f3c98f
+    );
+    color: #2a1d0a;
+    font-size: 2.1rem;
+    box-shadow:
+      0 0 1.5rem rgb(255 243 223 / 0.6),
+      0 0 5rem rgb(255 200 130 / 0.4);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem 0.35rem 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--hue) 40%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--hue) 12%, transparent);
+    font-size: 0.85rem;
+    font-weight: 520;
+  }
+
+  .chip :global(.icon) {
+    font-size: 1.05rem;
+    color: var(--hue);
+  }
+
+  .ids {
+    display: grid;
+    place-items: stretch;
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    background: rgb(0 0 0 / 0.28);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+  }
+
+  .ids p {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    color: var(--text-3);
+  }
+
+  .ids p + p {
+    border-top: 1px solid var(--line);
+  }
+
+  .ids code {
+    color: var(--violet);
+  }
+
+  .stack-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 0 0.9rem 2.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .stack-link :global(.icon) {
+    font-size: 1.1rem;
+    color: var(--text-2);
+  }
+
+  /* -- Who sees what ------------------------------------------------------- */
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-wrap table {
+    min-width: 46rem;
+  }
+
+  th,
+  td {
+    padding: 1rem 1.1rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  tbody tr {
+    border-top: 1px solid var(--line);
+  }
+
+  tbody th {
+    font-weight: 540;
+    max-width: 14rem;
+  }
+
+  .table-wrap tbody td {
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+
+  .table-wrap td :global(.icon) {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 1.25rem;
+  }
+
+  .yes {
+    color: var(--text);
+  }
+
+  .yes :global(.icon) {
+    color: var(--green);
+  }
+
+  .no {
+    color: var(--text-3);
+  }
+
+  /* -- Demo ---------------------------------------------------------------- */
+
+  .demo {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .demo .section-head {
+    margin-bottom: 0;
+  }
+
+  .demo-notes {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .demo-notes li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+
+  .demo-notes :global(.icon) {
+    margin-top: 0.2rem;
+    font-size: 1.15rem;
+    color: var(--amber);
+  }
+
+  .demo-box {
+    padding: 0.5rem;
+  }
+
+  .demo-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.75rem 1rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-3);
+  }
+
+  .demo-bar code {
+    margin-left: 0.4rem;
+    color: var(--self);
+  }
+
+  .demo-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .demo-actions .btn {
+    padding: 0.5rem 0.95rem;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+  }
+
+  .demo-box th,
+  .demo-box td {
+    padding: 0.75rem;
+  }
+
+  .demo-box thead th {
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+
+  .demo-box tbody th {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  .demo-box tbody th :global(.icon) {
+    font-size: 1.2rem;
+    color: var(--hue);
+  }
+
+  [data-cell] {
+    display: inline-block;
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--hue);
+    cursor: default;
+  }
+
+  [data-cell]:hover,
+  [data-cell]:focus-visible {
+    background: color-mix(in srgb, var(--hue) 14%, transparent);
+  }
+
+  [data-cell].flash {
+    animation: flash 0.7s var(--ease);
+  }
+
+  @keyframes flash {
+    from {
+      background: color-mix(in srgb, var(--hue) 45%, transparent);
+      color: #fff;
+    }
+  }
+
+  .demo-full {
+    min-height: 3.2rem;
+    margin: 0.25rem 0.75rem 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    line-height: 1.5;
+    color: var(--text-2);
+    overflow-wrap: anywhere;
+  }
+
+  .demo-fine {
+    padding: 0.5rem 0.75rem 0.75rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-3);
+  }
+
+  /* -- No way back --------------------------------------------------------- */
+
+  .formula {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+    background:
+      radial-gradient(
+        34rem 14rem at 0% 0%,
+        rgb(167 139 255 / 0.12),
+        transparent 70%
+      ),
+      var(--bg-1);
+  }
+
+  .formula pre {
+    margin: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    font-size: clamp(0.82rem, 1.6vw, 1.08rem);
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+
+  .f-out {
+    color: var(--violet);
+  }
+
+  .f-key {
+    color: var(--self);
+  }
+
+  .f-id {
+    color: var(--rose);
+  }
+
+  .f-site {
+    color: var(--cyan);
+  }
+
+  .formula p {
+    max-width: 44rem;
+    font-size: 0.95rem;
+    color: var(--text-2);
+  }
+
+  .reasons {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .reason {
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    padding: 1.5rem;
+  }
+
+  .reason :global(.icon) {
+    font-size: 1.8rem;
+    color: var(--violet);
+  }
+
+  .reason h3 {
+    font-size: 1.12rem;
+    letter-spacing: -0.02em;
+  }
+
+  .reason p {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  /* -- The model ----------------------------------------------------------- */
+
+  .model {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .model-row {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 13rem) minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+    padding: clamp(1.3rem, 2.6vw, 1.9rem);
+  }
+
+  .model-n {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 2.6rem;
+    line-height: 0.9;
+    color: var(--text-3);
+  }
+
+  .model-row h3 {
+    font-size: 1.3rem;
+    line-height: 1.25;
+  }
+
+  .model-row div {
+    display: grid;
+    gap: 0.45rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .model-k {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .model-k-here {
+    color: var(--amber);
+  }
+
+  .model-here {
+    color: var(--text);
+  }
+
+  .aside {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.2rem;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--text-3);
+  }
+
+  /* -- Limits -------------------------------------------------------------- */
+
+  .limits {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .limit {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.1rem;
+    padding: 1.6rem;
+  }
+
+  .limit > :global(.icon) {
+    font-size: 1.7rem;
+    color: var(--coral);
+  }
+
+  .limit h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+
+  .limit p {
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+
+  @media (max-width: 60rem) {
+    .demo {
+      grid-template-columns: 1fr;
+    }
+
+    .reasons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .model-row {
+      grid-template-columns: 2.4rem minmax(0, 1fr);
+    }
+
+    .model-row div {
+      grid-column: 2;
+    }
+  }
+
+  @media (max-width: 44rem) {
+    .layer {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .layer-viz {
+      justify-items: start;
+    }
+
+    .chips {
+      justify-content: flex-start;
+    }
+
+    .limits,
+    .reasons {
+      grid-template-columns: 1fr;
+    }
+
+    .demo-box th,
+    .demo-box td {
+      padding: 0.6rem 0.35rem;
+    }
+
+    .demo-box tbody th span {
+      display: none;
+    }
+
+    [data-cell] {
+      font-size: 0.7rem;
+    }
+  }
+</style>

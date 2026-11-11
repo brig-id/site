@@ -1,0 +1,401 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import StatusTag from "~/components/StatusTag.astro";
+
+const PAPER = "https://hal.science/hal-05193465v1";
+const SPEC = "https://github.com/brig-id/spec/blob/main";
+
+const authors =
+  "Fanny Georges, Antoine Seilles, Guillaume Artignan, Bérenger Arnaud, Mountaz Hascoët, Nancy Rodriguez, Birgitta Dresp-Langley, Jean Sallantin";
+
+interface Entry {
+  date: string;
+  datetime: string;
+  title: string;
+  text: string;
+  link?: { label: string; href: string };
+}
+
+const built: Entry[] = [
+  {
+    date: "24 May 2026",
+    datetime: "2026-05-24",
+    title: "First commit",
+    text: "The cryptography library, the core, the server and the specifications are started on the same day. The specifications come first on purpose: the system is meant to be audited.",
+  },
+  {
+    date: "29 July 2026",
+    datetime: "2026-07-29",
+    title: "A face",
+    text: "The web app begins: sign-up, sign-in and passkey management in a browser.",
+  },
+  {
+    date: "4 September 2026",
+    datetime: "2026-09-04",
+    title: "leaf 0.1.0",
+    text: "First release of the single-server edition, as a container image. In the same days the project's own server, helm.brig.id, goes online.",
+    link: {
+      label: "Releases",
+      href: "https://github.com/brig-id/server-leaf/releases",
+    },
+  },
+  {
+    date: "10 November 2026",
+    datetime: "2026-11-10",
+    title: "Accounts and identities part ways",
+    text: "The decision that gives brig·id its shape: an account is private and never shown to a website; an identity is what a website meets. Until then, one record played both roles.",
+    link: {
+      label: "ADR-002",
+      href: `${SPEC}/decisions/002-accounts-and-identities.md`,
+    },
+  },
+  {
+    date: "11 November 2026",
+    datetime: "2026-11-11",
+    title: "leaf 0.2 and the next decisions",
+    text: "Identities reach a release. The same day settles how sessions work, how a website will obtain an identity, and what its identifier is made of.",
+    link: { label: "Decisions", href: `${SPEC}/decisions` },
+  },
+];
+
+const next = [
+  "A recovery code, for the day every passkey is lost",
+  "Sign-up in one gesture, with no username to invent",
+  "Sign-in to websites with the identity you choose",
+];
+---
+
+<Base
+  title="History"
+  description="From a 2009 research paper on the semiotics of digital identity to a self-hosted identity server: where brig·id comes from."
+>
+  <section class="page-hero">
+    <div class="shell-narrow">
+      <p class="eyebrow">History</p>
+      <h1>
+        From a paper to a <span class="accent spectrum">server.</span>
+      </h1>
+      <p class="lead">
+        brig·id is young, and its idea is not. It took seventeen years, and a
+        few technologies that did not exist yet, to get from one to the other.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow chapter">
+      <p class="year rise">2009</p>
+      <div class="prose rise">
+        <h2>A study of two social networks</h2>
+        <p>
+          In 2009, eight researchers publish a paper at the H2PTM conference,
+          with Fanny Georges as first author. Its title, translated:{" "}
+          <strong>
+            Semiotics and visualisation of digital identity: a comparative study
+            of Facebook and MySpace.
+          </strong>
+        </p>
+        <p>
+          The paper looks at how the interfaces of the web of that time shape
+          the way a person is represented, and at what happens when an identity
+          is turned into numbers and charts. It reads a profile in three layers:
+        </p>
+      </div>
+
+      <ul class="layers rise">
+        <li>
+          <b>Declarative</b>
+          <span>
+            what the person enters: a name, a photograph, a description.
+          </span>
+        </li>
+        <li>
+          <b>Acting</b>
+          <span>what the platform reports the person doing.</span>
+        </li>
+        <li>
+          <b>Calculated</b>
+          <span>
+            what the platform computes and displays: counts, totals, rankings.
+          </span>
+        </li>
+      </ul>
+
+      <div class="prose rise">
+        <p>
+          Only the first layer is written by the person. The other two are
+          written by the platform, and they are the ones that grow.
+        </p>
+      </div>
+
+      <figure class="cite card hue-self rise">
+        <blockquote lang="fr">
+          Sémiotique et visualisation de l’identité numérique&nbsp;: une étude
+          comparée de Facebook et Myspace
+        </blockquote>
+        <figcaption>
+          {authors}. <cite>H2PTM 2009</cite>.
+        </figcaption>
+        <a class="link-arrow" href={PAPER}>
+          Read it on HAL
+          <Icon name="arrow-up-right" />
+        </a>
+      </figure>
+
+      <div class="prose rise">
+        <p>
+          One of the eight is Bérenger Arnaud, who would go on to start brig·id.
+          What stayed with him from that work is a plain idea: people do not
+          have one digital identity but several, and the more a system computes
+          about them, the less of each identity is theirs to write.
+        </p>
+        <p>
+          The paper studies social networks. It does not describe brig·id, and
+          its other authors have no part in this project.
+          <a href="https://berenger.arnaud.work/research">
+            More about that research.
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow chapter">
+      <p class="year rise">2009 → 2026</p>
+      <div class="prose rise">
+        <h2>Why it took until now</h2>
+        <p>
+          For most of those years the idea had no practical form. Signing in
+          meant a password, and a separate identity meant one more password to
+          forget. Two things changed that.
+        </p>
+        <ul>
+          <li>
+            <strong>Passkeys.</strong> Since 2022, the main browsers and
+            operating systems let people sign in with a gesture instead of a
+            secret they must remember. One strong, private way in became
+            realistic.
+          </li>
+          <li>
+            <strong>Post-quantum standards.</strong> In August 2024, NIST
+            published FIPS 203 and FIPS 204. An identity system started today
+            can be built on cryptography meant to outlast it.
+          </li>
+        </ul>
+        <p>
+          Meanwhile, the sign-in buttons of a few large platforms became the
+          default way to enter a website: the single account, everywhere, that
+          the 2009 paper could only glimpse.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow chapter">
+      <p class="year rise">2026</p>
+      <div class="prose rise">
+        <h2>Building it</h2>
+      </div>
+
+      <ol class="timeline">
+        {built.map((entry) => (
+          <li class="rise">
+            <time datetime={entry.datetime}>{entry.date}</time>
+            <h3>{entry.title}</h3>
+            <p>{entry.text}</p>
+            {entry.link && (
+              <a class="link-arrow" href={entry.link.href}>
+                {entry.link.label}
+                <Icon name="arrow-up-right" />
+              </a>
+            )}
+          </li>
+        ))}
+        <li class="rise upcoming">
+          <StatusTag status="progress" />
+          <h3>Next</h3>
+          <ul>
+            {next.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+          <a class="link-arrow" href="/features/">
+            The status of everything
+            <Icon name="arrow-right" />
+          </a>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow chapter">
+      <p class="year rise">A note</p>
+      <div class="prose rise">
+        <h2>On the names</h2>
+        <p>
+          The parts of brig·id are named after a tree. <code>roots</code> is the
+          workspace everything grows from. <code>leaf</code> is a single server,{" "}
+          <code>grove</code> will be several working as one, and
+          <code>forest</code> the largest deployments. The first server is
+          called <code>helm</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .chapter {
+    display: grid;
+    gap: 1.75rem;
+  }
+
+  .year {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(3.4rem, 11vw, 6.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    background: linear-gradient(180deg, var(--self), rgb(255 243 223 / 0.15));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .layers {
+    border-top: 1px solid var(--line);
+  }
+
+  .layers li {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 1rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-2);
+  }
+
+  .layers b {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    line-height: 2.1;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .cite {
+    display: grid;
+    gap: 1.1rem;
+    margin: 0.5rem 0;
+    padding: clamp(1.5rem, 4vw, 2.4rem);
+    background:
+      radial-gradient(
+        30rem 16rem at 100% 0%,
+        rgb(255 243 223 / 0.08),
+        transparent 70%
+      ),
+      var(--bg-1);
+  }
+
+  .cite blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.5rem, 3.4vw, 2.2rem);
+    line-height: 1.2;
+    color: var(--self);
+  }
+
+  .cite figcaption {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .cite cite {
+    font-style: normal;
+    color: var(--text);
+  }
+
+  .timeline {
+    display: grid;
+    gap: 0;
+    margin-left: 0.35rem;
+    border-left: 1px solid var(--line-2);
+  }
+
+  .timeline > li {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: 0.5rem;
+    padding: 0 0 2.5rem 2rem;
+  }
+
+  .timeline > li::before {
+    content: "";
+    position: absolute;
+    left: -0.36rem;
+    top: 0.45rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--self);
+    box-shadow:
+      0 0 0 0.3rem var(--bg),
+      0 0 1rem var(--amber);
+  }
+
+  .timeline > li.upcoming::before {
+    background: var(--bg);
+    box-shadow:
+      0 0 0 1px var(--amber) inset,
+      0 0 0 0.3rem var(--bg);
+  }
+
+  .timeline time {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .timeline h3 {
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .timeline p {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+
+  .timeline .link-arrow {
+    font-size: 0.9rem;
+    color: var(--text-2);
+  }
+
+  .upcoming ul {
+    display: grid;
+    gap: 0.4rem;
+    padding-left: 1.1rem;
+    list-style: disc;
+    font-size: 1.05rem;
+    color: var(--text-2);
+  }
+
+  @media (max-width: 36rem) {
+    .layers li {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

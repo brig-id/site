@@ -1,0 +1,919 @@
+---
+import Base from "~/layouts/Base.astro";
+import Compare from "~/components/Compare.astro";
+import Icon from "~/components/Icon.astro";
+import PrismScene from "~/components/PrismScene.astro";
+import StatusTag from "~/components/StatusTag.astro";
+import { FEATURES, RELEASE, feature, type Status } from "~/data/features";
+import { GITHUB, SPEC } from "~/data/nav";
+
+const count = (status: Status) =>
+  FEATURES.filter((item) => item.status === status).length;
+
+const stages: {
+  status: Status;
+  title: string;
+  text: string;
+  items: string[];
+}[] = [
+  {
+    status: "available",
+    title: "Works today",
+    text: `In leaf ${RELEASE.version}, the single-server edition.`,
+    items: [
+      "Passkey sign-in, a passkey per device",
+      "A private account with several identities",
+      "Encrypted storage, key rotation",
+      "Health and metrics for operators",
+    ],
+  },
+  {
+    status: "progress",
+    title: "Being built",
+    text: "Specified and decided; the code is landing.",
+    items: [
+      "Recovery code, one-gesture sign-up",
+      "Sign in to websites with an identity",
+      "A different identifier for every site",
+      "Server-side sessions, post-quantum tokens",
+    ],
+  },
+  {
+    status: "planned",
+    title: "After that",
+    text: "On the roadmap, not started.",
+    items: [
+      "Passkeys bound to one identity",
+      "grove and forest, for larger deployments",
+      "A public map of servers",
+      "An independent security audit",
+    ],
+  },
+];
+
+const tiers = [
+  { id: "leaf", name: "leaf", line: "One server, one container." },
+  { id: "grove", name: "grove", line: "Several servers as one." },
+  {
+    id: "forest",
+    name: "forest",
+    line: "Identity as critical infrastructure.",
+  },
+];
+---
+
+<Base description="brig·id is a self-hosted, passkey-only identity server. You sign in as a private self no website ever meets, and show each site only the identity you chose for it.">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="shell hero-text">
+      <a class="pill" href="/features/#status">
+        <span class="pill-dot"></span>
+        Pre-beta. See what works today
+        <Icon name="arrow-right" />
+      </a>
+      <h1>
+        One private self.
+        <br />
+        Many <span class="accent spectrum">identities.</span>
+      </h1>
+      <p class="lead">
+        brig·id is an identity server you host yourself. You sign in one way,
+        with a passkey, as a private self no website ever meets. Each site gets
+        only the identity you chose for it, and no way back to you.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/identities/">
+          How identities work
+          <Icon name="arrow-right" />
+        </a>
+        <a class="btn btn-ghost" href="/features/">
+          See the features
+        </a>
+      </div>
+    </div>
+    <div class="shell hero-scene">
+      <PrismScene />
+    </div>
+  </section>
+
+  <!-- The problem -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">The problem</p>
+        <h2>
+          You were never <span class="accent">one</span> account.
+        </h2>
+        <p class="lead">
+          At work, with family, on a forum at two in the morning, you are not
+          the same person, and you never were. Online, a single sign-in button
+          flattens all of it into one account that follows you everywhere.
+        </p>
+      </header>
+      <div class="rise">
+        <Compare />
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">What it does</p>
+        <h2>
+          Built for how people <span class="accent">really</span> live online.
+        </h2>
+        <p class="lead">
+          Some of this runs today and some is being built. Every item says
+          which.
+        </p>
+      </header>
+
+      <div class="bento">
+        <article class="card cell cell-7 hue-amber rise">
+          <div class="cell-text">
+            <StatusTag status={feature("passkeys").status} />
+            <h3>{feature("passkeys").title}</h3>
+            <p>{feature("passkeys").summary}</p>
+          </div>
+          <div class="viz viz-passkey" aria-hidden="true">
+            <span class="ring"></span>
+            <span class="ring"></span>
+            <span class="ring"></span>
+            <Icon name="fingerprint" />
+            <span class="prompt">Use my passkey</span>
+          </div>
+        </article>
+
+        <article class="card cell cell-5 hue-rose rise">
+          <div class="cell-text">
+            <StatusTag status={feature("many-identities").status} />
+            <h3>{feature("many-identities").title}</h3>
+            <p>{feature("many-identities").summary}</p>
+          </div>
+          <div class="viz viz-chips" aria-hidden="true">
+            <span class="chip hue-amber">
+              <Icon name="globe-hemisphere-west-duotone" />
+              Public
+            </span>
+            <span class="chip hue-rose">
+              <Icon name="house-line-duotone" />
+              Personal
+            </span>
+            <span class="chip hue-cyan">
+              <Icon name="briefcase-duotone" />
+              Work
+            </span>
+            <span class="chip hue-violet">
+              <Icon name="mask-happy-duotone" />
+              Night owl
+            </span>
+            <span class="chip chip-add">
+              <Icon name="plus" />
+              New identity
+            </span>
+          </div>
+        </article>
+
+        <article class="card cell cell-5 hue-violet rise">
+          <div class="cell-text">
+            <StatusTag status={feature("pairwise").status} />
+            <h3>{feature("pairwise").title}</h3>
+            <p>{feature("pairwise").summary}</p>
+          </div>
+          <div class="viz viz-ids" aria-hidden="true">
+            <p>
+              <span>forum.example</span>
+              <code>Lp3uQ0fZ…Xv6s</code>
+            </p>
+            <p>
+              <span>shop.example</span>
+              <code>8aRmT2yK…c41J</code>
+            </p>
+            <p>
+              <span>news.example</span>
+              <code>wE9dPn7B…0hUq</code>
+            </p>
+          </div>
+        </article>
+
+        <article class="card cell cell-7 hue-cyan rise">
+          <div class="cell-text">
+            <StatusTag status={feature("leaf").status} />
+            <h3>Your server, your rules</h3>
+            <p>{feature("leaf").summary}</p>
+          </div>
+          <div class="viz viz-term" aria-hidden="true">
+            <p class="bar">
+              <i></i>
+              <i></i>
+              <i></i>
+              <span>your-server</span>
+            </p>
+            <p>
+              <b>$</b> docker compose -f deploy/compose.yaml up -d
+            </p>
+            <p class="dim">leaf {RELEASE.version} · ghcr.io/brig-id/leaf</p>
+            <p>
+              <b>$</b> curl https://your-server/health
+            </p>
+            <p class="ok">{`{"status":"ok"}`}</p>
+          </div>
+        </article>
+
+        <article class="card cell cell-4 hue-green rise">
+          <div class="cell-text">
+            <StatusTag status={feature("encrypted-storage").status} />
+            <h3>{feature("encrypted-storage").title}</h3>
+            <p>{feature("encrypted-storage").summary}</p>
+          </div>
+        </article>
+
+        <article class="card cell cell-4 hue-violet rise">
+          <div class="cell-text">
+            <StatusTag status={feature("post-quantum").status} />
+            <h3>{feature("post-quantum").title}</h3>
+            <p>{feature("post-quantum").summary}</p>
+          </div>
+        </article>
+
+        <article class="card cell cell-4 hue-amber rise">
+          <div class="cell-text">
+            <StatusTag status={feature("specified").status} />
+            <h3>Open source, open specification</h3>
+            <p>
+              The code is LGPL-3.0. The protocol, the threat model and every
+              architecture decision are public, written to be checked.
+            </p>
+          </div>
+        </article>
+      </div>
+
+      <p class="after rise">
+        <a class="link-arrow" href="/features/">
+          All {FEATURES.length} features, with their status
+          <Icon name="arrow-right" />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Origin -->
+  <section class="section">
+    <div class="shell origin">
+      <div class="section-head rise">
+        <p class="eyebrow">Where it comes from</p>
+        <h2>
+          It began as a <span class="accent">research</span> question.
+        </h2>
+        <p class="lead">
+          In 2009, a team around researcher Fanny Georges compared how Facebook
+          and MySpace represent a person. Their semiotic model reads a digital
+          identity in three layers: what you declare, what the platform reports
+          you doing, and what it computes about you.
+        </p>
+        <p class="lead">
+          The more a platform computes, the less of your identity is yours to
+          write. brig·id is one engineer's answer, years later: a system where
+          you declare each identity yourself, and nothing is computed across
+          them.
+        </p>
+        <a class="link-arrow" href="/history/">
+          Read the history
+          <Icon name="arrow-right" />
+        </a>
+      </div>
+
+      <figure class="paper card hue-self rise">
+        <p class="paper-kind">Conference paper · H2PTM 2009</p>
+        <blockquote lang="fr">
+          Sémiotique et visualisation de l’identité numérique&nbsp;: une étude
+          comparée de Facebook et Myspace
+        </blockquote>
+        <figcaption>
+          Fanny Georges, Antoine Seilles, Guillaume Artignan, Bérenger Arnaud,
+          Mountaz Hascoët, Nancy Rodriguez, Birgitta Dresp-Langley, Jean
+          Sallantin
+        </figcaption>
+        <ul class="layers">
+          <li>
+            <b>Declarative</b> what you say you are
+          </li>
+          <li>
+            <b>Acting</b> what the platform reports you doing
+          </li>
+          <li>
+            <b>Calculated</b> what the platform computes about you
+          </li>
+        </ul>
+        <a class="link-arrow" href="https://hal.science/hal-05193465v1">
+          Read it on HAL
+          <Icon name="arrow-up-right" />
+        </a>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Self-hosting -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head center rise">
+        <p class="eyebrow">Your own server</p>
+        <h2>
+          Start with a <span class="accent">leaf.</span>
+        </h2>
+        <p class="lead">
+          There is no brig·id company holding the accounts. brig·id is software:
+          one small server is enough for a person, a family or a team, and it is
+          yours.
+        </p>
+      </header>
+      <ol class="tiers">
+        {tiers.map((tier) => (
+          <li class="card tier hue-green rise">
+            <span class="tier-icon">
+              <Icon name={feature(tier.id).icon} />
+            </span>
+            <StatusTag status={feature(tier.id).status} />
+            <h3>{tier.name}</h3>
+            <p class="tier-line">{tier.line}</p>
+            <p>{feature(tier.id).summary}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Where it stands -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">Where it stands</p>
+        <h2>
+          Honest about what is <span class="accent">built.</span>
+        </h2>
+        <p class="lead">
+          brig·id is pre-beta. This site describes where it is going, so every
+          claim on it carries one of three labels.
+        </p>
+      </header>
+      <div class="stages">
+        {stages.map((stage) => (
+          <section class="card stage rise">
+            <header>
+              <StatusTag status={stage.status} />
+              <span class="stage-count">{count(stage.status)}</span>
+            </header>
+            <h3>{stage.title}</h3>
+            <p>{stage.text}</p>
+            <ul>
+              {stage.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing -->
+  <section class="section">
+    <div class="shell">
+      <div class="closing card rise">
+        <h2>
+          Follow the <span class="accent spectrum">build.</span>
+        </h2>
+        <p class="lead">
+          Everything happens in the open: the code, the specifications, the
+          decisions and the reasons behind them.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href={GITHUB}>
+            <Icon name="github-logo" />
+            brig-id on GitHub
+          </a>
+          <a class="btn btn-ghost" href="/manifesto/">
+            Read the manifesto
+          </a>
+          <a class="btn btn-ghost" href={SPEC}>
+            Specifications
+            <Icon name="arrow-up-right" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* -- Hero ---------------------------------------------------------------- */
+
+  .hero {
+    position: relative;
+    padding-top: calc(var(--header-h) + clamp(3.5rem, 8vw, 6.5rem));
+    padding-bottom: clamp(3rem, 7vw, 5rem);
+    text-align: center;
+  }
+
+  /* A faint grid behind the headline, fading out towards the edges. */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 35%;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 4.5rem 4.5rem;
+    background-position: center top;
+    mask-image: radial-gradient(
+      60rem 30rem at 50% 20%,
+      #000 10%,
+      transparent 75%
+    );
+    opacity: 0.6;
+  }
+
+  .hero-text {
+    display: grid;
+    justify-items: center;
+    gap: 1.6rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.9rem, 8.2vw, 6.4rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+
+  .hero .lead {
+    max-width: 41rem;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .hero-scene {
+    margin-top: clamp(3rem, 7vw, 5rem);
+  }
+
+  /* -- Bento --------------------------------------------------------------- */
+
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.75rem;
+    min-height: 15rem;
+    padding: clamp(1.4rem, 2.6vw, 2rem);
+  }
+
+  .cell-7 {
+    grid-column: span 7;
+  }
+
+  .cell-5 {
+    grid-column: span 5;
+  }
+
+  .cell-4 {
+    grid-column: span 4;
+  }
+
+  .cell-text {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+  }
+
+  .cell h3 {
+    font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+    letter-spacing: -0.025em;
+  }
+
+  .cell p {
+    max-width: 34rem;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+
+  .viz {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    background: rgb(0 0 0 / 0.28);
+  }
+
+  .viz-passkey {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 1.5rem;
+    height: 13rem;
+    overflow: hidden;
+    color: var(--amber);
+    font-size: 3rem;
+  }
+
+  .viz-passkey :global(.icon) {
+    filter: drop-shadow(0 0 1.2rem rgb(255 182 92 / 0.7));
+  }
+
+  .ring {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    width: 5rem;
+    height: 5rem;
+    margin: -2.5rem 0 0 -2.5rem;
+    border: 1px solid rgb(255 182 92 / 0.45);
+    border-radius: 50%;
+    animation: spread 3.6s var(--ease) infinite;
+  }
+
+  .ring:nth-child(2) {
+    animation-delay: 1.2s;
+  }
+
+  .ring:nth-child(3) {
+    animation-delay: 2.4s;
+  }
+
+  @keyframes spread {
+    from {
+      transform: scale(0.7);
+      opacity: 1;
+    }
+    to {
+      transform: scale(4.2);
+      opacity: 0;
+    }
+  }
+
+  .prompt {
+    padding: 0.4rem 0.95rem;
+    border: 1px solid rgb(255 182 92 / 0.35);
+    border-radius: 999px;
+    background: rgb(255 182 92 / 0.1);
+    font-size: 0.85rem;
+    font-weight: 540;
+    color: var(--self);
+  }
+
+  .viz-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.8rem 0.4rem 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--hue) 40%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--hue) 12%, transparent);
+    font-size: 0.88rem;
+    font-weight: 520;
+  }
+
+  .chip :global(.icon) {
+    font-size: 1.1rem;
+    color: var(--hue);
+  }
+
+  .chip-add {
+    border: 1px dashed var(--line-2);
+    background: none;
+    color: var(--text-3);
+  }
+
+  .viz-ids {
+    display: grid;
+    gap: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .viz-ids p {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: none;
+    padding: 0.7rem 1rem;
+    color: var(--text-3);
+  }
+
+  .viz-ids p + p {
+    border-top: 1px solid var(--line);
+  }
+
+  .viz-ids code {
+    color: var(--violet);
+  }
+
+  .viz-term {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0 1.1rem 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    overflow: hidden;
+  }
+
+  .viz-term p {
+    max-width: none;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .viz-term .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 -1.1rem 0.6rem;
+    padding: 0.65rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-3);
+  }
+
+  .viz-term .bar i {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--line-2);
+  }
+
+  .viz-term .bar span {
+    margin-left: 0.5rem;
+  }
+
+  .viz-term b {
+    color: var(--cyan);
+    font-weight: 500;
+  }
+
+  .viz-term .dim {
+    color: var(--text-3);
+  }
+
+  .viz-term .ok {
+    color: var(--green);
+  }
+
+  .after {
+    margin-top: 2rem;
+  }
+
+  /* -- Origin -------------------------------------------------------------- */
+
+  .origin {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: center;
+    gap: clamp(2rem, 6vw, 5rem);
+  }
+
+  .origin .section-head {
+    margin-bottom: 0;
+  }
+
+  .paper {
+    display: grid;
+    gap: 1.25rem;
+    margin: 0;
+    padding: clamp(1.5rem, 3.5vw, 2.5rem);
+    background:
+      radial-gradient(
+        30rem 16rem at 100% 0%,
+        rgb(255 243 223 / 0.08),
+        transparent 70%
+      ),
+      var(--bg-1);
+  }
+
+  .paper-kind {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .paper blockquote {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    line-height: 1.2;
+    color: var(--self);
+  }
+
+  .paper figcaption {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .layers {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .layers li {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.92rem;
+    color: var(--text-2);
+  }
+
+  .layers b {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    line-height: 1.9;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  /* -- Tiers --------------------------------------------------------------- */
+
+  .tiers {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .tier {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 0.7rem;
+    padding: clamp(1.4rem, 2.6vw, 2rem);
+  }
+
+  .tier-icon {
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    margin-bottom: 0.6rem;
+    border: 1px solid rgb(98 227 164 / 0.3);
+    border-radius: 1rem;
+    background: rgb(98 227 164 / 0.08);
+    color: var(--green);
+    font-size: 1.8rem;
+  }
+
+  .tier h3 {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .tier-line {
+    font-weight: 540;
+    color: var(--text);
+  }
+
+  .tier p:last-child {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+
+  /* -- Stages -------------------------------------------------------------- */
+
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .stage {
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    padding: clamp(1.4rem, 2.6vw, 2rem);
+  }
+
+  .stage header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .stage-count {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 2.6rem;
+    line-height: 1;
+    color: var(--text-3);
+  }
+
+  .stage h3 {
+    font-size: 1.4rem;
+  }
+
+  .stage > p {
+    color: var(--text-2);
+  }
+
+  .stage ul {
+    display: grid;
+    gap: 0;
+    margin-top: 0.5rem;
+  }
+
+  .stage li {
+    padding: 0.65rem 0;
+    border-top: 1px solid var(--line);
+    font-size: 0.95rem;
+  }
+
+  /* -- Closing ------------------------------------------------------------- */
+
+  .closing {
+    display: grid;
+    justify-items: center;
+    gap: 1.4rem;
+    padding: clamp(3rem, 8vw, 6rem) var(--gutter);
+    text-align: center;
+    background:
+      radial-gradient(
+        40rem 20rem at 50% 115%,
+        rgb(255 182 92 / 0.22),
+        transparent 70%
+      ),
+      radial-gradient(
+        30rem 16rem at 20% 0%,
+        rgb(167 139 255 / 0.12),
+        transparent 70%
+      ),
+      var(--bg-1);
+  }
+
+  .closing h2 {
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+  }
+
+  .closing .lead {
+    max-width: 34rem;
+  }
+
+  @media (max-width: 60rem) {
+    .cell-7,
+    .cell-5 {
+      grid-column: span 12;
+    }
+
+    .cell-4 {
+      grid-column: span 6;
+    }
+
+    .origin {
+      grid-template-columns: 1fr;
+    }
+
+    .tiers,
+    .stages {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .cell-4 {
+      grid-column: span 12;
+    }
+
+    .cell {
+      min-height: 0;
+    }
+
+    .layers li {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

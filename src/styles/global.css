@@ -1,0 +1,644 @@
+/* brig·id — design system.
+   Dark only. One idea runs through it: the private self is white light, and
+   each identity is one colour split from it. */
+
+/* -- Tokens ---------------------------------------------------------------- */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #05060a;
+  --bg-1: #0a0c12;
+  --bg-2: #10131b;
+  --line: rgb(255 255 255 / 0.08);
+  --line-2: rgb(255 255 255 / 0.15);
+
+  --text: #eef0f5;
+  --text-2: #a6acba;
+  --text-3: #7c8296;
+
+  /* The private self, then the colours of the identities. */
+  --self: #fff3df;
+  --amber: #ffb65c;
+  --coral: #ff7d6b;
+  --rose: #ff86c8;
+  --violet: #a78bff;
+  --cyan: #5ad7f0;
+  --green: #62e3a4;
+
+  --spectrum: linear-gradient(
+    100deg,
+    var(--amber) 0%,
+    var(--coral) 28%,
+    var(--rose) 52%,
+    var(--violet) 76%,
+    var(--cyan) 100%
+  );
+
+  --font-sans:
+    "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-mono:
+    "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  --radius: 22px;
+  --radius-s: 12px;
+  --shell: 1180px;
+  --gutter: clamp(1.1rem, 4vw, 2.5rem);
+  --header-h: 4.25rem;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* An element takes the colour of one identity. */
+.hue-self {
+  --hue: var(--self);
+}
+.hue-amber {
+  --hue: var(--amber);
+}
+.hue-coral {
+  --hue: var(--coral);
+}
+.hue-rose {
+  --hue: var(--rose);
+}
+.hue-violet {
+  --hue: var(--violet);
+}
+.hue-cyan {
+  --hue: var(--cyan);
+}
+.hue-green {
+  --hue: var(--green);
+}
+
+/* -- Base ------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 100%;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1.5rem);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  background:
+    radial-gradient(
+      70rem 34rem at 50% -8rem,
+      rgb(255 182 92 / 0.1),
+      transparent 70%
+    ),
+    radial-gradient(
+      50rem 30rem at 85% 4rem,
+      rgb(167 139 255 / 0.07),
+      transparent 70%
+    ),
+    var(--bg);
+  background-repeat: no-repeat;
+}
+
+/* Film grain: keeps the large gradients from banding. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+main {
+  flex: 1;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 560;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: rgb(255 255 255 / 0.3);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: rgb(255 182 92 / 0.35);
+  color: #fff;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  fill: currentColor;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 200;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.2s var(--ease);
+}
+
+.skip:focus {
+  top: 0.75rem;
+}
+
+/* -- Layout ---------------------------------------------------------------- */
+
+.shell {
+  width: min(100% - 2 * var(--gutter), var(--shell));
+  margin-inline: auto;
+}
+
+.shell-narrow {
+  width: min(100% - 2 * var(--gutter), 46rem);
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(4rem, 10vw, 8rem);
+  position: relative;
+}
+
+.section + .section {
+  padding-top: clamp(2rem, 5vw, 4rem);
+}
+
+.page-hero + .section {
+  padding-top: clamp(1.5rem, 4vw, 3rem);
+}
+
+.section-head {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 44rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+
+.section-head.center {
+  margin-inline: auto;
+  text-align: center;
+  justify-items: center;
+}
+
+.section-head h2 {
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+}
+
+.lead {
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+/* Italic serif for the one word a heading leans on. */
+.accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  font-size: 1.08em;
+}
+
+.spectrum {
+  background: var(--spectrum);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* -- Small parts ----------------------------------------------------------- */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 1.4rem;
+  height: 1px;
+  background: var(--spectrum);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.38rem 0.85rem 0.38rem 0.6rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  backdrop-filter: blur(10px);
+  font-size: 0.82rem;
+  color: var(--text-2);
+  text-decoration: none;
+}
+
+a.pill:hover {
+  color: var(--text);
+  border-color: rgb(255 255 255 / 0.3);
+}
+
+.pill-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 0 rgb(255 182 92 / 0.6);
+  animation: pulse 2.4s var(--ease) infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255 182 92 / 0.55);
+  }
+  80%,
+  100% {
+    box-shadow: 0 0 0 0.55rem rgb(255 182 92 / 0);
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.35rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.96rem;
+  font-weight: 560;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.2s var(--ease),
+    box-shadow 0.3s var(--ease),
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--self);
+  color: #14110b;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.2) inset,
+    0 0 2.2rem rgb(255 200 130 / 0.28);
+}
+
+.btn-primary:hover {
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.2) inset,
+    0 0 3.2rem rgb(255 200 130 / 0.5);
+}
+
+.btn-ghost {
+  border-color: var(--line-2);
+  background: rgb(255 255 255 / 0.03);
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  border-color: rgb(255 255 255 / 0.32);
+  background: rgb(255 255 255 / 0.07);
+}
+
+.btn .icon {
+  font-size: 1.1em;
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 540;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.link-arrow .icon {
+  transition: transform 0.25s var(--ease);
+}
+
+.link-arrow:hover .icon {
+  transform: translateX(0.25rem);
+}
+
+/* Status of a feature: available, in progress, planned. */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.22rem 0.62rem 0.22rem 0.5rem;
+  border: 1px solid var(--tag-line);
+  border-radius: 999px;
+  background: var(--tag-bg);
+  color: var(--tag-ink);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tag::before {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.tag-available {
+  --tag-ink: var(--green);
+  --tag-line: rgb(98 227 164 / 0.3);
+  --tag-bg: rgb(98 227 164 / 0.08);
+}
+
+.tag-progress {
+  --tag-ink: var(--amber);
+  --tag-line: rgb(255 182 92 / 0.32);
+  --tag-bg: rgb(255 182 92 / 0.08);
+}
+
+.tag-progress::before {
+  animation: blink 1.6s ease-in-out infinite;
+}
+
+.tag-planned {
+  --tag-ink: #9aa6d6;
+  --tag-line: rgb(154 166 214 / 0.35);
+  --tag-bg: transparent;
+  border-style: dashed;
+}
+
+.tag-planned::before {
+  background: transparent;
+  box-shadow: 0 0 0 1px currentColor inset;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* -- Card ------------------------------------------------------------------ */
+
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.012)),
+    var(--bg-1);
+  transition: border-color 0.3s;
+}
+
+/* A light that follows the pointer (src/scripts/site.ts sets --mx/--my). */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  background: radial-gradient(
+    26rem circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in srgb, var(--hue, #fff) 16%, transparent),
+    transparent 55%
+  );
+  transition: opacity 0.4s;
+}
+
+.card:hover {
+  border-color: var(--line-2);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* -- Entrance -------------------------------------------------------------- */
+
+/* Sections rise as they scroll into view, where the browser can tie an
+   animation to scroll. Elsewhere they are simply there. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rise {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* -- Page header (inner pages) --------------------------------------------- */
+
+.page-hero {
+  padding-top: calc(var(--header-h) + clamp(3.5rem, 9vw, 7rem));
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+
+.page-hero .shell,
+.page-hero .shell-narrow {
+  display: grid;
+  gap: 1.4rem;
+}
+
+.page-hero h1 {
+  font-size: clamp(2.5rem, 6.4vw, 4.6rem);
+  max-width: 18ch;
+}
+
+.page-hero .lead {
+  max-width: 40rem;
+}
+
+/* -- Long-form text -------------------------------------------------------- */
+
+.prose {
+  display: grid;
+  gap: 1.15rem;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  color: var(--text-2);
+}
+
+.prose strong {
+  color: var(--text);
+  font-weight: 560;
+}
+
+.prose h2 {
+  margin-top: 1.6rem;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  color: var(--text);
+}
+
+.prose h3 {
+  margin-top: 0.8rem;
+  font-size: 1.2rem;
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+
+.prose ul {
+  display: grid;
+  gap: 0.55rem;
+  padding-left: 1.2rem;
+  list-style: disc;
+}
+
+.prose li::marker {
+  color: var(--text-3);
+}
+
+.prose code {
+  padding: 0.1em 0.38em;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.04);
+  color: var(--text);
+}
+
+/* A framed note: status of a page, a caveat. */
+.note {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid rgb(255 182 92 / 0.25);
+  border-radius: var(--radius-s);
+  background: rgb(255 182 92 / 0.06);
+  color: var(--text-2);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.note .icon {
+  margin-top: 0.2rem;
+  font-size: 1.25rem;
+  color: var(--amber);
+}
+
+.note strong {
+  color: var(--text);
+  font-weight: 560;
+}

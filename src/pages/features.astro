@@ -1,0 +1,310 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import StatusTag from "~/components/StatusTag.astro";
+import {
+  FEATURES,
+  GROUPS,
+  RELEASE,
+  STATUS_LABEL,
+  STATUS_MEANING,
+  featuresOf,
+  type Status,
+} from "~/data/features";
+
+const statuses = Object.keys(STATUS_LABEL) as Status[];
+const count = (status: Status) =>
+  FEATURES.filter((item) => item.status === status).length;
+const external = (href: string) => href.startsWith("https://");
+---
+
+<Base
+  title="Features"
+  description="Everything brig·id does or will do, each with its real status: available, in progress or planned."
+>
+  <section class="page-hero">
+    <div class="shell">
+      <p class="eyebrow">Features</p>
+      <h1>
+        What it does, and <span class="accent spectrum">where it stands.</span>
+      </h1>
+      <p class="lead">
+        brig·id is pre-beta. This page lists what the latest release does, what
+        is being built, and what is only planned, without mixing the three.
+      </p>
+      <nav class="jump" aria-label="Sections">
+        {GROUPS.map((group) => (
+          <a class:list={["pill", `hue-${group.hue}`]} href={`#${group.id}`}>
+            <span class="jump-dot" />
+            {group.title}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </section>
+
+  <section class="section legend-section" id="status">
+    <div class="shell">
+      <ul class="legend">
+        {statuses.map((status) => (
+          <li class="card">
+            <header>
+              <StatusTag status={status} />
+              <span class="legend-count">{count(status)}</span>
+            </header>
+            <p>{STATUS_MEANING[status]}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="release">
+        Latest release: <a href={RELEASE.url}>leaf {RELEASE.version}</a>,{" "}
+        <time datetime={RELEASE.date}>11 November 2026</time>.
+      </p>
+    </div>
+  </section>
+
+  {GROUPS.map((group) => (
+    <section
+      class:list={["section", "group", `hue-${group.hue}`]}
+      id={group.id}
+    >
+      <div class="shell group-grid">
+        <header class="group-head">
+          <span class="group-bar" />
+          <h2>{group.title}</h2>
+          <p>{group.intro}</p>
+        </header>
+        <ul class="rows">
+          {featuresOf(group.id).map((item) => (
+            <li class="card row rise" id={item.id}>
+              <span class="row-icon">
+                <Icon name={item.icon} />
+              </span>
+              <div class="row-body">
+                <header>
+                  <h3>{item.title}</h3>
+                  <StatusTag status={item.status} />
+                </header>
+                <p class="row-summary">{item.summary}</p>
+                <p class="row-detail">{item.detail}</p>
+                {item.ref && (
+                  <a class="link-arrow row-ref" href={item.ref.href}>
+                    {item.ref.label}
+                    <Icon
+                      name={
+                        external(item.ref.href)
+                          ? "arrow-up-right"
+                          : "arrow-right"
+                      }
+                    />
+                  </a>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ))}
+
+  <section class="section">
+    <div class="shell-narrow">
+      <p class="note">
+        <Icon name="warning-duotone" />
+        <span>
+          <strong>Do not rely on brig·id yet.</strong> It has not been audited
+          by an independent party, its interfaces still change between releases,
+          and the server that runs it publicly is a test bed. The labels above
+          are kept in step with the code; when in doubt, the
+          <a href="https://github.com/brig-id/spec">specifications</a> are the
+          reference.
+        </span>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .jump-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--hue);
+    box-shadow: 0 0 0.7rem var(--hue);
+  }
+
+  .legend-section {
+    padding-block: 1rem clamp(2rem, 5vw, 3rem);
+  }
+
+  .legend {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .legend li {
+    display: grid;
+    align-content: start;
+    gap: 0.9rem;
+    padding: 1.4rem 1.5rem;
+  }
+
+  .legend header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .legend-count {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--text-3);
+  }
+
+  .legend p {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+
+  .release {
+    margin-top: 1.25rem;
+    font-size: 0.92rem;
+    color: var(--text-3);
+  }
+
+  .group {
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .group-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(1.5rem, 5vw, 4.5rem);
+  }
+
+  .group-head {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .group-bar {
+    width: 2.5rem;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--hue);
+    box-shadow: 0 0 1.2rem var(--hue);
+  }
+
+  .group-head h2 {
+    font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+  }
+
+  .group-head p {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+
+  .rows {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1.25rem;
+    padding: 1.5rem;
+    scroll-margin-top: calc(var(--header-h) + 2rem);
+  }
+
+  .row:target {
+    border-color: var(--hue);
+  }
+
+  .row-icon {
+    display: grid;
+    place-items: center;
+    width: 2.9rem;
+    height: 2.9rem;
+    border: 1px solid color-mix(in srgb, var(--hue) 35%, transparent);
+    border-radius: 0.9rem;
+    background: color-mix(in srgb, var(--hue) 10%, transparent);
+    color: var(--hue);
+    font-size: 1.55rem;
+  }
+
+  .row-body {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .row-body header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+
+  .row h3 {
+    font-size: 1.22rem;
+    letter-spacing: -0.02em;
+  }
+
+  .row-summary {
+    color: var(--text);
+    line-height: 1.55;
+  }
+
+  .row-detail {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .row-ref {
+    justify-self: start;
+    margin-top: 0.2rem;
+    font-size: 0.88rem;
+    color: var(--text-2);
+  }
+
+  .row-ref:hover {
+    color: var(--text);
+  }
+
+  @media (max-width: 56rem) {
+    .group-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .group-head {
+      position: static;
+    }
+
+    .legend {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .row {
+      grid-template-columns: 1fr;
+      gap: 0.9rem;
+      padding: 1.25rem;
+    }
+  }
+</style>

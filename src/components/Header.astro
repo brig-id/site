@@ -1,0 +1,277 @@
+---
+import Icon from "./Icon.astro";
+import Mark from "./Mark.astro";
+import { GITHUB, PRIMARY, SECONDARY } from "~/data/nav";
+
+const path = Astro.url.pathname;
+const current = (href: string) => (path.startsWith(href) ? "page" : undefined);
+---
+
+<header class="site-header" data-header>
+  <div class="bar">
+    <a class="brand" href="/" aria-label="brig·id, home">
+      <Mark />
+      <span class="wordmark">
+        brig<span class="dot">·</span>id
+      </span>
+    </a>
+
+    <nav class="nav-wide" aria-label="Main">
+      <ul>
+        {PRIMARY.map((link) => (
+          <li>
+            <a href={link.href} aria-current={current(link.href)}>
+              {link.label}
+            </a>
+          </li>
+        ))}
+        <li class="sep" aria-hidden="true"></li>
+        {SECONDARY.map((link) => (
+          <li>
+            <a class="quiet" href={link.href} aria-current={current(link.href)}>
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <a class="gh" href={GITHUB} aria-label="brig·id on GitHub">
+        <Icon name="github-logo" />
+        <span>GitHub</span>
+      </a>
+
+      <details class="nav-narrow">
+        <summary aria-label="Menu">
+          <Icon name="list" class="open" />
+          <Icon name="x" class="close" />
+        </summary>
+        <nav aria-label="Main, small screens">
+          <ul>
+            {[...PRIMARY, ...SECONDARY].map((link) => (
+              <li>
+                <a href={link.href} aria-current={current(link.href)}>
+                  {link.label}
+                  <Icon name="arrow-right" />
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href={GITHUB}>
+                GitHub
+                <Icon name="arrow-up-right" />
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0.75rem 0 auto;
+    z-index: 50;
+    padding-inline: var(--gutter);
+    pointer-events: none;
+  }
+
+  .bar {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: min(100%, var(--shell));
+    height: 3.5rem;
+    margin-inline: auto;
+    padding: 0 0.6rem 0 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgb(10 12 18 / 0.62);
+    backdrop-filter: blur(18px) saturate(1.5);
+    box-shadow: 0 0.6rem 2.5rem rgb(0 0 0 / 0.35);
+    transition:
+      border-color 0.3s,
+      background 0.3s;
+  }
+
+  .site-header[data-scrolled] .bar {
+    border-color: var(--line-2);
+    background: rgb(10 12 18 / 0.82);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+  }
+
+  .brand :global(.mark) {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+
+  .wordmark {
+    font-size: 1.16rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .dot {
+    margin-inline: 0.04em;
+    color: var(--amber);
+    text-shadow: 0 0 0.9rem var(--amber);
+  }
+
+  .nav-wide ul {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+  }
+
+  .nav-wide a {
+    display: block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+
+  .nav-wide a.quiet {
+    color: var(--text-2);
+  }
+
+  .nav-wide a:hover {
+    background: rgb(255 255 255 / 0.07);
+    color: var(--text);
+  }
+
+  .nav-wide a[aria-current="page"] {
+    background: rgb(255 255 255 / 0.1);
+    color: var(--text);
+  }
+
+  .sep {
+    width: 1px;
+    height: 1.1rem;
+    margin-inline: 0.45rem;
+    background: var(--line-2);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .gh {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 2.4rem;
+    padding: 0 0.95rem 0 0.8rem;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 540;
+    text-decoration: none;
+    transition:
+      background 0.2s,
+      border-color 0.2s;
+  }
+
+  .gh:hover {
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(255 255 255 / 0.3);
+  }
+
+  .gh :global(.icon) {
+    font-size: 1.15rem;
+  }
+
+  .nav-narrow {
+    display: none;
+  }
+
+  .nav-narrow summary {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 1px solid var(--line-2);
+    border-radius: 50%;
+    font-size: 1.15rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .nav-narrow summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav-narrow summary :global(.close),
+  .nav-narrow[open] summary :global(.open) {
+    display: none;
+  }
+
+  .nav-narrow[open] summary :global(.close) {
+    display: block;
+  }
+
+  .nav-narrow nav {
+    position: absolute;
+    inset: 4.1rem var(--gutter) auto;
+    padding: 0.6rem;
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius);
+    background: #0c0e14;
+    box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 0.6);
+  }
+
+  .nav-narrow a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 0.9rem;
+    border-radius: var(--radius-s);
+    font-size: 1.05rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .nav-narrow a :global(.icon) {
+    color: var(--text-3);
+  }
+
+  .nav-narrow a:hover,
+  .nav-narrow a[aria-current="page"] {
+    background: rgb(255 255 255 / 0.07);
+  }
+
+  @media (max-width: 60rem) {
+    .nav-wide,
+    .gh span {
+      display: none;
+    }
+
+    .gh {
+      width: 2.4rem;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .nav-narrow {
+      display: block;
+    }
+  }
+</style>
