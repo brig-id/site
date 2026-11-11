@@ -23,28 +23,23 @@ jobs:
     # secret of the same name in an environment would take precedence over
     # them.
     #
-    # Each secret is given only to the step that needs it: the Cloudflare
-    # token in particular never reaches dependency install or the build.
+    # The Cloudflare credentials are given to the deploy step only: they never
+    # reach dependency install or the build, which need no secret at all.
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-
-      - name: Configure Web Awesome Pro registry auth
-        env:
-          WEBAWESOME_NPM_TOKEN: ${{ secrets.WEBAWESOME_NPM_TOKEN }}
-        run: echo "//npm.cloudsmith.io/fortawesome/webawesome-pro/:_authToken=$WEBAWESOME_NPM_TOKEN" >> ~/.npmrc
 
       - uses: helpers4/action/setup-pnpm@6fddd178620e7325d446a246c38a44f979569fc4 # main @ 2026-07-29
         with:
           node-version: "24"
           working-directory: .
 
+      # The worker is deployed with the pages it serves: test it first.
+      - name: Test
+        run: pnpm run test
+
       - name: Build
-        env:
-          # Inlined into the static build by Vite (see vite.config.ts envPrefix).
-          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
-          FONT_AWESOME_KIT_ID: ${{ secrets.FONT_AWESOME_KIT_ID }}
         run: pnpm run build
 
       - name: Deploy
