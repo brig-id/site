@@ -8,7 +8,7 @@ import { RELEASE, feature } from "~/data/features";
 
 <Base
   title="leaf, grove, forest"
-  description="The three editions of the brig·id server compared: leaf for one machine, grove for several, forest for companies. What exists today and what is planned."
+  description="The three editions of the brig·id server compared: leaf for private use, grove for non-profits on a dedicated server, forest for companies at scale. What exists today and what is planned."
 >
   <section class="page-hero">
     <div class="shell">
@@ -17,9 +17,9 @@ import { RELEASE, feature } from "~/data/features";
         leaf, grove, <span class="accent spectrum">forest.</span>
       </h1>
       <p class="lead">
-        One server software in three sizes. Only the first exists today: leaf
-        {RELEASE.version}. The other two are planned, and this page says what is
-        decided about them and what is not.
+        One server software, in three editions. They differ in the volume they
+        carry and in how they fit into what you already run. Only the first
+        exists today: leaf {RELEASE.version}.
       </p>
     </div>
   </section>
@@ -51,7 +51,7 @@ import { RELEASE, feature } from "~/data/features";
       <header class="section-head rise">
         <p class="eyebrow">Side by side</p>
         <h2>
-          What <span class="accent">changes</span> with size.
+          What <span class="accent">changes</span> between them.
         </h2>
       </header>
 
@@ -89,8 +89,8 @@ import { RELEASE, feature } from "~/data/features";
         </table>
       </div>
       <p class="aside rise">
-        grove and forest are not written yet. Their rows describe the plan in
-        the repositories; details will change as they are built.
+        grove and forest are not written yet. Their columns describe the plan;
+        details will change as they are built.
       </p>
     </div>
   </section>
@@ -123,17 +123,19 @@ import { RELEASE, feature } from "~/data/features";
       <h2>Which one?</h2>
       <ul>
         <li>
-          <strong>Start with a leaf.</strong> It is the one that exists, and one
-          small machine is enough for a person, a family or an association.
+          <strong>leaf, for private use.</strong> It is the one that exists, and
+          it needs very little: enough for yourself, a family or a handful of
+          users.
         </li>
         <li>
-          <strong>grove, when one machine is no longer enough</strong>: more
-          people than it can serve, or a sign-in that must survive the loss of a
-          server. Non-profits choose between leaf and grove by size alone.
+          <strong>grove, for a non-profit.</strong> An association or a
+          community, with more users than a leaf is meant for: one dedicated
+          server is recommended.
         </li>
         <li>
-          <strong>forest, when a company depends on it.</strong> It is the paid
-          edition, and it will be built with the companies that need it.
+          <strong>forest, for a company.</strong> It fits into the company's own
+          cloud and carries large volumes. It is the paid edition, built with
+          the companies that need it.
         </li>
       </ul>
       <p>

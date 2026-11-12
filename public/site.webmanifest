@@ -1,7 +1,7 @@
 {
   "name": "brig·id",
   "short_name": "brig·id",
-  "description": "One private self, many identities. A self-hosted, passkey-only identity server.",
+  "description": "One private self, many identities. An identity server you can run yourself.",
   "start_url": "/",
   "display": "browser",
   "background_color": "#05060a",
