@@ -1,0 +1,61 @@
+---
+import Icon from "./Icon.astro";
+import type { Verdict } from "~/data/competitors";
+
+interface Props {
+  verdict: Verdict;
+  /** Shown next to the mark. */
+  text: string;
+}
+
+const ICON: Record<Verdict, string> = {
+  yes: "check-circle-duotone",
+  option: "sliders-horizontal",
+  partial: "circle-half-duotone",
+  no: "prohibit",
+  unknown: "question",
+  na: "minus-circle",
+};
+
+const { verdict, text } = Astro.props;
+---
+
+<span class:list={["verdict", `verdict-${verdict}`]}>
+  <Icon name={ICON[verdict]} />
+  <span>{text}</span>
+</span>
+
+<style>
+  .verdict {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    line-height: 1.35;
+  }
+
+  .verdict :global(.icon) {
+    margin-top: 0.1em;
+    font-size: 1.15em;
+  }
+
+  .verdict-yes :global(.icon) {
+    color: var(--green);
+  }
+
+  .verdict-option :global(.icon),
+  .verdict-partial :global(.icon) {
+    color: var(--amber);
+  }
+
+  .verdict-no,
+  .verdict-unknown,
+  .verdict-na {
+    color: var(--text-2);
+  }
+
+  .verdict-no :global(.icon),
+  .verdict-unknown :global(.icon),
+  .verdict-na :global(.icon) {
+    color: var(--text-3);
+  }
+</style>

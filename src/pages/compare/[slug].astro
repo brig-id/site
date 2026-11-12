@@ -1,0 +1,461 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import StatusTag from "~/components/StatusTag.astro";
+import VerdictMark from "~/components/VerdictMark.astro";
+import {
+  BRIGID,
+  CATEGORIES,
+  CHECKED,
+  COMPETITORS,
+  QUESTIONS,
+  type Competitor,
+} from "~/data/competitors";
+import { feature } from "~/data/features";
+
+export function getStaticPaths() {
+  return COMPETITORS.map((item, index) => ({
+    params: { slug: item.slug },
+    props: {
+      item,
+      previous: COMPETITORS[index - 1],
+      next: COMPETITORS[index + 1],
+    },
+  }));
+}
+
+interface Props {
+  item: Competitor;
+  previous?: Competitor;
+  next?: Competitor;
+}
+
+const { item, previous, next } = Astro.props;
+const category = CATEGORIES.find((entry) => entry.id === item.category);
+if (!category) throw new Error(`Unknown category "${item.category}"`);
+---
+
+<Base
+  titleFull={`brig·id vs ${item.name}: an honest comparison`}
+  description={`brig·id compared with ${item.name}: where ${item.name} is ahead, what brig·id does differently, and who should pick which. Checked on ${CHECKED.text}.`}
+>
+  <section class:list={["page-hero", `hue-${category.hue}`]}>
+    <div class="shell">
+      <p class="crumbs">
+        <a href="/compare/">
+          <Icon name="arrow-left" />
+          All comparisons
+        </a>
+        <a href={`/compare/#${category.id}`}>{category.title}</a>
+      </p>
+      <h1>
+        brig·id and <span class="accent them">{item.name}</span>
+      </h1>
+      <p class="lead">{item.what}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell picks">
+      <article class:list={["card", "pick", `hue-${category.hue}`]}>
+        <p class="pick-k">Choose {item.name} if</p>
+        <p class="pick-v">{item.pickThem}</p>
+        <a class="link-arrow" href={item.url}>
+          {item.name}
+          <Icon name="arrow-up-right" />
+        </a>
+      </article>
+      <article class="card pick hue-self">
+        <p class="pick-k">Look at brig·id if</p>
+        <p class="pick-v">{item.pickUs}</p>
+        <a class="link-arrow" href="/identities/">
+          How identities work
+          <Icon name="arrow-right" />
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">Side by side</p>
+        <h2>
+          The same <span class="accent">questions</span> for both.
+        </h2>
+      </header>
+
+      <div class="table-wrap card rise">
+        <table>
+          <thead>
+            <tr>
+              <td></td>
+              <th scope="col" class="col-us">
+                brig·id
+              </th>
+              <th scope="col">{item.name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">What it is</th>
+              <td>{BRIGID.what}</td>
+              <td>{item.what}</td>
+            </tr>
+            <tr>
+              <th scope="row">Licence</th>
+              <td>{BRIGID.licence}</td>
+              <td>{item.licence}</td>
+            </tr>
+            <tr>
+              <th scope="row">How far along</th>
+              <td>{BRIGID.maturity}</td>
+              <td>{item.maturity}</td>
+            </tr>
+            {QUESTIONS.map((question) => (
+              <tr>
+                <th scope="row">
+                  {question.title}
+                  <small>{question.why}</small>
+                </th>
+                <td>
+                  <p class="mark">
+                    <VerdictMark
+                      verdict={BRIGID[question.id].verdict}
+                      text={BRIGID[question.id].short}
+                    />
+                    <StatusTag
+                      status={feature(BRIGID[question.id].feature).status}
+                    />
+                  </p>
+                  <p class="cell-note">{BRIGID[question.id].note}</p>
+                </td>
+                <td>
+                  <p class="mark">
+                    <VerdictMark
+                      verdict={item[question.id].verdict}
+                      text={item[question.id].short}
+                    />
+                  </p>
+                  <p class="cell-note">{item[question.id].note}</p>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell lists">
+      <article class:list={["card", "list", `hue-${category.hue}`, "rise"]}>
+        <h2>Where {item.name} is ahead</h2>
+        <ul>
+          {item.ahead.map((point) => (
+            <li>
+              <Icon name="check-circle-duotone" />
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      </article>
+      <article class="card list hue-self rise">
+        <h2>What brig·id does differently</h2>
+        <ul>
+          {item.differs.map((point) => (
+            <li>
+              <Icon name="arrows-split-duotone" />
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow sources">
+      <p class="note">
+        <Icon name="warning-duotone" />
+        <span>
+          <strong>brig·id is pre-beta.</strong> It is not audited, and websites
+          cannot sign people in with it yet. If you need something that works
+          today, {item.name} does.
+          <a href="/features/">See what brig·id can do now.</a>
+        </span>
+      </p>
+
+      <div class="prose">
+        <h2>Sources</h2>
+        <p>
+          What this page says about {item.name} comes from the pages below, read
+          on <time datetime={CHECKED.iso}>{CHECKED.text}</time>. Products
+          change: check them before deciding.
+        </p>
+        <ul>
+          {item.sources.map((source) => (
+            <li>
+              <a href={source.href}>{source.label}</a>
+            </li>
+          ))}
+        </ul>
+        <p class="fine">
+          {item.name} is a name or trademark of its owner, who has no link with
+          brig·id and does not endorse it.
+          <a href="https://github.com/brig-id/site/issues/new">
+            Found a mistake? Tell us.
+          </a>
+        </p>
+      </div>
+
+      <nav class="pager" aria-label="Other comparisons">
+        {previous ? (
+          <a class="card" href={`/compare/${previous.slug}/`}>
+            <Icon name="arrow-left" />
+            <span>
+              <small>Previous</small>
+              {previous.name}
+            </span>
+          </a>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <a class="card next" href={`/compare/${next.slug}/`}>
+            <span>
+              <small>Next</small>
+              {next.name}
+            </span>
+            <Icon name="arrow-right" />
+          </a>
+        ) : (
+          <span />
+        )}
+      </nav>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-2);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--text);
+  }
+
+  .crumbs a + a {
+    color: var(--hue);
+  }
+
+  .page-hero h1 {
+    max-width: 22ch;
+  }
+
+  .them {
+    color: var(--hue);
+  }
+
+  .picks,
+  .lists {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .pick {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 0.9rem;
+    padding: clamp(1.4rem, 3vw, 2rem);
+    border-top: 2px solid var(--hue);
+  }
+
+  .pick-k {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--hue);
+  }
+
+  .pick-v {
+    font-size: clamp(1.15rem, 2vw, 1.4rem);
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+  }
+
+  .pick .link-arrow {
+    margin-top: 0.3rem;
+    font-size: 0.92rem;
+    color: var(--text-2);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 44rem;
+    border-collapse: collapse;
+  }
+
+  tr > :first-child {
+    width: 26%;
+  }
+
+  th,
+  td {
+    width: 37%;
+    padding: 1.1rem 1.25rem;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.55;
+  }
+
+  thead th {
+    font-size: 1.05rem;
+    font-weight: 560;
+  }
+
+  .col-us {
+    color: var(--self);
+  }
+
+  tbody tr {
+    border-top: 1px solid var(--line);
+  }
+
+  tbody th {
+    font-weight: 540;
+  }
+
+  tbody th small {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--text-3);
+  }
+
+  tbody td {
+    color: var(--text-2);
+  }
+
+  tbody td:nth-child(2) {
+    background: color-mix(in srgb, var(--self) 4%, transparent);
+  }
+
+  .mark {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.75rem;
+    font-weight: 540;
+    color: var(--text);
+  }
+
+  .cell-note {
+    margin-top: 0.45rem;
+    font-size: 0.93rem;
+  }
+
+  .list {
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+  }
+
+  .list h2 {
+    margin-bottom: 1.25rem;
+    font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  }
+
+  .list ul {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.8rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .list li :global(.icon) {
+    margin-top: 0.15rem;
+    font-size: 1.3rem;
+    color: var(--hue);
+  }
+
+  .sources {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .fine {
+    font-size: 0.9rem;
+    color: var(--text-3);
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .pager a {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 1.25rem;
+    font-weight: 540;
+    text-decoration: none;
+  }
+
+  .pager a.next {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .pager small {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .pager :global(.icon) {
+    color: var(--text-3);
+  }
+
+  @media (max-width: 48rem) {
+    .picks,
+    .lists {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
