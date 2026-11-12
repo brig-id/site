@@ -8,6 +8,11 @@
   // Only the custom domains serve the site.
   "workers_dev": false,
   "preview_urls": false,
+  // Worker Previews (`wrangler preview`, run for each pull request by
+  // .github/workflows/preview.yml) are served at <name>.brig.id: the brig.id
+  // custom domain is enabled for Production and Preview in the dashboard.
+  // They take no setting from production; the site needs none.
+  "previews": {},
   "compatibility_date": "2026-11-01",
   "main": "worker/index.ts",
   "assets": {

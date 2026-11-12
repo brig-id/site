@@ -7,6 +7,9 @@ export interface Env {
   ASSETS: Fetcher;
 }
 
+/** The production host. Every other host serving this Worker is a Preview. */
+const PRODUCTION_HOST = "brig.id";
+
 /** Seconds a status report is reused before the servers are probed again. */
 const STATUS_TTL_SECONDS = 60;
 
@@ -56,13 +59,18 @@ export default {
       );
     }
 
-    if (url.pathname === "/api/status") {
-      return withSecurityHeaders(
-        await statusResponse(request, ctx),
-        url.pathname,
-      );
-    }
+    const response = withSecurityHeaders(
+      url.pathname === "/api/status"
+        ? await statusResponse(request, ctx)
+        : await env.ASSETS.fetch(request),
+      url.pathname,
+    );
 
-    return withSecurityHeaders(await env.ASSETS.fetch(request), url.pathname);
+    // Pull request Previews (<name>.brig.id) are public: keep them out of
+    // search results. Cloudflare only does this for workers.dev Previews.
+    if (url.hostname !== PRODUCTION_HOST) {
+      response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    }
+    return response;
   },
 };

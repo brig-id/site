@@ -87,12 +87,20 @@ there, with a test in `worker/index.spec.ts`.
 
 Deployed to **Cloudflare Workers** (static assets + `worker/index.ts`), as the
 Worker `brigid-site` with `brig.id` and `www.brig.id` as its custom domains
-(`workers.dev` and preview URLs are off; `www` redirects to the apex).
+(`workers.dev` URLs are off; `www` redirects to the apex).
 
 `.github/workflows/deploy.yml` tests, builds and deploys on every push to `main`
 (and on demand). It is not Workers Builds: the Cloudflare dashboard has no Git
-connection for this Worker, and PRs get no preview deployment. The workflow
-reads two repository secrets, whose values are in OpenBao's `kv/orgs/brig-id`:
+connection for this Worker.
+
+`.github/workflows/preview.yml` publishes each pull request from this
+repository as a Worker Preview at `https://pr-<number>.brig.id` (the `brig.id`
+custom domain is enabled for Production and Preview in the dashboard, which
+added a proxied `*.brig.id` DNS record), comments the URL on the pull request
+and deletes the Preview when the pull request is closed. The Worker sends
+`X-Robots-Tag: noindex, nofollow` on every host but `brig.id`.
+
+Both workflows read two repository secrets, whose values are in OpenBao's `kv/orgs/brig-id`:
 `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. The build itself needs no
 secret.
 
