@@ -54,6 +54,23 @@ describe("static pages", () => {
       "max-age=63072000",
     );
     expect(response.headers.get("Cache-Control")).toBeNull();
+    expect(response.headers.get("X-Robots-Tag")).toBeNull();
+  });
+
+  it("keeps a pull request Preview out of search results", async () => {
+    const response = await worker.fetch(
+      new Request("https://pr-13.brig.id/"),
+      envServing("<!doctype html>", {
+        headers: { "Content-Type": "text/html" },
+      }),
+      ctx,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("X-Robots-Tag")).toBe("noindex, nofollow");
+    expect(response.headers.get("Content-Security-Policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
   });
 
   it("allows no inline script, no inline style and no other origin", () => {
