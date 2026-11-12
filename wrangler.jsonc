@@ -1,9 +1,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // The Worker's name on Cloudflare: renaming it here would deploy a new one.
-  // Deployed by .github/workflows/deploy.yml; brig.id and www.brig.id are
-  // custom domains attached to it.
-  "name": "site",
+  // The Worker's name on Cloudflare: changing it here alone would deploy a new,
+  // empty Worker. Rename the Worker on Cloudflare first (its custom domains
+  // follow), then here. Deployed by .github/workflows/deploy.yml; brig.id and
+  // www.brig.id are custom domains attached to it.
+  "name": "brigid-site",
   // Only the custom domains serve the site.
   "workers_dev": false,
   "preview_urls": false,
