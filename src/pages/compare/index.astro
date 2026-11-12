@@ -1,0 +1,400 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import StatusTag from "~/components/StatusTag.astro";
+import VerdictMark from "~/components/VerdictMark.astro";
+import {
+  BRIGID,
+  CATEGORIES,
+  CHECKED,
+  COMPETITORS,
+  NEIGHBOURS,
+  QUESTIONS,
+  competitorsOf,
+} from "~/data/competitors";
+import { feature } from "~/data/features";
+---
+
+<Base
+  title="Compare"
+  description={`brig·id compared, honestly, with ${COMPETITORS.length} other ways to sign in: Keycloak, authentik, Authelia, Pocket ID, Auth0, Sign in with Google or Apple, IndieAuth and more.`}
+>
+  <section class="page-hero">
+    <div class="shell">
+      <p class="eyebrow">Compare</p>
+      <h1>
+        How brig·id <span class="accent spectrum">compares.</span>
+      </h1>
+      <p class="lead">
+        Honestly: almost everything on this page is more mature than brig·id,
+        and for many needs it is the better choice today. Each comparison says
+        where the other one is ahead, where brig·id takes a different road, and
+        who should pick which.
+      </p>
+      <nav class="jump" aria-label="Families">
+        {CATEGORIES.map((category) => (
+          <a
+            class:list={["pill", `hue-${category.hue}`]}
+            href={`#${category.id}`}
+          >
+            <span class="jump-dot" />
+            {category.title}
+            <span class="jump-n">{competitorsOf(category.id).length}</span>
+          </a>
+        ))}
+      </nav>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">How to read this</p>
+        <h2>
+          Four questions, asked of <span class="accent">everyone.</span>
+        </h2>
+        <p class="lead">
+          Not a feature count: brig·id would lose it. These are the four things
+          brig·id exists for, so they are what it can fairly be compared on.
+        </p>
+      </header>
+      <ol class="questions">
+        {QUESTIONS.map((question, index) => (
+          <li class="card question rise">
+            <p class="q-n">{index + 1}</p>
+            <h3>{question.title}</h3>
+            <p>{question.why}</p>
+            <p class="q-us">
+              <span>brig·id</span>
+              <VerdictMark
+                verdict={BRIGID[question.id].verdict}
+                text={BRIGID[question.id].short}
+              />
+              <StatusTag status={feature(BRIGID[question.id].feature).status} />
+            </p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {CATEGORIES.map((category) => (
+    <section
+      class:list={["section", "family", `hue-${category.hue}`]}
+      id={category.id}
+    >
+      <div class="shell">
+        <header class="section-head rise">
+          <span class="family-bar" />
+          <h2>{category.title}</h2>
+          <p class="lead">{category.intro}</p>
+        </header>
+
+        <div class="table-wrap card rise">
+          <table>
+            <thead>
+              <tr>
+                <td />
+                <th scope="col">Licence</th>
+                {QUESTIONS.map((question) => (
+                  <th scope="col">{question.title}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="us">
+                <th scope="row">
+                  <span class="name">brig·id</span>
+                  <span class="sub">pre-beta</span>
+                </th>
+                <td>{BRIGID.licence}</td>
+                {QUESTIONS.map((question) => (
+                  <td>
+                    <VerdictMark
+                      verdict={BRIGID[question.id].verdict}
+                      text={BRIGID[question.id].short}
+                    />
+                  </td>
+                ))}
+              </tr>
+              {competitorsOf(category.id).map((item) => (
+                <tr>
+                  <th scope="row">
+                    <a class="name" href={`/compare/${item.slug}/`}>
+                      {item.name}
+                      <Icon name="arrow-right" />
+                    </a>
+                  </th>
+                  <td>{item.licence}</td>
+                  {QUESTIONS.map((question) => (
+                    <td>
+                      <VerdictMark
+                        verdict={item[question.id].verdict}
+                        text={item[question.id].short}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">Not rivals</p>
+        <h2>
+          Good <span class="accent">neighbours.</span>
+        </h2>
+        <p class="lead">
+          Some tools solve the problem next door. They go well with brig·id, and
+          it does not replace them.
+        </p>
+      </header>
+      <ul class="neighbours">
+        {NEIGHBOURS.map((item) => (
+          <li class="card neighbour rise">
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow">
+      <p class="note">
+        <Icon name="scales-duotone" />
+        <span>
+          <strong>About these comparisons.</strong> What is said about another
+          product comes from its own documentation or repository, read on
+          <time datetime={CHECKED.iso}>{CHECKED.text}</time> and linked from its
+          page. Products change; where we could not confirm something, the page
+          says “not confirmed” instead of guessing. Names and trademarks belong
+          to their owners, and none of these projects endorses brig·id.
+          <a href="https://github.com/brig-id/site/issues/new">
+            Found a mistake? Tell us.
+          </a>
+        </span>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .jump-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--hue);
+    box-shadow: 0 0 0.7rem var(--hue);
+  }
+
+  .jump-n {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-3);
+  }
+
+  .questions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .question {
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    padding: 1.5rem;
+  }
+
+  .q-n {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 2.4rem;
+    line-height: 0.9;
+    color: var(--text-3);
+  }
+
+  .question h3 {
+    font-size: 1.15rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .question > p:not(.q-n, .q-us) {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .q-us {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-top: auto;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--line-2);
+    font-size: 0.9rem;
+  }
+
+  .q-us > span:first-child {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .family {
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+    scroll-margin-top: var(--header-h);
+  }
+
+  .family .section-head {
+    margin-bottom: 1.75rem;
+  }
+
+  .family-bar {
+    width: 2.5rem;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--hue);
+    box-shadow: 0 0 1.2rem var(--hue);
+  }
+
+  .family h2 {
+    font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 56rem;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  th,
+  td {
+    padding: 0.95rem 1.1rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  tbody tr {
+    border-top: 1px solid var(--line);
+  }
+
+  tbody th {
+    min-width: 11rem;
+    font-weight: 540;
+  }
+
+  tbody td:nth-child(2) {
+    max-width: 13rem;
+    color: var(--text-2);
+  }
+
+  .name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1rem;
+    text-decoration: none;
+  }
+
+  a.name :global(.icon) {
+    color: var(--text-3);
+    transition: transform 0.25s var(--ease);
+  }
+
+  a.name:hover :global(.icon) {
+    color: var(--hue);
+    transform: translateX(0.2rem);
+  }
+
+  .us {
+    background: color-mix(in srgb, var(--self) 5%, transparent);
+  }
+
+  .us .name {
+    color: var(--self);
+  }
+
+  .sub {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  .neighbours {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .neighbour {
+    display: grid;
+    align-content: start;
+    gap: 0.6rem;
+    padding: 1.5rem;
+  }
+
+  .neighbour h3 {
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+
+  .neighbour p {
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+
+  @media (max-width: 60rem) {
+    .questions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .neighbours {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 34rem) {
+    .questions {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
