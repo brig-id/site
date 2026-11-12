@@ -192,6 +192,10 @@ samp {
   fill: currentColor;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -265,6 +269,8 @@ samp {
   font-size: clamp(1.05rem, 1.5vw, 1.25rem);
   line-height: 1.55;
   color: var(--text-2);
+  /* Lines of even length: no last line left with two words. */
+  text-wrap: balance;
 }
 
 /* Italic serif for the one word a heading leans on. */
@@ -277,6 +283,13 @@ samp {
 }
 
 .spectrum {
+  /* Room for the slant of the italics, which would otherwise be cut off at
+     the edge of the box the gradient is painted in; and one full gradient
+     per line when the words wrap. */
+  margin-inline: -0.12em;
+  padding: 0.08em 0.12em 0.14em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   background: var(--spectrum);
   -webkit-background-clip: text;
   background-clip: text;
@@ -493,6 +506,9 @@ a.pill:hover {
   position: absolute;
   inset: 0;
   z-index: -1;
+  /* A card that lets its content overflow still keeps the light inside its
+     rounded corners. */
+  border-radius: inherit;
   opacity: 0;
   background: radial-gradient(
     26rem circle at var(--mx, 50%) var(--my, 0%),
