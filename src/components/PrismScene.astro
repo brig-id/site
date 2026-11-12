@@ -5,21 +5,22 @@
 import Icon from "./Icon.astro";
 import { IDENTITIES } from "~/data/identities";
 
-const wide = [
-  { d: "M500 0C500 96 125 64 125 200", hue: "amber" },
-  { d: "M500 0C500 84 375 96 375 200", hue: "rose" },
-  { d: "M500 0C500 84 625 96 625 200", hue: "cyan" },
-  { d: "M500 0C500 96 875 64 875 200", hue: "violet" },
-];
-const narrow = [
-  { d: "M500 0C500 96 250 70 250 200", hue: "amber" },
-  { d: "M500 0C500 96 750 70 750 200", hue: "rose" },
-];
-const stops: Record<string, string> = {
-  amber: "#ffb65c",
-  rose: "#ff86c8",
-  cyan: "#5ad7f0",
-  violet: "#a78bff",
+// One ray per identity. Each leaves the prism from its own point on the base
+// (`exit`, in the prism's own units) and lands on the middle of a card. The
+// stylesheet places both ends, so the picture holds at any width.
+const rays = [
+  { hue: "amber", tint: "#ffe2b8", color: "#ffb65c", exit: 26, side: "left" },
+  { hue: "rose", tint: "#ffd0ea", color: "#ff86c8", exit: 48, side: "left" },
+  { hue: "cyan", tint: "#c6f1fa", color: "#5ad7f0", exit: 72, side: "right" },
+  { hue: "violet", tint: "#ddd2ff", color: "#a78bff", exit: 94, side: "right" },
+] as const;
+
+// Where the white light splits, inside the prism.
+const split = { x: 60, y: 34 };
+const base = 98;
+const path = {
+  left: "M100 0C100 50 0 38 0 100",
+  right: "M0 0C0 50 100 38 100 100",
 };
 ---
 
@@ -29,7 +30,7 @@ const stops: Record<string, string> = {
     <span class="orb">
       <Icon name="fingerprint" />
     </span>
-    <p class="cap cap-right">One passkey. Shown to no one.</p>
+    <p class="cap cap-right">No name, no password. Seen by no one.</p>
   </div>
 
   <span class="beam" aria-hidden="true"></span>
@@ -38,15 +39,67 @@ const stops: Record<string, string> = {
     <svg viewBox="0 0 120 104" aria-hidden="true">
       <defs>
         <linearGradient id="prism-glass" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.34"></stop>
-          <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.06"></stop>
-          <stop offset="1" stop-color="#a78bff" stop-opacity="0.22"></stop>
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop>
+          <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.05"></stop>
+          <stop offset="1" stop-color="#a78bff" stop-opacity="0.18"></stop>
         </linearGradient>
         <linearGradient id="prism-edge" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"></stop>
           <stop offset="1" stop-color="#ffffff" stop-opacity="0.25"></stop>
         </linearGradient>
+        <linearGradient
+          id="prism-wedge"
+          x1={rays[0].exit}
+          y1="0"
+          x2={rays[3].exit}
+          y2="0"
+          gradientUnits="userSpaceOnUse"
+        >
+          {rays.map((ray, index) => (
+            <stop offset={index / 3} stop-color={ray.color} />
+          ))}
+        </linearGradient>
+        <linearGradient
+          id="prism-fade"
+          x1="0"
+          y1={split.y}
+          x2="0"
+          y2={base}
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stop-color="#fff" stop-opacity="0"></stop>
+          <stop offset="1" stop-color="#fff" stop-opacity="1"></stop>
+        </linearGradient>
+        <mask id="prism-wedge-mask">
+          <rect
+            x="0"
+            y="0"
+            width="120"
+            height="104"
+            fill="url(#prism-fade)"
+          ></rect>
+        </mask>
+        {rays.map((ray) => (
+          <linearGradient
+            id={`prism-ray-${ray.hue}`}
+            x1={split.x}
+            y1={split.y}
+            x2={ray.exit}
+            y2={base}
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0" stop-color="#ffffff" />
+            <stop offset="0.55" stop-color={ray.tint} />
+            <stop offset="1" stop-color={ray.color} />
+          </linearGradient>
+        ))}
+        <radialGradient id="prism-spark">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"></stop>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+        </radialGradient>
       </defs>
+
+      <!-- The glass. -->
       <path
         d="M60 6 114 98H6Z"
         fill="url(#prism-glass)"
@@ -54,67 +107,65 @@ const stops: Record<string, string> = {
         stroke-width="1.5"
         stroke-linejoin="round"
       ></path>
+
+      <!-- White light comes in, and splits. -->
       <path
-        d="M60 6 60 98"
+        d={`M60 6V${split.y}`}
         stroke="#ffffff"
-        stroke-opacity="0.5"
-        stroke-width="1"
+        stroke-width="2"
+        stroke-linecap="round"
       ></path>
       <path
-        d="M60 6 34 98"
-        stroke="#ffffff"
-        stroke-opacity="0.12"
-        stroke-width="1"
+        d={`M${split.x} ${split.y}L${rays[0].exit} ${base}H${rays[3].exit}Z`}
+        fill="url(#prism-wedge)"
+        opacity="0.3"
+        mask="url(#prism-wedge-mask)"
       ></path>
-      <path
-        d="M60 6 86 98"
-        stroke="#ffffff"
-        stroke-opacity="0.12"
-        stroke-width="1"
-      ></path>
+      {rays.map((ray) => (
+        <path
+          d={`M${split.x} ${split.y}L${ray.exit} ${base}`}
+          stroke={`url(#prism-ray-${ray.hue})`}
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      ))}
+      <circle cx={split.x} cy={split.y} r="7" fill="url(#prism-spark)"></circle>
     </svg>
     <p class="cap cap-right">Your brig·id server</p>
   </div>
 
-  {[
-    { rays: wide, name: "rays-wide" },
-    { rays: narrow, name: "rays-narrow" },
-  ].map(({ rays, name }) => (
-    <svg
-      class:list={["rays", name]}
-      viewBox="0 0 1000 200"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <defs>
-        {rays.map((ray) => (
-          <linearGradient
-            id={`${name}-${ray.hue}`}
-            gradientUnits="userSpaceOnUse"
-            x1="0"
-            y1="0"
-            x2="0"
-            y2="200"
-          >
-            <stop offset="0" stop-color="#fff3df" />
-            <stop offset="0.45" stop-color={stops[ray.hue]} />
-            <stop offset="1" stop-color={stops[ray.hue]} />
-          </linearGradient>
-        ))}
-      </defs>
-      {rays.map((ray) => (
-        <g>
-          <path class="glow" d={ray.d} stroke={`url(#${name}-${ray.hue})`} />
-          <path class="core" d={ray.d} stroke={`url(#${name}-${ray.hue})`} />
+  <div class="rays" aria-hidden="true">
+    {rays.map((ray, index) => (
+      <span class:list={["ray", `ray-${index + 1}`]}>
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient
+              id={`ray-${ray.hue}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="100"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0" stop-color={ray.color} />
+              <stop offset="1" stop-color={ray.color} />
+            </linearGradient>
+          </defs>
           <path
-            class:list={["photon", `photon-${ray.hue}`]}
-            d={ray.d}
-            pathLength="100"
+            class="glow"
+            d={path[ray.side]}
+            stroke={`url(#ray-${ray.hue})`}
           />
-        </g>
-      ))}
-    </svg>
-  ))}
+          <path
+            class="core"
+            d={path[ray.side]}
+            stroke={`url(#ray-${ray.hue})`}
+          />
+          <path class="photon" d={path[ray.side]} pathLength="100" />
+        </svg>
+      </span>
+    ))}
+  </div>
 
   <ul class="facets">
     {IDENTITIES.map((identity) => (
@@ -146,6 +197,7 @@ const stops: Record<string, string> = {
 
 <style>
   .scene {
+    --prism: 8rem;
     display: grid;
     justify-items: center;
     width: min(100%, 66rem);
@@ -245,44 +297,81 @@ const stops: Record<string, string> = {
   /* -- The prism ------------------------------------------------------------ */
 
   .prism svg {
-    width: 6.5rem;
+    width: var(--prism);
     margin-top: -0.3rem;
     filter: drop-shadow(0 0 1.6rem rgb(255 255 255 / 0.28));
   }
 
+  /* Beside the slope of the glass, not beside the box around it. */
   .prism .cap-right {
-    left: calc(100% + 0.9rem);
+    left: calc(100% - 0.6rem);
     top: 62%;
   }
 
   /* -- The colours ---------------------------------------------------------- */
 
+  /* Each ray is a box stretched between two points: where it leaves the prism
+     (a fixed distance from the middle, since the prism does not scale) and
+     the middle of its card (a share of the width). */
   .rays {
-    width: 100%;
+    /* The exits are 34 and 12 units from the middle of the prism, which is
+       120 units wide; its base sits 6 units above the bottom of its box. */
+    --out: calc(var(--prism) * 34 / 120);
+    --in: calc(var(--prism) * 12 / 120);
+    --gap: 1rem; /* the gap of the cards below */
+    position: relative;
+    justify-self: stretch;
     height: 8.5rem;
-    margin-top: -0.55rem;
+    margin-top: calc(var(--prism) * -6 / 120);
+  }
+
+  .ray {
+    position: absolute;
+    inset-block: 0;
+  }
+
+  .ray-1 {
+    left: calc(12.5% - 0.375 * var(--gap));
+    right: calc(50% + var(--out));
+  }
+
+  .ray-2 {
+    left: calc(37.5% - 0.125 * var(--gap));
+    right: calc(50% + var(--in));
+  }
+
+  .ray-3 {
+    left: calc(50% + var(--in));
+    right: calc(37.5% - 0.125 * var(--gap));
+  }
+
+  .ray-4 {
+    left: calc(50% + var(--out));
+    right: calc(12.5% - 0.375 * var(--gap));
+  }
+
+  .ray svg {
+    display: block;
+    width: 100%;
+    height: 100%;
     overflow: visible;
     fill: none;
   }
 
-  .rays-narrow {
-    display: none;
-  }
-
-  .rays path {
+  .ray path {
     vector-effect: non-scaling-stroke;
     stroke-linecap: round;
   }
 
   .glow {
     stroke-width: 9;
-    opacity: 0.28;
+    opacity: 0.3;
     filter: blur(7px);
   }
 
   .core {
-    stroke-width: 1.4;
-    opacity: 0.9;
+    stroke-width: 1.5;
+    opacity: 0.95;
   }
 
   .photon {
@@ -294,15 +383,15 @@ const stops: Record<string, string> = {
     filter: drop-shadow(0 0 5px #fff);
   }
 
-  .photon-rose {
+  .ray-2 .photon {
     animation-delay: -0.9s;
   }
 
-  .photon-cyan {
+  .ray-3 .photon {
     animation-delay: -1.8s;
   }
 
-  .photon-violet {
+  .ray-4 .photon {
     animation-delay: -2.7s;
   }
 
@@ -414,21 +503,48 @@ const stops: Record<string, string> = {
   }
 
   @media (max-width: 52rem) {
+    /* Two columns, filled one after the other: the two left rays feed the
+       left column, the two right rays the right one, without crossing. */
     .facets {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, auto);
+      grid-auto-flow: column;
       gap: 0.75rem;
     }
 
-    .rays-wide {
+    .facet:nth-child(even) {
+      box-shadow: none;
+    }
+
+    .facet:nth-child(even)::after {
       display: none;
     }
 
-    .rays-narrow {
-      display: block;
+    .rays {
+      --gap: 0.75rem;
+      --spread: 0.55rem;
       height: 6rem;
     }
 
+    .ray-1 {
+      left: calc(25% - 0.25 * var(--gap) - var(--spread));
+    }
+
+    .ray-2 {
+      left: calc(25% - 0.25 * var(--gap) + var(--spread));
+    }
+
+    .ray-3 {
+      right: calc(25% - 0.25 * var(--gap) + var(--spread));
+    }
+
+    .ray-4 {
+      right: calc(25% - 0.25 * var(--gap) - var(--spread));
+    }
+
+    /* What is left between the orb and the edge of the page. */
     .cap {
+      max-width: calc(50vw - 3.5rem - var(--gutter));
       font-size: 0.64rem;
     }
 
@@ -438,6 +554,11 @@ const stops: Record<string, string> = {
 
     .cap-right {
       left: calc(100% + 1.1rem);
+    }
+
+    .prism .cap-right {
+      left: calc(100% - 1rem);
+      max-width: calc(50vw - 3.2rem - var(--gutter));
     }
   }
 
