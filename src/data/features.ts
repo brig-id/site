@@ -53,7 +53,7 @@ export const GROUPS: Group[] = [
     id: "hosting",
     title: "Your own server",
     intro:
-      "brig·id is software you run. Start with one small server; grow when you need to.",
+      "brig·id is software you run. Three editions, for three sizes: a few people, an organisation, a company.",
     hue: "cyan",
   },
   {
@@ -80,21 +80,18 @@ export interface Feature {
   ref?: { label: string; href: string };
 }
 
-const SPEC = "https://github.com/brig-id/spec/blob/main";
-
 export const FEATURES: Feature[] = [
   // -- Signing in ------------------------------------------------------------
   {
     id: "passkeys",
     group: "sign-in",
-    title: "Passkeys, and nothing else",
+    title: "Sign in with a gesture, nothing to remember",
     summary:
-      "No password to choose, reuse, leak or be tricked out of. You sign in with the passkey held by your phone, your computer, a security key or your password manager.",
+      "No password to choose, reuse or leak, and no username to type. You sign in the way your phone already unlocks: a fingerprint, a face or a key.",
     detail:
-      "WebAuthn / FIDO2 with discoverable credentials: the passkey itself says who you are, so there is no username to type either.",
+      "This is a passkey (WebAuthn / FIDO2): it cannot be guessed, reused or phished, and it says who you are by itself.",
     status: "available",
     icon: "fingerprint-duotone",
-    ref: { label: "Protocol, §3–§4", href: `${SPEC}/protocol.md` },
   },
   {
     id: "several-passkeys",
@@ -117,10 +114,6 @@ export const FEATURES: Feature[] = [
       "The server gives the account a generated handle that stays out of sight. It can be renamed later, and nothing depends on it.",
     status: "progress",
     icon: "hand-tap-duotone",
-    ref: {
-      label: "ADR-003",
-      href: `${SPEC}/decisions/003-usernames-and-quick-signup.md`,
-    },
   },
   {
     id: "recovery",
@@ -132,10 +125,6 @@ export const FEATURES: Feature[] = [
       "The code does that single thing. It opens no session, reveals nothing about the account, is used once, and is not a password in disguise: you never choose it.",
     status: "progress",
     icon: "lifebuoy-duotone",
-    ref: {
-      label: "ADR-004",
-      href: `${SPEC}/decisions/004-account-recovery.md`,
-    },
   },
   {
     id: "other-server",
@@ -147,27 +136,19 @@ export const FEATURES: Feature[] = [
       "No central account, no shared user database: each server authenticates its own people.",
     status: "progress",
     icon: "signpost-duotone",
-    ref: {
-      label: "ADR-003, Sign-in",
-      href: `${SPEC}/decisions/003-usernames-and-quick-signup.md`,
-    },
   },
 
   // -- Identities ------------------------------------------------------------
   {
     id: "account-vs-identity",
     group: "identities",
-    title: "A private self, apart from every identity",
+    title: "A private self with nothing attached",
     summary:
-      "Your account is where you sign in and manage everything. It is private: websites are meant to meet your identities, never the account behind them.",
+      "Your account is only your way in. It carries no profile, no email address and no password, and websites never meet it: everything others can see belongs to an identity.",
     detail:
-      "The two are separate records in the server today. The last piece, keeping the account's session entirely server-side, is being built.",
+      "Accounts and identities are separate records in the server today. The account still has a handle chosen at sign-up; hiding it for good is being built.",
     status: "available",
     icon: "user-focus-duotone",
-    ref: {
-      label: "ADR-002",
-      href: `${SPEC}/decisions/002-accounts-and-identities.md`,
-    },
   },
   {
     id: "many-identities",
@@ -179,10 +160,6 @@ export const FEATURES: Feature[] = [
       "An identity carries only what you wrote in it. It does not remember the template it came from, and its name is a display name, not a login.",
     status: "available",
     icon: "users-three-duotone",
-    ref: {
-      label: "ADR-002",
-      href: `${SPEC}/decisions/002-accounts-and-identities.md`,
-    },
   },
   {
     id: "rp-sign-in",
@@ -194,10 +171,6 @@ export const FEATURES: Feature[] = [
       "Authorization Code flow with PKCE, for registered websites only. Until it ships, the server issues no token for any website.",
     status: "progress",
     icon: "sign-in-duotone",
-    ref: {
-      label: "ADR-005",
-      href: `${SPEC}/decisions/005-account-sessions-and-rp-tokens.md`,
-    },
   },
   {
     id: "identity-choice",
@@ -209,22 +182,17 @@ export const FEATURES: Feature[] = [
       "The choice is yours each time a new website asks; nothing is shared by default.",
     status: "progress",
     icon: "hand-pointing-duotone",
-    ref: {
-      label: "ADR-005",
-      href: `${SPEC}/decisions/005-account-sessions-and-rp-tokens.md`,
-    },
   },
   {
     id: "pairwise",
     group: "identities",
-    title: "A different identifier for every site",
+    title: "Identities that cannot be joined",
     summary:
-      "Each website receives an opaque identifier made for it alone. Two sites comparing their records find nothing in common.",
+      "Each website receives an identifier made for it alone. Websites cannot compare notes to piece your self back together, and nothing here helps advertisers retrace your path.",
     detail:
-      "The identifier is derived from the identity and the website with a secret only your server holds. The derivation is in the server; its final form (ADR-007) lands with website sign-in.",
+      "The identifier is derived from the identity and the website with a secret only your server holds. The derivation is in the server; its final form lands with sign-in to websites.",
     status: "progress",
     icon: "arrows-split-duotone",
-    ref: { label: "ADR-007", href: `${SPEC}/decisions/007-identifiers.md` },
   },
   {
     id: "identity-passkeys",
@@ -235,10 +203,6 @@ export const FEATURES: Feature[] = [
     detail: "Foreseen by the data model; not designed in detail yet.",
     status: "planned",
     icon: "key-duotone",
-    ref: {
-      label: "ADR-002, Sign-in",
-      href: `${SPEC}/decisions/002-accounts-and-identities.md`,
-    },
   },
 
   // -- Privacy by construction -------------------------------------------------
@@ -252,7 +216,6 @@ export const FEATURES: Feature[] = [
       "AES-256-GCM, with keys derived from a master key that lives outside the database. The master key can be rotated.",
     status: "available",
     icon: "lock-key-duotone",
-    ref: { label: "Security model", href: `${SPEC}/security-model.md` },
   },
   {
     id: "nothing-computed",
@@ -275,10 +238,6 @@ export const FEATURES: Feature[] = [
       "An HttpOnly, same-site cookie; one hour idle, twelve hours at most. It replaces the token the web app keeps today.",
     status: "progress",
     icon: "cookie-duotone",
-    ref: {
-      label: "ADR-005",
-      href: `${SPEC}/decisions/005-account-sessions-and-rp-tokens.md`,
-    },
   },
   {
     id: "post-quantum",
@@ -290,24 +249,20 @@ export const FEATURES: Feature[] = [
       "ML-KEM-768 + X25519 and ML-DSA-65 + Ed25519 are implemented, tested and fuzzed in the crypto library. Signing tokens with them comes next.",
     status: "progress",
     icon: "atom-duotone",
-    ref: { label: "PQC notes", href: `${SPEC}/pqc.md` },
   },
 
   // -- Your own server -----------------------------------------------------------
   {
     id: "leaf",
     group: "hosting",
-    title: "leaf: one server, one container",
+    title: "leaf: light, for private use",
     summary:
-      "A single binary with an embedded database, published as a container image. One master key, your domain, and a reverse proxy for TLS.",
+      "Needs very little: a single container with its own embedded database, happy in a corner of a small machine. For yourself, a family, a handful of users.",
     detail:
-      "Enough for a person, a family, an association or a small company. This is what runs on helm.brig.id.",
+      "One master key, your domain and a reverse proxy for TLS. This is what runs on helm.brig.id.",
     status: "available",
     icon: "plant-duotone",
-    ref: {
-      label: "server-leaf",
-      href: "https://github.com/brig-id/server-leaf",
-    },
+    ref: { label: "Compare the editions", href: "/editions/" },
   },
   {
     id: "operations",
@@ -319,16 +274,14 @@ export const FEATURES: Feature[] = [
       "Signing keys rotate with a grace period, so tokens issued just before stay verifiable.",
     status: "available",
     icon: "heartbeat-duotone",
-    ref: { label: "Operations", href: `${SPEC}/operations.md` },
   },
   {
     id: "grove",
     group: "hosting",
-    title: "grove: several servers as one",
+    title: "grove: a dedicated server",
     summary:
-      "For when one machine is no longer enough: several servers behind one domain, sharing a PostgreSQL database.",
-    detail:
-      "Not started; the single server comes first. Free and open source, like leaf.",
+      "For non-profit use: an association or a community, on one server set aside for sign-in and sized for an organisation's users.",
+    detail: "Not started; leaf comes first. Free and open source, like leaf.",
     status: "planned",
     icon: "tree-duotone",
     ref: { label: "Compare the editions", href: "/editions/" },
@@ -336,9 +289,9 @@ export const FEATURES: Feature[] = [
   {
     id: "forest",
     group: "hosting",
-    title: "forest: identity as critical infrastructure",
+    title: "forest: for companies, at scale",
     summary:
-      "High availability on Kubernetes, for companies that cannot afford their sign-in to be down.",
+      "Fits into a company's own cloud, clusters included, and carries large volumes of users and sign-ins.",
     detail:
       "Not started. A paid edition, built with the companies that need it.",
     status: "planned",
@@ -379,7 +332,6 @@ export const FEATURES: Feature[] = [
     detail: "Read it, build it, run it exactly as published.",
     status: "available",
     icon: "git-branch-duotone",
-    ref: { label: "github.com/brig-id", href: "https://github.com/brig-id" },
   },
   {
     id: "specified",
@@ -391,7 +343,6 @@ export const FEATURES: Feature[] = [
       "They are written so that someone from outside can check the code against them, and they say what is not implemented yet.",
     status: "available",
     icon: "book-open-text-duotone",
-    ref: { label: "brig-id/spec", href: "https://github.com/brig-id/spec" },
   },
   {
     id: "tested-crypto",
@@ -403,7 +354,6 @@ export const FEATURES: Feature[] = [
       "FIPS 203 and FIPS 204 vectors for the hybrid key exchange and signatures.",
     status: "available",
     icon: "flask-duotone",
-    ref: { label: "brig-id/crypto", href: "https://github.com/brig-id/crypto" },
   },
   {
     id: "external-audit",
@@ -415,7 +365,6 @@ export const FEATURES: Feature[] = [
       "Not commissioned yet. Until it is done, treat brig·id as unaudited software.",
     status: "planned",
     icon: "seal-check-duotone",
-    ref: { label: "Audit checklist", href: `${SPEC}/audit-checklist.md` },
   },
 ];
 

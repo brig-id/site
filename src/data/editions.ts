@@ -1,6 +1,7 @@
-// The three editions of the server, and what is known about each. grove and
-// forest do not exist yet: a cell says "To be defined" rather than promise
-// something nobody has designed.
+// The three editions of the server, and what is known about each. They differ
+// in the volume they carry and in how they fit into what you already run, not
+// in what an identity is. grove and forest do not exist yet: a cell says "To
+// be defined" rather than promise something nobody has designed.
 
 export interface Edition {
   id: "leaf" | "grove" | "forest";
@@ -13,22 +14,22 @@ export interface Edition {
 export const EDITIONS: Edition[] = [
   {
     id: "leaf",
-    line: "One server, one container.",
-    audience: "A person, a family, a small association or team.",
+    line: "Light, for private use.",
+    audience: "Yourself, a family, a handful of users.",
     price: "Free",
     priceNote: "Open source, for anyone.",
   },
   {
     id: "grove",
-    line: "Several servers as one.",
-    audience: "A non-profit or a community that has outgrown one machine.",
+    line: "A dedicated server, for non-profits.",
+    audience: "An association or a community.",
     price: "Free",
     priceNote: "Open source, like leaf.",
   },
   {
     id: "forest",
-    line: "Identity as critical infrastructure.",
-    audience: "Companies that cannot afford their sign-in to be down.",
+    line: "For companies, at scale.",
+    audience: "Companies, in their own cloud.",
     price: "Paid",
     priceNote: "Commercial licence. Contact us.",
   },
@@ -45,34 +46,39 @@ export const EDITION_ROWS: EditionRow[] = [
   {
     label: "Made for",
     cells: [
-      "A person, a family, a small association or team",
-      "A non-profit or a community that has outgrown one machine",
-      "Companies for which sign-in is critical",
+      "Private use: yourself, a family, a few people",
+      "Non-profit use: an association, a community",
+      "Companies",
     ],
   },
   {
-    label: "Shape",
-    why: "What you have to run.",
+    label: "Volume",
+    why: "How many people it is sized for.",
+    cells: ["A handful of users", "An organisation's users", "Large volumes"],
+  },
+  {
+    label: "What it needs",
     cells: [
-      "One server, in one container",
-      "Several servers behind one domain, with Docker Compose",
-      "A cluster, on Kubernetes",
+      "Very little: a corner of a small machine",
+      "A dedicated server is recommended",
+      "A cluster, in the company's cloud",
     ],
   },
   {
-    label: "Database",
+    label: "How it is run",
     cells: [
-      "Embedded, in a single file (SQLite)",
-      "PostgreSQL, with Redis for shared sessions",
-      "To be defined",
+      "One container, with an embedded database (SQLite)",
+      "Docker Compose, with PostgreSQL and Redis",
+      "Kubernetes, for high availability",
     ],
   },
   {
-    label: "If a machine fails",
+    label: "Fits into",
+    why: "What it has to live with.",
     cells: [
-      "Sign-in is down until it is back",
-      "The other servers take over",
-      "High availability, by design",
+      "Nothing: it stands alone",
+      "Nothing: it stands alone",
+      "A company's existing infrastructure",
     ],
   },
   {
@@ -93,12 +99,12 @@ export const EDITION_ROWS: EditionRow[] = [
 export const SAME_EVERYWHERE = [
   {
     icon: "fingerprint-duotone",
-    title: "Passkeys only",
-    text: "No edition adds a password.",
+    title: "Nothing to remember",
+    text: "You sign in with a gesture. No edition adds a password.",
   },
   {
     icon: "users-three-duotone",
-    title: "One private account, several identities",
+    title: "One private self, several identities",
     text: "The model is the same on a leaf and on a forest.",
   },
   {

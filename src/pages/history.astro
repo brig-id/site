@@ -4,58 +4,118 @@ import Icon from "~/components/Icon.astro";
 import StatusTag from "~/components/StatusTag.astro";
 
 const PAPER = "https://hal.science/hal-05193465v1";
-const SPEC = "https://github.com/brig-id/spec/blob/main";
 
 const authors =
   "Fanny Georges, Antoine Seilles, Guillaume Artignan, Bérenger Arnaud, Mountaz Hascoët, Nancy Rodriguez, Birgitta Dresp-Langley, Jean Sallantin";
 
 interface Entry {
   date: string;
-  datetime: string;
   title: string;
-  text: string;
-  link?: { label: string; href: string };
+  text: string[];
 }
 
-const built: Entry[] = [
+const question: Entry[] = [
+  {
+    date: "2008",
+    title: "Can we do better than the keyboard?",
+    text: [
+      "Bérenger Arnaud begins research in human-computer interaction at the LIRMM, in Montpellier, with a plain question: can people do better than type? That includes the thing typed most often of all, a login and a password.",
+      "The same years go into other ways for people to reach information by themselves. That work becomes DIP, the heart of a thesis defended in 2013.",
+    ],
+  },
+  {
+    date: "2008 – 2009",
+    title: "Two fields meet",
+    text: [
+      "He meets Fanny Georges, a researcher from the social sciences with an idea about how a person is represented online: a semiotic model of digital identity.",
+      "They work together on what the social networks of the time, Facebook and MySpace among them, laid open in astronomical quantities: people's profiles. The model reads them in three layers.",
+    ],
+  },
+];
+
+const idea: Entry[] = [
+  {
+    date: "2009 – 2010",
+    title: "A sign-in built for the person",
+    text: [
+      "Out of that work comes an idea: a sign-in server designed around the human being, not around the machine, and not around what already exists.",
+      "One finding follows quickly. The technologies and the standards needed to change how people sign in, and how systems manage them, are not there. The idea is put on hold.",
+    ],
+  },
+];
+
+const wait: Entry[] = [
+  {
+    date: "2011",
+    title: "Circles",
+    text: [
+      "Google+ launches with circles: one account, and several audiences to choose between. A large platform admits that nobody shows the same face to everyone.",
+    ],
+  },
+  {
+    date: "2014",
+    title: "A universal chat, never started",
+    text: [
+      "A project for one chat across many services meets the same gap: it needs something that gathers a person's services by identity. Nothing does, and the project does not start.",
+    ],
+  },
+  {
+    date: "2022",
+    title: "Passkeys",
+    text: [
+      "The main browsers and operating systems begin to offer passkeys. Signing in with a gesture, instead of a secret to remember, becomes something anyone can use.",
+    ],
+  },
+  {
+    date: "2024",
+    title: "Project Lévrier, and a name",
+    text: [
+      "While designing an ecosystem of tools, Project Lévrier, the same brick is missing once more: a way to manage users through their identities. This time it gets a name, brig·id.",
+      "The same year, the first post-quantum standards are published. An identity system started now can rest on cryptography meant to outlast it.",
+    ],
+  },
+];
+
+const built: (Entry & { datetime: string })[] = [
   {
     date: "24 May 2026",
     datetime: "2026-05-24",
-    title: "First commit",
-    text: "The cryptography library, the core, the server and the specifications are started on the same day. The specifications come first on purpose: the system is meant to be audited.",
+    title: "The project resumes",
+    text: [
+      "First commit. The cryptography library, the core, the server and the specifications are started on the same day. The specifications come first on purpose: the system is meant to be audited.",
+    ],
   },
   {
     date: "29 July 2026",
     datetime: "2026-07-29",
     title: "A face",
-    text: "The web app begins: sign-up, sign-in and passkey management in a browser.",
+    text: [
+      "The web app begins: sign-up, sign-in and passkey management in a browser.",
+    ],
   },
   {
     date: "4 September 2026",
     datetime: "2026-09-04",
     title: "leaf 0.1.0",
-    text: "First release of the single-server edition, as a container image. In the same days the project's own server, helm.brig.id, goes online.",
-    link: {
-      label: "Releases",
-      href: "https://github.com/brig-id/server-leaf/releases",
-    },
+    text: [
+      "First release of the light edition, as a container image. In the same days the project's own server, helm.brig.id, goes online.",
+    ],
   },
   {
     date: "10 November 2026",
     datetime: "2026-11-10",
     title: "Accounts and identities part ways",
-    text: "The decision that gives brig·id its shape: an account is private and never shown to a website; an identity is what a website meets. Until then, one record played both roles.",
-    link: {
-      label: "ADR-002",
-      href: `${SPEC}/decisions/002-accounts-and-identities.md`,
-    },
+    text: [
+      "The decision that gives brig·id its shape: an account is private and never shown to a website; an identity is what a website meets. Until then, one record played both roles.",
+    ],
   },
   {
     date: "11 November 2026",
     datetime: "2026-11-11",
-    title: "leaf 0.2 and the next decisions",
-    text: "Identities reach a release. The same day settles how sessions work, how a website will obtain an identity, and what its identifier is made of.",
-    link: { label: "Decisions", href: `${SPEC}/decisions` },
+    title: "leaf 0.2",
+    text: [
+      "Identities reach a release. The same day settles how sessions work, how a website will obtain an identity, and what its identifier is made of.",
+    ],
   },
 ];
 
@@ -68,128 +128,134 @@ const next = [
 
 <Base
   title="History"
-  description="From a 2009 research paper on the semiotics of digital identity to a self-hosted identity server: where brig·id comes from."
+  description="brig·id started as a question in a research lab in 2008: can signing in be built around the person? Why it waited eighteen years, and where its name comes from."
 >
   <section class="page-hero">
     <div class="shell-narrow">
       <p class="eyebrow">History</p>
       <h1>
-        From a paper to a <span class="accent spectrum">server.</span>
+        A question that waited{" "}
+        <span class="accent spectrum nowrap">eighteen years.</span>
       </h1>
       <p class="lead">
-        brig·id is young, and its idea is not. It took seventeen years, and a
-        few technologies that did not exist yet, to get from one to the other.
+        brig·id is young, and its question is not. It was asked in a research
+        lab in 2008, and it had to wait for the technology to exist.
       </p>
     </div>
   </section>
 
   <section class="section">
     <div class="shell-narrow chapter">
-      <p class="year rise">2009</p>
+      <p class="year rise">2008 – 2010</p>
       <div class="prose rise">
-        <h2>A study of two social networks</h2>
-        <p>
-          In 2009, eight researchers publish a paper at the H2PTM conference,
-          with Fanny Georges as first author. Its title, translated:{" "}
-          <strong>
-            Semiotics and visualisation of digital identity: a comparative study
-            of Facebook and MySpace.
-          </strong>
-        </p>
-        <p>
-          The paper looks at how the interfaces of the web of that time shape
-          the way a person is represented, and at what happens when an identity
-          is turned into numbers and charts. It reads a profile in three layers:
-        </p>
+        <h2>The question</h2>
       </div>
 
-      <ul class="layers rise">
-        <li>
-          <b>Declarative</b>
-          <span>
-            what the person enters: a name, a photograph, a description.
-          </span>
+      <ol class="timeline">
+        {question.map((entry) => (
+          <li class="rise">
+            <p class="when">{entry.date}</p>
+            <h3>{entry.title}</h3>
+            {entry.text.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </li>
+        ))}
+        <li class="rise">
+          <p class="when">The model</p>
+          <ul class="layers">
+            <li>
+              <b>Declarative</b>
+              <span>
+                what the person enters: a name, a photograph, a description.
+              </span>
+            </li>
+            <li>
+              <b>Acting</b>
+              <span>what the platform reports the person doing.</span>
+            </li>
+            <li>
+              <b>Calculated</b>
+              <span>
+                what the platform computes from that, and displays: counts,
+                totals.
+              </span>
+            </li>
+          </ul>
+          <p>
+            Only the first layer is written by the person. The other two are
+            written by the platform, and they are the ones that grow.
+          </p>
         </li>
-        <li>
-          <b>Acting</b>
-          <span>what the platform reports the person doing.</span>
+        <li class="rise">
+          <p class="when">2009</p>
+          <h3>The paper</h3>
+          <p>
+            The work is presented at the H2PTM conference, by eight authors from
+            both fields.
+          </p>
+          <figure class="cite card hue-self">
+            <blockquote lang="fr">
+              Sémiotique et visualisation de l’identité numérique&nbsp;: une
+              étude comparée de Facebook et Myspace
+            </blockquote>
+            <figcaption>
+              {authors}. <cite>H2PTM 2009</cite>.
+            </figcaption>
+            <a class="link-arrow" href={PAPER}>
+              Read it on HAL
+              <Icon name="arrow-up-right" />
+            </a>
+          </figure>
         </li>
-        <li>
-          <b>Calculated</b>
-          <span>
-            what the platform computes and displays: counts, totals, rankings.
-          </span>
-        </li>
-      </ul>
+        {idea.map((entry) => (
+          <li class="rise">
+            <p class="when">{entry.date}</p>
+            <h3>{entry.title}</h3>
+            {entry.text.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </li>
+        ))}
+      </ol>
 
-      <div class="prose rise">
-        <p>
-          Only the first layer is written by the person. The other two are
-          written by the platform, and they are the ones that grow.
-        </p>
-      </div>
-
-      <figure class="cite card hue-self rise">
-        <blockquote lang="fr">
-          Sémiotique et visualisation de l’identité numérique&nbsp;: une étude
-          comparée de Facebook et Myspace
-        </blockquote>
-        <figcaption>
-          {authors}. <cite>H2PTM 2009</cite>.
-        </figcaption>
-        <a class="link-arrow" href={PAPER}>
-          Read it on HAL
-          <Icon name="arrow-up-right" />
-        </a>
-      </figure>
-
-      <div class="prose rise">
-        <p>
-          One of the eight is Bérenger Arnaud, who would go on to start brig·id.
-          What stayed with him from that work is a plain idea: people do not
-          have one digital identity but several, and the more a system computes
-          about them, the less of each identity is theirs to write.
-        </p>
-        <p>
-          The paper studies social networks. It does not describe brig·id, and
-          its other authors have no part in this project.
+      <p class="note rise">
+        <Icon name="quotes-duotone" />
+        <span>
+          <strong>Whose idea.</strong> The sign-in server is Bérenger Arnaud's
+          idea, and his alone. Fanny Georges and the other authors of the paper
+          took no part in it and have no link with brig·id. It follows from
+          their work, which is why it is told here.
           <a href="https://berenger.arnaud.work/research">
             More about that research.
           </a>
-        </p>
-      </div>
+        </span>
+      </p>
     </div>
   </section>
 
   <section class="section">
     <div class="shell-narrow chapter">
-      <p class="year rise">2009 → 2026</p>
+      <p class="year rise">2011 – 2024</p>
       <div class="prose rise">
-        <h2>Why it took until now</h2>
+        <h2>The wait</h2>
         <p>
-          For most of those years the idea had no practical form. Signing in
-          meant a password, and a separate identity meant one more password to
-          forget. Two things changed that.
-        </p>
-        <ul>
-          <li>
-            <strong>Passkeys.</strong> Since 2022, the main browsers and
-            operating systems let people sign in with a gesture instead of a
-            secret they must remember. One strong, private way in became
-            realistic.
-          </li>
-          <li>
-            <strong>Post-quantum standards.</strong> In August 2024, NIST
-            published FIPS 203 and FIPS 204. An identity system started today
-            can be built on cryptography meant to outlast it.
-          </li>
-        </ul>
-        <p>
-          Meanwhile, the sign-in buttons of a few large platforms became the
-          default way to enter a website: the single account, everywhere, that
-          the 2009 paper could only glimpse.
+          For fourteen years the idea stays where it was left, and keeps being
+          needed.
         </p>
       </div>
+
+      <ol class="timeline">
+        {wait.map((entry) => (
+          <li class="rise">
+            <p class="when">{entry.date}</p>
+            <h3>{entry.title}</h3>
+            {entry.text.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
@@ -203,15 +269,13 @@ const next = [
       <ol class="timeline">
         {built.map((entry) => (
           <li class="rise">
-            <time datetime={entry.datetime}>{entry.date}</time>
+            <time class="when" datetime={entry.datetime}>
+              {entry.date}
+            </time>
             <h3>{entry.title}</h3>
-            <p>{entry.text}</p>
-            {entry.link && (
-              <a class="link-arrow" href={entry.link.href}>
-                {entry.link.label}
-                <Icon name="arrow-up-right" />
-              </a>
-            )}
+            {entry.text.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
           </li>
         ))}
         <li class="rise upcoming">
@@ -231,17 +295,42 @@ const next = [
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="name">
     <div class="shell-narrow chapter">
-      <p class="year rise">A note</p>
+      <p class="year rise">The name</p>
       <div class="prose rise">
-        <h2>On the names</h2>
+        <h2>Why “brig·id”</h2>
         <p>
-          The parts of brig·id are named after a tree. <code>roots</code> is the
-          workspace everything grows from. <code>leaf</code> is a single server,{" "}
-          <code>grove</code> will be several working as one, and
-          <code>forest</code> the largest deployments. The first server is
-          called <code>helm</code>.
+          The name had to hold two ideas at once: <strong>providing</strong> an
+          identity, and <strong>isolating</strong> it.
+        </p>
+        <ul>
+          <li>
+            <strong>id.</strong> It is short, and it ends in <em>id</em> on
+            purpose: this is an identity server.
+          </li>
+          <li>
+            <strong>A brig is a ship.</strong> A two-masted one: the vessel that
+            carries your identity where you need it.
+          </li>
+          <li>
+            <strong>A brig is also a prison,</strong> the one aboard a ship:
+            your identities are kept apart from each other.
+          </li>
+          <li>
+            <strong>brig, bring.</strong> Said with a French accent, the two are
+            close. It brings your identity to the websites you choose.
+          </li>
+          <li>
+            <strong>Brigid</strong> is a goddess of Celtic Ireland, a country
+            its author loves.
+          </li>
+        </ul>
+        <p>
+          The parts are named after a tree. <code>roots</code> is the workspace
+          everything grows from; <code>leaf</code> is the light edition,
+          <code>grove</code> the dedicated server and <code>forest</code> the
+          edition for companies. The first server is called <code>helm</code>.
         </p>
       </div>
     </div>
@@ -359,7 +448,7 @@ const next = [
       0 0 0 0.3rem var(--bg);
   }
 
-  .timeline time {
+  .timeline .when {
     font-family: var(--font-mono);
     font-size: 0.76rem;
     letter-spacing: 0.1em;
@@ -372,10 +461,15 @@ const next = [
     letter-spacing: -0.02em;
   }
 
-  .timeline p {
+  .timeline p:not(.when) {
     font-size: 1.05rem;
     line-height: 1.65;
     color: var(--text-2);
+  }
+
+  .timeline .layers,
+  .timeline .cite {
+    width: 100%;
   }
 
   .timeline .link-arrow {

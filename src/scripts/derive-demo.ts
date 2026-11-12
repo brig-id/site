@@ -13,7 +13,6 @@ if (root && "subtle" in crypto) {
   const secretOut = root.querySelector<HTMLElement>("[data-secret]");
   const full = root.querySelector<HTMLElement>("[data-full]");
   const reroll = root.querySelector<HTMLButtonElement>("[data-reroll]");
-  const again = root.querySelector<HTMLButtonElement>("[data-again]");
 
   // One random id per identity, as the server would have given them.
   const identityIds = new Map<string, string>();
@@ -59,7 +58,6 @@ if (root && "subtle" in crypto) {
     secret = crypto.getRandomValues(new Uint8Array(32));
     void render();
   });
-  again?.addEventListener("click", () => void render());
 
   void render();
 }

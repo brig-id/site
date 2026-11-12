@@ -20,9 +20,9 @@ const stages: {
   {
     status: "available",
     title: "Works today",
-    text: `In leaf ${RELEASE.version}, the single-server edition.`,
+    text: `In leaf ${RELEASE.version}, the light edition.`,
     items: [
-      "Passkey sign-in, a passkey per device",
+      "Sign-in with a gesture, on each of your devices",
       "A private account with several identities",
       "Encrypted storage, key rotation",
       "Health and metrics for operators",
@@ -44,8 +44,8 @@ const stages: {
     title: "After that",
     text: "On the roadmap, not started.",
     items: [
-      "Passkeys bound to one identity",
-      "grove and forest, for larger deployments",
+      "grove and forest, for larger uses",
+      "brig·id Cloud, for those who do not run a server",
       "A public map of servers",
       "An independent security audit",
     ],
@@ -53,17 +53,19 @@ const stages: {
 ];
 
 const tiers = [
-  { id: "leaf", name: "leaf", line: "One server, one container." },
-  { id: "grove", name: "grove", line: "Several servers as one." },
-  {
-    id: "forest",
-    name: "forest",
-    line: "Identity as critical infrastructure.",
-  },
+  { id: "leaf", size: "A few people" },
+  { id: "grove", size: "An organisation" },
+  { id: "forest", size: "A company, at scale" },
+] as const;
+
+const layers = [
+  { name: "Declarative", text: "what you say you are" },
+  { name: "Acting", text: "what a platform reports you doing" },
+  { name: "Calculated", text: "what a platform computes about you" },
 ];
 ---
 
-<Base description="brig·id is a self-hosted, passkey-only identity server. You sign in as a private self no website ever meets, and show each site only the identity you chose for it.">
+<Base description="One way to sign in, known only to you, and a separate identity for each website. brig·id is an identity server you can run yourself: no site can tell who is behind an identity.">
   <!-- Hero -->
   <section class="hero">
     <div class="shell hero-text">
@@ -78,9 +80,8 @@ const tiers = [
         Many <span class="accent spectrum">identities.</span>
       </h1>
       <p class="lead">
-        brig·id is an identity server you host yourself. You sign in one way,
-        with a passkey, as a private self no website ever meets. Each site gets
-        only the identity you chose for it, and no way back to you.
+        One way to sign in, that only you know. On each website you show the
+        identity you picked for it, and no site can tell who is behind it.
       </p>
       <div class="cta-row">
         <a class="btn btn-primary" href="/identities/">
@@ -135,15 +136,19 @@ const tiers = [
         <article class="card cell cell-7 hue-amber rise">
           <div class="cell-text">
             <StatusTag status={feature("passkeys").status} />
-            <h3>{feature("passkeys").title}</h3>
-            <p>{feature("passkeys").summary}</p>
+            <h3>Nothing left to remember</h3>
+            <p>
+              No password, and no username to type. You sign in the way your
+              phone already unlocks: a fingerprint, a face or a key. It cannot
+              be guessed, reused or stolen by a fake website.
+            </p>
           </div>
           <div class="viz viz-passkey" aria-hidden="true">
             <span class="ring"></span>
             <span class="ring"></span>
             <span class="ring"></span>
             <Icon name="fingerprint" />
-            <span class="prompt">Use my passkey</span>
+            <span class="prompt">Sign in</span>
           </div>
         </article>
 
@@ -181,7 +186,11 @@ const tiers = [
           <div class="cell-text">
             <StatusTag status={feature("pairwise").status} />
             <h3>{feature("pairwise").title}</h3>
-            <p>{feature("pairwise").summary}</p>
+            <p>
+              Your identities are sealed off from each other. Websites cannot
+              compare notes to piece your self back together, and nothing here
+              helps advertisers retrace where you go.
+            </p>
           </div>
           <div class="viz viz-ids" aria-hidden="true">
             <p>
@@ -199,27 +208,35 @@ const tiers = [
           </div>
         </article>
 
-        <article class="card cell cell-7 hue-cyan rise">
+        <article class="card cell cell-7 hue-green rise">
           <div class="cell-text">
-            <StatusTag status={feature("leaf").status} />
-            <h3>Your server, your rules</h3>
-            <p>{feature("leaf").summary}</p>
+            <h3>A server for every size</h3>
+            <p>
+              brig·id is software you run, or have run for you. Three editions
+              carry three sizes of use.
+            </p>
           </div>
-          <div class="viz viz-term" aria-hidden="true">
-            <p class="bar">
-              <i></i>
-              <i></i>
-              <i></i>
-              <span>your-server</span>
-            </p>
+          <ul class="viz viz-sizes">
+            {tiers.map((tier) => (
+              <li>
+                <Icon name={feature(tier.id).icon} />
+                <b>{tier.id}</b>
+                <span>{tier.size}</span>
+                <StatusTag status={feature(tier.id).status} />
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article class="card cell cell-4 hue-self rise">
+          <div class="cell-text">
+            <StatusTag status={feature("quick-signup").status} />
+            <h3>Nothing attached to your private self</h3>
             <p>
-              <b>$</b> docker compose -f deploy/compose.yaml up -d
+              No name, no email address, no password, no profile. Your private
+              self is only the way in: everything others can see belongs to an
+              identity.
             </p>
-            <p class="dim">leaf {RELEASE.version} · ghcr.io/brig-id/leaf</p>
-            <p>
-              <b>$</b> curl https://your-server/health
-            </p>
-            <p class="ok">{`{"status":"ok"}`}</p>
           </div>
         </article>
 
@@ -231,21 +248,13 @@ const tiers = [
           </div>
         </article>
 
-        <article class="card cell cell-4 hue-violet rise">
-          <div class="cell-text">
-            <StatusTag status={feature("post-quantum").status} />
-            <h3>{feature("post-quantum").title}</h3>
-            <p>{feature("post-quantum").summary}</p>
-          </div>
-        </article>
-
         <article class="card cell cell-4 hue-amber rise">
           <div class="cell-text">
             <StatusTag status={feature("specified").status} />
             <h3>Open source, open specification</h3>
             <p>
-              The code is LGPL-3.0. The protocol, the threat model and every
-              architecture decision are public, written to be checked.
+              The code is public, and so are the protocol, the threat model and
+              the reasons behind each choice, written to be checked.
             </p>
           </div>
         </article>
@@ -266,19 +275,18 @@ const tiers = [
       <div class="section-head rise">
         <p class="eyebrow">Where it comes from</p>
         <h2>
-          It began as a <span class="accent">research</span> question.
+          It began where two fields <span class="accent">met.</span>
         </h2>
         <p class="lead">
-          In 2009, a team around researcher Fanny Georges compared how Facebook
-          and MySpace represent a person. Their semiotic model reads a digital
-          identity in three layers: what you declare, what the platform reports
-          you doing, and what it computes about you.
+          brig·id grew out of a collaboration between human-computer interaction
+          and the social sciences, around a semiotic model of digital identity.
+          The model reads a person online in three layers: what you declare,
+          what a platform reports you doing, and what it computes about you.
         </p>
         <p class="lead">
-          The more a platform computes, the less of your identity is yours to
-          write. brig·id is one engineer's answer, years later: a system where
-          you declare each identity yourself, and nothing is computed across
-          them.
+          Only the first layer is yours to write. brig·id came later, as one
+          person's answer: a way to sign in where an identity holds what you
+          declared, and nothing is computed across your identities.
         </p>
         <a class="link-arrow" href="/history/">
           Read the history
@@ -286,32 +294,21 @@ const tiers = [
         </a>
       </div>
 
-      <figure class="paper card hue-self rise">
-        <p class="paper-kind">Conference paper · H2PTM 2009</p>
-        <blockquote lang="fr">
-          Sémiotique et visualisation de l’identité numérique&nbsp;: une étude
-          comparée de Facebook et Myspace
-        </blockquote>
-        <figcaption>
-          Fanny Georges, Antoine Seilles, Guillaume Artignan, Bérenger Arnaud,
-          Mountaz Hascoët, Nancy Rodriguez, Birgitta Dresp-Langley, Jean
-          Sallantin
-        </figcaption>
-        <ul class="layers">
-          <li>
-            <b>Declarative</b> what you say you are
-          </li>
-          <li>
-            <b>Acting</b> what the platform reports you doing
-          </li>
-          <li>
-            <b>Calculated</b> what the platform computes about you
-          </li>
-        </ul>
-        <a class="link-arrow" href="https://hal.science/hal-05193465v1">
-          Read it on HAL
-          <Icon name="arrow-up-right" />
-        </a>
+      <figure class="model card hue-self rise">
+        <figcaption>A semiotic model of digital identity</figcaption>
+        <ol>
+          {layers.map((layer, index) => (
+            <li>
+              <span class="model-n">{index + 1}</span>
+              <b>{layer.name}</b>
+              <span>{layer.text}</span>
+            </li>
+          ))}
+        </ol>
+        <p>
+          The more a platform reports and computes, the less of your identity is
+          yours.
+        </p>
       </figure>
     </div>
   </section>
@@ -325,9 +322,9 @@ const tiers = [
           Start with a <span class="accent">leaf.</span>
         </h2>
         <p class="lead">
-          There is no brig·id company holding the accounts. brig·id is software:
-          one small server is enough for a person, a family or a team, and it is
-          yours.
+          No company holds the accounts: brig·id is software. Its three editions
+          differ in how many people they carry, and in how they fit into what
+          you already run.
         </p>
       </header>
       <ol class="tiers">
@@ -337,8 +334,8 @@ const tiers = [
               <Icon name={feature(tier.id).icon} />
             </span>
             <StatusTag status={feature(tier.id).status} />
-            <h3>{tier.name}</h3>
-            <p class="tier-line">{tier.line}</p>
+            <h3>{tier.id}</h3>
+            <p class="tier-line">{tier.size}</p>
             <p>{feature(tier.id).summary}</p>
           </li>
         ))}
@@ -397,8 +394,8 @@ const tiers = [
           Honest about what is <span class="accent">built.</span>
         </h2>
         <p class="lead">
-          brig·id is pre-beta. This site describes where it is going, so every
-          claim on it carries one of three labels.
+          brig·id is pre-beta, and this site describes where it is going. So
+          each feature carries one of three labels.
         </p>
       </header>
       <div class="stages">
@@ -406,7 +403,9 @@ const tiers = [
           <section class="card stage rise">
             <header>
               <StatusTag status={stage.status} />
-              <span class="stage-count">{count(stage.status)}</span>
+              <p class="stage-count">
+                <b>{count(stage.status)}</b> features
+              </p>
             </header>
             <h3>{stage.title}</h3>
             <p>{stage.text}</p>
@@ -563,7 +562,7 @@ const tiers = [
     display: grid;
     place-items: center;
     align-content: center;
-    gap: 1.5rem;
+    gap: 2.4rem;
     height: 13rem;
     overflow: hidden;
     color: var(--amber);
@@ -669,55 +668,35 @@ const tiers = [
     color: var(--violet);
   }
 
-  .viz-term {
+  .viz-sizes {
     display: grid;
-    gap: 0.35rem;
-    padding: 0 1.1rem 1.1rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    overflow: hidden;
   }
 
-  .viz-term p {
-    max-width: none;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .viz-term .bar {
-    display: flex;
+  .viz-sizes li {
+    display: grid;
+    grid-template-columns: auto 4.5rem 1fr auto;
     align-items: center;
-    gap: 0.4rem;
-    margin: 0 -1.1rem 0.6rem;
-    padding: 0.65rem 1.1rem;
-    border-bottom: 1px solid var(--line);
-    color: var(--text-3);
+    gap: 0.9rem;
+    padding: 0.85rem 1.1rem;
   }
 
-  .viz-term .bar i {
-    width: 0.6rem;
-    height: 0.6rem;
-    border-radius: 50%;
-    background: var(--line-2);
+  .viz-sizes li + li {
+    border-top: 1px solid var(--line);
   }
 
-  .viz-term .bar span {
-    margin-left: 0.5rem;
+  .viz-sizes :global(.icon) {
+    font-size: 1.4rem;
+    color: var(--green);
   }
 
-  .viz-term b {
-    color: var(--cyan);
+  .viz-sizes b {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
     font-weight: 500;
   }
 
-  .viz-term .dim {
-    color: var(--text-3);
-  }
-
-  .viz-term .ok {
-    color: var(--green);
+  .viz-sizes span:not(.tag) {
+    color: var(--text-2);
   }
 
   .after {
@@ -755,7 +734,7 @@ const tiers = [
     margin-bottom: 0;
   }
 
-  .paper {
+  .model {
     display: grid;
     gap: 1.25rem;
     margin: 0;
@@ -769,16 +748,7 @@ const tiers = [
       var(--bg-1);
   }
 
-  .paper-kind {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-3);
-  }
-
-  .paper blockquote {
-    margin: 0;
+  .model figcaption {
     font-family: var(--font-serif);
     font-style: italic;
     font-size: clamp(1.5rem, 2.8vw, 2.1rem);
@@ -786,36 +756,40 @@ const tiers = [
     color: var(--self);
   }
 
-  .paper figcaption {
-    font-size: 0.9rem;
-    line-height: 1.55;
-    color: var(--text-2);
-  }
-
-  .layers {
-    display: grid;
-    gap: 0;
+  .model ol {
     border-top: 1px solid var(--line);
   }
 
-  .layers li {
+  .model li {
     display: grid;
-    grid-template-columns: 7.5rem 1fr;
-    gap: 1rem;
-    padding: 0.7rem 0;
+    grid-template-columns: 1.5rem 7.5rem 1fr;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.85rem 0;
     border-bottom: 1px solid var(--line);
-    font-size: 0.92rem;
     color: var(--text-2);
   }
 
-  .layers b {
+  .model-n {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--text-3);
+  }
+
+  .model b {
     font-family: var(--font-mono);
     font-size: 0.74rem;
     font-weight: 500;
     letter-spacing: 0.1em;
-    line-height: 1.9;
     text-transform: uppercase;
     color: var(--text);
+  }
+
+  .model > p {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-3);
   }
 
   /* -- Tiers --------------------------------------------------------------- */
@@ -886,11 +860,19 @@ const tiers = [
   }
 
   .stage-count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-3);
+  }
+
+  .stage-count b {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 2.6rem;
+    font-weight: 400;
+    font-size: 2.4rem;
     line-height: 1;
-    color: var(--text-3);
   }
 
   .stage h3 {
@@ -972,9 +954,20 @@ const tiers = [
       min-height: 0;
     }
 
-    .layers li {
-      grid-template-columns: 1fr;
-      gap: 0;
+    .model li {
+      grid-template-columns: 1.5rem 1fr;
+    }
+
+    .model li span:last-child {
+      grid-column: 2;
+    }
+
+    .viz-sizes li {
+      grid-template-columns: auto 1fr auto;
+    }
+
+    .viz-sizes li span:not(.tag) {
+      grid-column: 2 / -1;
     }
   }
 </style>

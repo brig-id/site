@@ -46,6 +46,20 @@ there.
 | `scripts/check-dist.mjs`  | Fails the build if a page needs an inline script or style                                                                                                               |
 | `scripts/og/og.html`      | Source of `public/og.png`                                                                                                                                               |
 
+### Voice
+
+- Written for the general public first. The passkey is how it works, not the
+  headline: say "nothing to remember", and that the private self carries no
+  data (no name, no email, no password, no profile); what others see always
+  belongs to an identity.
+- The pages that present the product (`features`, `identities`, `history`,
+  `pricing`, `editions`) do not link to GitHub for their evidence, and never to
+  decision records. Links to the source belong in the footer.
+- The origin story is told on `/history/`. Elsewhere, say that brig·id follows
+  from work between human-computer interaction and the social sciences on a
+  semiotic model of digital identity; the idea of brig·id itself is its
+  author's alone.
+
 ### Comparison pages
 
 `/compare/` exists to be useful to someone choosing, which is also what makes it
@@ -62,11 +76,20 @@ worth finding. The rules, enforced in part by `src/data/competitors.spec.ts`:
 
 ### Pricing and editions
 
-Nothing is sold yet. `/pricing/` and `/editions/` describe the intended model:
-leaf and grove free and open source (non-profits choose by size), forest paid
-for companies, a hosted Cloud that is free forever for personal use, Team and
-Enterprise on quotation. Everything that does not exist carries a `Planned` tag,
-and an undecided detail reads "To be defined".
+Nothing is sold yet. `/pricing/` and `/editions/` describe the intended model.
+
+- **Hosted (brig·id Cloud), shown first:** Personal is free for ever, with
+  limits stated as a safeguard (1 account per person, 5 identities, 10 connected
+  websites) and not enforced at the start; Team and Enterprise on quotation.
+- **Self-hosted:** the editions differ in the volume they carry and in how they
+  fit into existing infrastructure. leaf is light, for private use and a few
+  users; grove is for non-profits, on **one** dedicated server; forest is the
+  paid edition for companies, integrated into their own cloud. leaf and grove
+  are free and open source.
+
+Everything that does not exist carries a `Planned` tag, and an undecided detail
+reads "To be defined". Only the offers above are public: do not add others to
+this repository, which anyone can read.
 
 ### Content-Security-Policy
 

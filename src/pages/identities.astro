@@ -7,8 +7,6 @@ import { feature } from "~/data/features";
 
 const sites = ["forum.example", "shop.example", "news.example"];
 
-const SPEC = "https://github.com/brig-id/spec/blob/main";
-
 const views = [
   {
     what: "Your passkeys",
@@ -153,9 +151,9 @@ const limits = [
             <p class="layer-step">01 · private</p>
             <h3>The private self</h3>
             <p>
-              Your account. You sign in to it with a passkey, and it holds your
-              passkeys, your identities and your settings. It has no public
-              name, and it is never presented to a website.
+              Your way in, and nothing more. It carries no profile, no email
+              address and no password: only your identities and your settings.
+              It is never presented to a website.
             </p>
           </div>
           <div class="layer-viz">
@@ -279,14 +277,14 @@ const limits = [
           <li>
             <Icon name="equals" />
             <span>
-              Compute again: every value comes back the same. A website
-              recognises you.
+              The same identity on the same website always gets the same value:
+              the site recognises you.
             </span>
           </li>
           <li>
             <Icon name="shuffle" />
             <span>
-              Change the server's secret: every value changes. Without it,
+              Change the server's secret and every value changes. Without it,
               nothing can be recomputed.
             </span>
           </li>
@@ -299,9 +297,6 @@ const limits = [
             Server secret <code data-secret>random</code>
           </p>
           <div class="demo-actions">
-            <button class="btn btn-ghost" type="button" data-again>
-              Compute again
-            </button>
             <button class="btn btn-primary" type="button" data-reroll>
               <Icon name="shuffle" />
               New secret
@@ -374,10 +369,8 @@ const limits = [
     "brigid-vsid-v2" ‖ <span class="f-id">identity id</span> ‖ <span class="f-site">website id</span>
 )</code></pre>
         <p>
-          The form decided in
-          <a href={`${SPEC}/decisions/007-identifiers.md`}>ADR-007</a>. Today's
-          server derives the same way from an earlier input; the final form
-          lands together with sign-in to websites.
+          Today's server derives the same way from an earlier input; this final
+          form lands together with sign-in to websites.
         </p>
       </div>
 
@@ -402,9 +395,10 @@ const limits = [
           A <span class="accent">semiotic</span> model of digital identity.
         </h2>
         <p class="lead">
-          brig·id grew out of a 2009 study of Facebook and MySpace led by Fanny
-          Georges, which reads a person's digital identity in three layers. Here
-          is that model, and what brig·id makes of each layer.
+          brig·id grew out of work between human-computer interaction and the
+          social sciences, around a model by Fanny Georges that reads a person's
+          digital identity in three layers. Here is that model, and what brig·id
+          makes of each layer.
         </p>
       </header>
 
@@ -425,8 +419,9 @@ const limits = [
         ))}
       </div>
       <p class="aside rise">
-        This is our reading of the model, applied to signing in. The paper
-        studies social networks and does not describe brig·id.
+        This is one reading of the model, applied to signing in. The model
+        describes social platforms, not brig·id, and its author has no part in
+        this project.
         <a class="link-arrow" href="/history/">
           How one led to the other
           <Icon name="arrow-right" />

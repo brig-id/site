@@ -26,7 +26,8 @@ const external = (href: string) => href.startsWith("https://");
     <div class="shell">
       <p class="eyebrow">Features</p>
       <h1>
-        What it does, and <span class="accent spectrum">where it stands.</span>
+        What it does, and
+        <span class="accent spectrum nowrap">where it stands.</span>
       </h1>
       <p class="lead">
         brig·id is pre-beta. This page lists what the latest release does, what
@@ -50,14 +51,16 @@ const external = (href: string) => href.startsWith("https://");
           <li class="card">
             <header>
               <StatusTag status={status} />
-              <span class="legend-count">{count(status)}</span>
+              <p class="legend-count">
+                <b>{count(status)}</b> features
+              </p>
             </header>
             <p>{STATUS_MEANING[status]}</p>
           </li>
         ))}
       </ul>
       <p class="release">
-        Latest release: <a href={RELEASE.url}>leaf {RELEASE.version}</a>,{" "}
+        Latest release: leaf {RELEASE.version},
         <time datetime={RELEASE.date}>11 November 2026</time>.
       </p>
     </div>
@@ -115,9 +118,7 @@ const external = (href: string) => href.startsWith("https://");
           <strong>Do not rely on brig·id yet.</strong> It has not been audited
           by an independent party, its interfaces still change between releases,
           and the server that runs it publicly is a test bed. The labels above
-          are kept in step with the code; when in doubt, the
-          <a href="https://github.com/brig-id/spec">specifications</a> are the
-          reference.
+          are kept in step with the code.
         </span>
       </p>
     </div>
@@ -164,11 +165,19 @@ const external = (href: string) => href.startsWith("https://");
   }
 
   .legend-count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-3);
+  }
+
+  .legend-count b {
     font-family: var(--font-serif);
     font-style: italic;
+    font-weight: 400;
     font-size: 2.4rem;
     line-height: 1;
-    color: var(--text-3);
   }
 
   .legend p {
