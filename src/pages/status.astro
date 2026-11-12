@@ -1,7 +1,6 @@
 ---
 import Base from "~/layouts/Base.astro";
 import Icon from "~/components/Icon.astro";
-import { RELEASE } from "~/data/features";
 import { SERVICES } from "../../worker/status";
 
 // The same list the Worker probes, so the page and /api/status cannot drift.
@@ -118,10 +117,9 @@ const services = [
           yet. A green light means “answering now”, nothing more.
         </li>
         <li>
-          <strong>What helm.brig.id is.</strong> The project's own server,
-          running leaf {RELEASE.version}. It is where each release is tried
-          first: it can change or go offline without notice, and it is not a
-          service to depend on.
+          <strong>What helm.brig.id is.</strong> The project's own server, a
+          single leaf. It is where each release is tried first: it can change or
+          go offline without notice, and it is not a service to depend on.
         </li>
       </ul>
       <p>
