@@ -75,8 +75,11 @@ import { RELEASE, feature } from "~/data/features";
                   {row.label}
                   {row.why && <small>{row.why}</small>}
                 </th>
-                {row.cells.map((cell) => (
-                  <td class:list={[{ tbd: cell === "To be defined" }]}>
+                {row.cells.map((cell, index) => (
+                  <td
+                    class:list={[{ tbd: cell === "To be defined" }]}
+                    data-who={EDITIONS[index]?.id}
+                  >
                     {cell}
                   </td>
                 ))}
@@ -303,6 +306,48 @@ import { RELEASE, feature } from "~/data/features";
     font-size: 0.95rem;
     line-height: 1.55;
     color: var(--text-2);
+  }
+
+  @media (max-width: 44rem) {
+    table {
+      display: block;
+      min-width: 0;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody,
+    tbody tr,
+    tbody th,
+    tbody td {
+      display: block;
+      width: auto;
+    }
+
+    tbody tr {
+      padding-block: 0.4rem;
+    }
+
+    tbody th {
+      padding-bottom: 0.3rem;
+      font-size: 1.05rem;
+    }
+
+    tbody td {
+      padding-block: 0.6rem;
+    }
+
+    tbody td::before {
+      content: attr(data-who);
+      display: block;
+      margin-bottom: 0.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-3);
+    }
   }
 
   @media (max-width: 60rem) {
