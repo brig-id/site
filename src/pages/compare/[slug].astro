@@ -99,18 +99,18 @@ if (!category) throw new Error(`Unknown category "${item.category}"`);
           <tbody>
             <tr>
               <th scope="row">What it is</th>
-              <td>{BRIGID.what}</td>
-              <td>{item.what}</td>
+              <td data-who="brig·id">{BRIGID.what}</td>
+              <td data-who={item.name}>{item.what}</td>
             </tr>
             <tr>
               <th scope="row">Licence</th>
-              <td>{BRIGID.licence}</td>
-              <td>{item.licence}</td>
+              <td data-who="brig·id">{BRIGID.licence}</td>
+              <td data-who={item.name}>{item.licence}</td>
             </tr>
             <tr>
               <th scope="row">How far along</th>
-              <td>{BRIGID.maturity}</td>
-              <td>{item.maturity}</td>
+              <td data-who="brig·id">{BRIGID.maturity}</td>
+              <td data-who={item.name}>{item.maturity}</td>
             </tr>
             {QUESTIONS.map((question) => (
               <tr>
@@ -118,7 +118,7 @@ if (!category) throw new Error(`Unknown category "${item.category}"`);
                   {question.title}
                   <small>{question.why}</small>
                 </th>
-                <td>
+                <td data-who="brig·id">
                   <p class="mark">
                     <VerdictMark
                       verdict={BRIGID[question.id].verdict}
@@ -130,7 +130,7 @@ if (!category) throw new Error(`Unknown category "${item.category}"`);
                   </p>
                   <p class="cell-note">{BRIGID[question.id].note}</p>
                 </td>
-                <td>
+                <td data-who={item.name}>
                   <p class="mark">
                     <VerdictMark
                       verdict={item[question.id].verdict}
@@ -456,6 +456,57 @@ if (!category) throw new Error(`Unknown category "${item.category}"`);
     .picks,
     .lists {
       grid-template-columns: 1fr;
+    }
+
+    /* Too narrow for two columns: each question becomes a block, with the
+       two answers one under the other. */
+    table {
+      display: block;
+      min-width: 0;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tr > :first-child {
+      width: auto;
+    }
+
+    tbody,
+    tbody tr,
+    tbody th,
+    tbody td {
+      display: block;
+      width: auto;
+    }
+
+    tbody tr {
+      padding-block: 0.4rem;
+    }
+
+    tbody th {
+      padding-bottom: 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    tbody td {
+      padding-block: 0.7rem;
+    }
+
+    tbody td::before {
+      content: attr(data-who);
+      display: block;
+      margin-bottom: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    tbody td:nth-child(2)::before {
+      color: var(--self);
     }
   }
 </style>
