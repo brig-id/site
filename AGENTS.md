@@ -33,15 +33,40 @@ there.
 
 ### Layout
 
-| Path                     | Content                                                                                               |
-| ------------------------ | ----------------------------------------------------------------------------------------------------- |
-| `src/pages/`             | One file per page: home, `features`, `identities`, `manifesto`, `history`, `status`, `servers`, `404` |
-| `src/data/features.ts`   | Every feature, its group and its status                                                               |
-| `src/components/`        | Header, footer, icons, the hero's prism scene                                                         |
-| `src/lib/derive.ts`      | The per-site identifier demo of `/identities/`                                                        |
-| `worker/`                | The Cloudflare Worker: security headers, `www` redirect, `/api/status`                                |
-| `scripts/check-dist.mjs` | Fails the build if a page needs an inline script or style                                             |
-| `scripts/og/og.html`     | Source of `public/og.png`                                                                             |
+| Path                      | Content                                                                                                                                                                 |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/`              | One file per page: home, `features`, `identities`, `pricing`, `editions`, `compare/` (hub and one page per product), `manifesto`, `history`, `status`, `servers`, `404` |
+| `src/data/features.ts`    | Every feature, its group and its status                                                                                                                                 |
+| `src/data/competitors.ts` | The products brig·id is compared with, their facts and sources                                                                                                          |
+| `src/data/editions.ts`    | leaf, grove and forest: what is decided about each                                                                                                                      |
+| `src/data/nav.ts`         | Navigation, and `CONTACT`: where "Contact us" leads                                                                                                                     |
+| `src/components/`         | Header, footer, icons, the hero's prism scene                                                                                                                           |
+| `src/lib/derive.ts`       | The per-site identifier demo of `/identities/`                                                                                                                          |
+| `worker/`                 | The Cloudflare Worker: security headers, `www` redirect, `/api/status`                                                                                                  |
+| `scripts/check-dist.mjs`  | Fails the build if a page needs an inline script or style                                                                                                               |
+| `scripts/og/og.html`      | Source of `public/og.png`                                                                                                                                               |
+
+### Comparison pages
+
+`/compare/` exists to be useful to someone choosing, which is also what makes it
+worth finding. The rules, enforced in part by `src/data/competitors.spec.ts`:
+
+- Every product lists where it is **ahead** of brig·id. Most are mature and
+  brig·id is pre-beta: say so.
+- A fact about another product comes from its own documentation or repository,
+  linked in `sources`. What cannot be confirmed is `unknown` ("Not confirmed"),
+  never a guess.
+- No prices and no popularity figures.
+- `CHECKED` is the date the sources were last read: change it when you re-read
+  them, not when you reword a sentence.
+
+### Pricing and editions
+
+Nothing is sold yet. `/pricing/` and `/editions/` describe the intended model:
+leaf and grove free and open source (non-profits choose by size), forest paid
+for companies, a hosted Cloud that is free forever for personal use, Team and
+Enterprise on quotation. Everything that does not exist carries a `Planned` tag,
+and an undecided detail reads "To be defined".
 
 ### Content-Security-Policy
 

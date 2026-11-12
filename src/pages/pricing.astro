@@ -1,0 +1,516 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import StatusTag from "~/components/StatusTag.astro";
+import { EDITIONS } from "~/data/editions";
+import { feature } from "~/data/features";
+import { CONTACT } from "~/data/nav";
+
+const selfHosted = EDITIONS.map((edition) => ({
+  id: edition.id,
+  audience: edition.audience,
+  price: edition.price,
+  priceNote: edition.priceNote,
+  status: feature(edition.id).status,
+  icon: feature(edition.id).icon,
+  contact: edition.id === "forest",
+}));
+
+const cloud = [
+  {
+    id: "personal",
+    name: "Personal",
+    icon: "user-duotone",
+    price: "Free",
+    priceNote: "Forever.",
+    audience: "One person, with all their identities.",
+    points: [
+      "A private account and as many identities as you need",
+      "Passkeys only, like every brig·id server",
+      "Nothing to install or keep running",
+    ],
+    contact: false,
+  },
+  {
+    id: "team",
+    name: "Team",
+    icon: "users-three-duotone",
+    price: "Contact us",
+    priceNote: "On quotation.",
+    audience: "A team or an organisation that would rather not run a server.",
+    points: [
+      "Accounts for the people of a team or an organisation",
+      "Run and updated for you",
+      "Details to be defined with the first teams",
+    ],
+    contact: true,
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    icon: "buildings-duotone",
+    price: "Contact us",
+    priceNote: "On quotation.",
+    audience: "Companies for which sign-in must not go down.",
+    points: [
+      "For companies that need commitments on availability and support",
+      "Run and updated for you",
+      "Details to be defined with the first customers",
+    ],
+    contact: true,
+  },
+];
+
+const questions = [
+  {
+    q: "Can I buy something today?",
+    a: "No. brig·id is pre-beta and nothing is for sale. The only thing that exists is leaf, the free single-server edition. This page describes the model brig·id is being built towards, so that you know it before you rely on anything.",
+  },
+  {
+    q: "Is leaf really free?",
+    a: "Yes. It is open source under the LGPL-3.0: the code is public, and the licence sets no limit on users or on who may run it. grove is planned under the same terms.",
+  },
+  {
+    q: "We are a non-profit. What do we pay?",
+    a: "Nothing for the software. Run a leaf, or a grove when one machine is no longer enough; the choice depends on your size, not on a price list. If you would rather not run a server, the Team offer of brig·id Cloud is where to ask.",
+  },
+  {
+    q: "We are a company. Why forest?",
+    a: "Because a company's sign-in has to stay up, be supported and come with someone accountable. forest is the edition built for that, under a paid licence, and it is meant to fund the free editions.",
+  },
+  {
+    q: "Why would Personal stay free forever?",
+    a: "Because a private self should not depend on a subscription. The paid offers, forest and the Team and Enterprise plans, are meant to pay for it.",
+  },
+  {
+    q: "Hosted or self-hosted: what is the difference for my privacy?",
+    a: "Whoever runs the server knows which identities belong to which account. On your own server that is you. On brig·id Cloud it would be us. Websites learn nothing more either way, but self-hosting remains the reference.",
+  },
+  {
+    q: "When?",
+    a: "There are no dates. The order of work is public: the single server first, then sign-in to websites, then the larger editions and the hosted offer.",
+  },
+];
+---
+
+<Base
+  title="Pricing"
+  description="brig·id is free to self-host for people and non-profits (leaf, grove), paid for companies (forest), and plans a hosted Cloud that is free forever for personal use."
+>
+  <section class="page-hero">
+    <div class="shell">
+      <p class="eyebrow">Pricing</p>
+      <h1>
+        Free for people. <span class="accent spectrum">Paid</span> by companies.
+      </h1>
+      <p class="lead">
+        Nothing is for sale yet: brig·id is pre-beta. This is the model it is
+        being built towards. Two ways to use it, on your own server or hosted
+        for you, and in both, a person never pays.
+      </p>
+    </div>
+  </section>
+
+  <!-- Self-hosted -->
+  <section class="section" id="self-hosted">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">On your own server</p>
+        <h2>
+          Run it <span class="accent">yourself.</span>
+        </h2>
+        <p class="lead">
+          The software is yours to run. Non-profits pick leaf or grove according
+          to their size. Companies get forest, under a paid licence.
+        </p>
+      </header>
+
+      <ol class="plans">
+        {selfHosted.map((plan) => (
+          <li
+            class:list={[
+              "card",
+              "plan",
+              "hue-green",
+              "rise",
+              { featured: plan.id === "leaf" },
+            ]}
+          >
+            <header>
+              <span class="plan-icon">
+                <Icon name={plan.icon} />
+              </span>
+              <StatusTag status={plan.status} />
+            </header>
+            <h3 class="mono">{plan.id}</h3>
+            <p class="plan-for">{plan.audience}</p>
+            <p class="price">
+              <b>{plan.price}</b>
+              <span>{plan.priceNote}</span>
+            </p>
+            <p class="plan-line">{feature(plan.id).summary}</p>
+            {plan.contact ? (
+              <a class="btn btn-ghost" href={CONTACT.href}>
+                Contact us
+                <Icon name="arrow-up-right" />
+              </a>
+            ) : plan.status === "available" ? (
+              <a
+                class="btn btn-primary"
+                href="https://github.com/brig-id/server-leaf"
+              >
+                Get leaf
+                <Icon name="arrow-up-right" />
+              </a>
+            ) : (
+              <span class="btn btn-idle">Not available yet</span>
+            )}
+          </li>
+        ))}
+      </ol>
+      <p class="after rise">
+        <a class="link-arrow" href="/editions/">
+          Compare leaf, grove and forest
+          <Icon name="arrow-right" />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Cloud -->
+  <section class="section" id="cloud">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">Hosted for you</p>
+        <h2>
+          brig·id <span class="accent">Cloud.</span>
+        </h2>
+        <p class="lead">
+          For those who would rather not run a server: the same software,
+          hosted. It does not exist yet.
+        </p>
+        <StatusTag status={feature("cloud").status} />
+      </header>
+
+      <ol class="plans">
+        {cloud.map((plan) => (
+          <li
+            class:list={[
+              "card",
+              "plan",
+              "hue-violet",
+              "rise",
+              { featured: plan.id === "personal" },
+            ]}
+          >
+            <header>
+              <span class="plan-icon">
+                <Icon name={plan.icon} />
+              </span>
+              <StatusTag status="planned" />
+            </header>
+            <h3>{plan.name}</h3>
+            <p class="plan-for">{plan.audience}</p>
+            <p class="price">
+              <b>{plan.price}</b>
+              <span>{plan.priceNote}</span>
+            </p>
+            <ul class="points">
+              {plan.points.map((point) => (
+                <li>
+                  <Icon name="check" />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+            {plan.contact ? (
+              <a class="btn btn-ghost" href={CONTACT.href}>
+                Contact us
+                <Icon name="arrow-up-right" />
+              </a>
+            ) : (
+              <span class="btn btn-idle">Not open yet</span>
+            )}
+          </li>
+        ))}
+      </ol>
+
+      <p class="note rise">
+        <Icon name="eye-duotone" />
+        <span>
+          <strong>The honest trade.</strong> A hosted server knows which
+          identities are yours, exactly as your own server would. Websites still
+          learn nothing more. If answering to no one matters to you, run a leaf:
+          that is what it is for.
+          <a href="/identities/">What a server sees.</a>
+        </span>
+      </p>
+    </div>
+  </section>
+
+  <!-- Questions -->
+  <section class="section">
+    <div class="shell-narrow">
+      <header class="section-head rise">
+        <p class="eyebrow">Questions</p>
+        <h2>
+          Before you <span class="accent">ask.</span>
+        </h2>
+      </header>
+      <div class="faq">
+        {questions.map((item) => (
+          <details class="rise">
+            <summary>
+              {item.q}
+              <Icon name="plus" />
+            </summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section" id="contact">
+    <div class="shell">
+      <div class="contact card rise">
+        <h2>
+          Talk to <span class="accent spectrum">us.</span>
+        </h2>
+        <p class="lead">
+          For forest, a Team or Enterprise plan, or anything this page does not
+          answer.
+        </p>
+        <a class="btn btn-primary" href={CONTACT.href}>
+          Contact us
+          <Icon name="arrow-up-right" />
+        </a>
+        {CONTACT.isPublic && (
+          <p class="contact-fine">
+            For now this opens an issue on GitHub, which is public. A private
+            address will come with the first paid offer.
+          </p>
+        )}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .plan {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: clamp(1.5rem, 2.8vw, 2.1rem);
+  }
+
+  .plan.featured {
+    border-color: color-mix(in srgb, var(--hue) 45%, transparent);
+    background:
+      radial-gradient(
+        24rem 12rem at 50% 0%,
+        color-mix(in srgb, var(--hue) 14%, transparent),
+        transparent 70%
+      ),
+      var(--bg-1);
+  }
+
+  .plan header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 0.4rem;
+  }
+
+  .plan-icon {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid color-mix(in srgb, var(--hue) 35%, transparent);
+    border-radius: 0.95rem;
+    background: color-mix(in srgb, var(--hue) 10%, transparent);
+    color: var(--hue);
+    font-size: 1.65rem;
+  }
+
+  .plan h3 {
+    font-size: 1.6rem;
+    letter-spacing: -0.025em;
+  }
+
+  .plan h3.mono {
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+
+  .plan-for {
+    min-height: 3em;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+
+  .price {
+    display: grid;
+    gap: 0.1rem;
+    width: 100%;
+    padding-block: 1rem;
+    border-block: 1px dashed var(--line-2);
+    font-size: 0.9rem;
+    color: var(--text-2);
+  }
+
+  .price b {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4vw, 2.9rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  .plan-line {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+
+  .points {
+    display: grid;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    color: var(--text-2);
+  }
+
+  .points li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem;
+    line-height: 1.45;
+  }
+
+  .points :global(.icon) {
+    margin-top: 0.2rem;
+    color: var(--hue);
+  }
+
+  .plan .btn {
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .plan-line + .btn,
+  .points + .btn {
+    margin-top: auto;
+  }
+
+  .btn-idle {
+    border: 1px dashed var(--line-2);
+    color: var(--text-3);
+    cursor: default;
+  }
+
+  .after {
+    margin-top: 2rem;
+  }
+
+  #cloud .section-head {
+    justify-items: start;
+  }
+
+  #cloud .note {
+    max-width: 46rem;
+    margin-top: 1.5rem;
+  }
+
+  .faq {
+    border-top: 1px solid var(--line);
+  }
+
+  .faq details {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .faq summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    font-size: 1.12rem;
+    font-weight: 540;
+    letter-spacing: -0.015em;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq summary :global(.icon) {
+    color: var(--text-3);
+    transition: transform 0.25s var(--ease);
+  }
+
+  .faq details[open] summary :global(.icon) {
+    transform: rotate(45deg);
+    color: var(--amber);
+  }
+
+  .faq details p {
+    max-width: 40rem;
+    padding-bottom: 1.4rem;
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+
+  .contact {
+    display: grid;
+    justify-items: center;
+    gap: 1.3rem;
+    padding: clamp(2.5rem, 7vw, 5rem) var(--gutter);
+    text-align: center;
+    background:
+      radial-gradient(
+        40rem 20rem at 50% 115%,
+        rgb(255 182 92 / 0.2),
+        transparent 70%
+      ),
+      var(--bg-1);
+  }
+
+  .contact h2 {
+    font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+  }
+
+  .contact .lead {
+    max-width: 32rem;
+  }
+
+  .contact-fine {
+    max-width: 30rem;
+    font-size: 0.88rem;
+    color: var(--text-3);
+  }
+
+  @media (max-width: 60rem) {
+    .plans {
+      grid-template-columns: 1fr;
+    }
+
+    .plan-for {
+      min-height: 0;
+    }
+  }
+</style>
