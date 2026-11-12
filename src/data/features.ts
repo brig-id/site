@@ -12,7 +12,7 @@ export const STATUS_LABEL: Record<Status, string> = {
 
 export const STATUS_MEANING: Record<Status, string> = {
   available:
-    "In the latest release of the server, and running on helm.brig.id.",
+    "Exists today: in the latest release of the server, or public in the repositories.",
   progress:
     "Decided and specified; being built now. Not in a release yet, or only in part.",
   planned: "On the roadmap. No code yet, and the design may still change.",
