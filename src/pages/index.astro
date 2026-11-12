@@ -5,6 +5,7 @@ import Icon from "~/components/Icon.astro";
 import PrismScene from "~/components/PrismScene.astro";
 import StatusTag from "~/components/StatusTag.astro";
 import { FEATURES, RELEASE, feature, type Status } from "~/data/features";
+import { COMPETITORS } from "~/data/competitors";
 import { GITHUB, SPEC } from "~/data/nav";
 
 const count = (status: Status) =>
@@ -342,6 +343,48 @@ const tiers = [
           </li>
         ))}
       </ol>
+      <p class="after links rise">
+        <a class="link-arrow" href="/editions/">
+          Compare leaf, grove and forest
+          <Icon name="arrow-right" />
+        </a>
+        <a class="link-arrow" href="/pricing/">
+          Pricing
+          <Icon name="arrow-right" />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Compare -->
+  <section class="section">
+    <div class="shell">
+      <header class="section-head rise">
+        <p class="eyebrow">Compare</p>
+        <h2>
+          Not the <span class="accent">only</span> way to sign in.
+        </h2>
+        <p class="lead">
+          Most of the alternatives are more mature than brig·id, and for many
+          needs they are the better choice today. Each comparison says where the
+          other one is ahead.
+        </p>
+      </header>
+      <ul class="rivals rise">
+        {COMPETITORS.map((item) => (
+          <li>
+            <a class="pill" href={`/compare/${item.slug}/`}>
+              {item.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="after rise">
+        <a class="link-arrow" href="/compare/">
+          All {COMPETITORS.length} comparisons
+          <Icon name="arrow-right" />
+        </a>
+      </p>
     </div>
   </section>
 
@@ -679,6 +722,24 @@ const tiers = [
 
   .after {
     margin-top: 2rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 2.5rem;
+  }
+
+  .rivals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .rivals .pill {
+    padding-inline: 0.9rem;
+    font-size: 0.9rem;
   }
 
   /* -- Origin -------------------------------------------------------------- */

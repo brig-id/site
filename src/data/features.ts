@@ -326,28 +326,36 @@ export const FEATURES: Feature[] = [
     group: "hosting",
     title: "grove: several servers as one",
     summary:
-      "For when one machine is no longer enough: several servers behind one domain.",
-    detail: "Not started. The single server comes first.",
+      "For when one machine is no longer enough: several servers behind one domain, sharing a PostgreSQL database.",
+    detail:
+      "Not started; the single server comes first. Free and open source, like leaf.",
     status: "planned",
     icon: "tree-duotone",
-    ref: {
-      label: "server-grove",
-      href: "https://github.com/brig-id/server-grove",
-    },
+    ref: { label: "Compare the editions", href: "/editions/" },
   },
   {
     id: "forest",
     group: "hosting",
     title: "forest: identity as critical infrastructure",
     summary:
-      "High availability at scale, for organisations that cannot afford their sign-in to be down.",
-    detail: "Not started.",
+      "High availability on Kubernetes, for companies that cannot afford their sign-in to be down.",
+    detail:
+      "Not started. A paid edition, built with the companies that need it.",
     status: "planned",
     icon: "tree-evergreen-duotone",
-    ref: {
-      label: "server-forest",
-      href: "https://github.com/brig-id/server-forest",
-    },
+    ref: { label: "Compare the editions", href: "/editions/" },
+  },
+  {
+    id: "cloud",
+    group: "hosting",
+    title: "brig·id Cloud: hosted for you",
+    summary:
+      "The same software, run for people and teams who would rather not operate a server. Personal use is meant to stay free.",
+    detail:
+      "Not started. A hosted server knows which identities are yours, like any server: self-hosting stays the reference.",
+    status: "planned",
+    icon: "cloud-duotone",
+    ref: { label: "Pricing", href: "/pricing/" },
   },
   {
     id: "server-map",
