@@ -1,6 +1,6 @@
 name: Deploy
 
-# Publishes brig.id (Worker `site`) when main changes. The build and the deploy
+# Publishes brig.id (Worker `brigid-site`) when main changes. The build and the deploy
 # run here rather than in Workers Builds, so the secrets stay in one place.
 
 on:

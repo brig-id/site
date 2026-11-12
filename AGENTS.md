@@ -86,7 +86,7 @@ there, with a test in `worker/index.spec.ts`.
 ## Deployment
 
 Deployed to **Cloudflare Workers** (static assets + `worker/index.ts`), as the
-Worker `site` with `brig.id` and `www.brig.id` as its custom domains
+Worker `brigid-site` with `brig.id` and `www.brig.id` as its custom domains
 (`workers.dev` and preview URLs are off; `www` redirects to the apex).
 
 `.github/workflows/deploy.yml` tests, builds and deploys on every push to `main`
