@@ -121,14 +121,14 @@ export interface Competitor extends Record<QuestionId, Fact> {
 /** brig·id's own answers, with the status of each (see features.ts). */
 export const BRIGID = {
   what: "A self-hosted identity server where one private account holds several identities, each shown to the websites you choose.",
-  licence: "LGPL-3.0",
+  licence: "AGPL-3.0",
   maturity:
-    "Pre-beta and not audited. Websites cannot sign people in with it yet.",
+    "Pre-beta and not audited. Websites can sign people in with it; they receive an identifier and nothing else yet.",
   selfHost: {
     verdict: "yes",
     short: "Yes",
-    note: "A single container, leaf. Nothing else is offered today.",
-    feature: "leaf",
+    note: "A single container, seedling. Nothing else is offered today.",
+    feature: "seedling",
   },
   signIn: {
     verdict: "yes",

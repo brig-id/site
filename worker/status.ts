@@ -72,7 +72,7 @@ export const SERVICES: Service[] = [
     name: "helm.brig.id",
     host: "helm.brig.id",
     description:
-      "The project's own brig·id server, a single leaf. Pre-beta: it is where each release is tried first.",
+      "The project's own brig·id server, a single seedling. Pre-beta: it is where each release is tried first.",
     probes: [
       {
         id: "health",

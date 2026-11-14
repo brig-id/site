@@ -1,10 +1,11 @@
-// The three editions of the server, and what is known about each. They differ
-// in the volume they carry and in how they fit into what you already run, not
-// in what an identity is. grove and forest do not exist yet: a cell says "To
-// be defined" rather than promise something nobody has designed.
+// The three editions of the server, and what is decided about each. They do
+// not differ in what an identity is, nor in what they cost: all three are free
+// software. They differ by who runs them and by what an outage costs. grove and
+// forest do not exist yet: a cell describes what is decided, and the page marks
+// them as planned.
 
 export interface Edition {
-  id: "leaf" | "grove" | "forest";
+  id: "seedling" | "grove" | "forest";
   line: string;
   audience: string;
   price: string;
@@ -13,32 +14,32 @@ export interface Edition {
 
 export const EDITIONS: Edition[] = [
   {
-    id: "leaf",
-    line: "Light, for private use.",
-    audience: "Yourself, a family, a handful of users.",
+    id: "seedling",
+    line: "The smallest, for you and yours.",
+    audience: "Yourself, a family.",
     price: "Free",
-    priceNote: "Open source, for anyone.",
+    priceNote: "Free software, for anyone.",
   },
   {
     id: "grove",
-    line: "A dedicated server, for non-profits.",
-    audience: "An association or a community.",
+    line: "For a community.",
+    audience: "A community or an association.",
     price: "Free",
-    priceNote: "Open source, like leaf.",
+    priceNote: "Free software, like seedling.",
   },
   {
     id: "forest",
-    line: "For companies, at scale.",
-    audience: "Companies, in their own cloud.",
-    price: "Paid",
-    priceNote: "Commercial licence. Contact us.",
+    line: "For a company.",
+    audience: "A company, in its own infrastructure.",
+    price: "Free",
+    priceNote: "Free software too. Help is what is paid.",
   },
 ];
 
 export interface EditionRow {
   label: string;
   why?: string;
-  /** leaf, grove, forest. */
+  /** seedling, grove, forest. */
   cells: [string, string, string];
 }
 
@@ -46,52 +47,56 @@ export const EDITION_ROWS: EditionRow[] = [
   {
     label: "Made for",
     cells: [
-      "Private use: yourself, a family, a few people",
-      "Non-profit use: an association, a community",
-      "Companies",
+      "Yourself or a family",
+      "A community or an association",
+      "A company",
     ],
   },
   {
-    label: "Volume",
-    why: "How many people it is sized for.",
-    cells: ["A handful of users", "An organisation's users", "Large volumes"],
+    label: "Looked after by",
+    cells: [
+      "One person",
+      "A volunteer or a small team",
+      "A team whose job it is",
+    ],
   },
   {
     label: "What it needs",
     cells: [
       "Very little: a corner of a small machine",
-      "A dedicated server is recommended",
-      "A cluster, in the company's cloud",
+      "A machine of its own",
+      "A cluster, in the company's infrastructure",
     ],
   },
   {
     label: "How it is run",
     cells: [
-      "One container, with an embedded database (SQLite)",
-      "Docker Compose, with PostgreSQL and Redis",
-      "Kubernetes, for high availability",
+      "One container, with its database inside",
+      "One container, the same engine, its data copied elsewhere as it changes",
+      "Several servers that stand in for one another",
     ],
   },
   {
-    label: "Fits into",
-    why: "What it has to live with.",
+    label: "If the machine stops",
+    why: "What an outage costs is what separates the editions.",
     cells: [
-      "Nothing: it stands alone",
-      "Nothing: it stands alone",
-      "A company's existing infrastructure",
+      "Sign-in stops; you restore a backup",
+      "Sign-in stops for a moment; nothing recent is lost",
+      "Sign-in goes on",
     ],
   },
   {
     label: "Licence",
     cells: [
-      "LGPL-3.0, open source",
-      "LGPL-3.0, open source",
-      "Commercial; terms not published yet",
+      "AGPL-3.0, free software",
+      "AGPL-3.0, free software",
+      "AGPL-3.0, free software",
     ],
   },
   {
     label: "Price",
-    cells: ["Free", "Free", "Paid, on quotation"],
+    why: "What can be paid for is help: support, hosting, extra modules.",
+    cells: ["Free", "Free", "Free"],
   },
 ];
 
@@ -105,7 +110,7 @@ export const SAME_EVERYWHERE = [
   {
     icon: "users-three-duotone",
     title: "One private self, several identities",
-    text: "The model is the same on a leaf and on a forest.",
+    text: "The model is the same on a seedling and on a forest.",
   },
   {
     icon: "arrows-split-duotone",
