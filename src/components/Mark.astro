@@ -1,6 +1,7 @@
 ---
-// The brig·id mark: one white point, the private self, and the identities
-// that leave it, each in its own colour.
+// The brig·id mark: one white lens, lit by the private self, and the
+// identities that leave it, each in its own colour. It is the scene of the
+// home page, turned a quarter.
 interface Props {
   class?: string;
 }
@@ -14,23 +15,30 @@ const { class: className } = Astro.props;
   aria-hidden="true"
 >
   <path
-    d="M10 16 25 7"
+    d="M12 16 26.5 6.5"
     stroke="#ffb65c"
-    stroke-width="2.4"
+    stroke-width="2.6"
     stroke-linecap="round"
   ></path>
   <path
-    d="M10 16h16.5"
+    d="M12 16h17"
     stroke="#ff86c8"
-    stroke-width="2.4"
+    stroke-width="2.6"
     stroke-linecap="round"
   ></path>
   <path
-    d="m10 16 15 9"
+    d="m12 16 14.5 9.5"
     stroke="#5ad7f0"
-    stroke-width="2.4"
+    stroke-width="2.6"
     stroke-linecap="round"
   ></path>
-  <circle cx="9" cy="16" r="4.6" fill="#05060a"></circle>
-  <circle cx="9" cy="16" r="3.4" fill="#fff3df"></circle>
+  <!-- A dark rim keeps the colours off the glass. -->
+  <path
+    d="M9.5 2.5a15.5 15.5 0 0 1 0 27 15.5 15.5 0 0 1 0-27Z"
+    fill="#05060a"
+  ></path>
+  <path
+    d="M9.5 4.6a13.6 13.6 0 0 1 0 22.8 13.6 13.6 0 0 1 0-22.8Z"
+    fill="#fff3df"
+  ></path>
 </svg>
