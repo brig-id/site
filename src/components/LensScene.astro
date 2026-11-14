@@ -1,0 +1,874 @@
+---
+// The picture of the whole idea: the private self is white light, the server
+// is a contact lens, and every identity is one colour that leaves it. The
+// hollow of the lens faces the self and shelters it; the rounded face sends
+// the colours out. A colour does not tell you what the white light was.
+//
+// The lens is drawn once, with the light coming down. On a wide screen the
+// stylesheet lays the scene on its side and mirrors the drawing along its
+// diagonal, so that down becomes right and the first colour stays first.
+import Icon from "./Icon.astro";
+import { IDENTITIES } from "~/data/identities";
+
+// A shallow bowl seen from above at an angle, on a box of 176 by 64 units:
+// the rim is an ellipse, the under side a curve hanging from its two ends.
+// The stylesheet below places the rays from these numbers, so change them
+// together.
+const box = { width: 176, height: 64 };
+const middle = box.width / 2;
+const rim = { y: 24, rx: 72, ry: 18 };
+const under = [
+  [middle - rim.rx, rim.y],
+  [middle - rim.rx + 10, rim.y + 44],
+  [middle + rim.rx - 10, rim.y + 44],
+  [middle + rim.rx, rim.y],
+] as const;
+const round = (value: number) => Math.round(value * 10) / 10;
+
+/** The point of the under side reached after a share `t` of its length. */
+const along = (t: number) => {
+  const u = 1 - t;
+  const weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+  const sum = (axis: 0 | 1) =>
+    under.reduce(
+      (total, point, index) => total + (weights[index] ?? 0) * point[axis],
+      0,
+    );
+  return { x: sum(0), y: sum(1) };
+};
+
+/** How low the under side is, `dx` units from the middle. */
+const face = (dx: number) => {
+  let low = 0;
+  let high = 1;
+  for (let step = 0; step < 40; step++) {
+    const half = (low + high) / 2;
+    if (along(half).x < middle + dx) low = half;
+    else high = half;
+  }
+  return round(along(low).y);
+};
+
+// One ray per identity. Each leaves the under side from its own point (`dx`
+// units from the middle) and lands on the middle of a card. The outer rays
+// leave the glass more aslant than the inner ones (`lean`). `down` is its
+// path when the scene stands, `across` when it lies.
+const ray = (
+  hue: string,
+  tint: string,
+  color: string,
+  dx: number,
+  lean: number,
+) => ({
+  hue,
+  tint,
+  color,
+  x: middle + dx,
+  y: face(dx),
+  down:
+    dx < 0
+      ? `M100 0C${100 - lean} 30 0 38 0 100`
+      : `M0 0C${lean} 30 100 38 100 100`,
+  across:
+    dx < 0
+      ? `M0 100C30 ${100 - lean} 38 0 100 0`
+      : `M0 0C30 ${lean} 38 100 100 100`,
+});
+
+const rays = [
+  ray("amber", "#ffe2b8", "#ffb65c", -46, 9),
+  ray("rose", "#ffd0ea", "#ff86c8", -16, 3),
+  ray("cyan", "#c6f1fa", "#5ad7f0", 16, 3),
+  ray("violet", "#ddd2ff", "#a78bff", 46, 9),
+] as const;
+
+// Where the white light lands in the hollow, and splits.
+const pool = { x: middle, y: rim.y + 9 };
+const first = rays[0];
+const last = rays[3];
+const bowl =
+  `M${under[0].join(" ")}C${under[1].join(" ")} ${under[2].join(" ")} ${under[3].join(" ")}` +
+  `A${rim.rx} ${rim.ry} 0 0 0 ${under[0].join(" ")}Z`;
+const directions = ["down", "across"] as const;
+---
+
+<div class="scene">
+  <div class="self">
+    <p class="cap cap-self">Your private self</p>
+    <span class="orb">
+      <Icon name="fingerprint" />
+    </span>
+    <p class="cap cap-facts">No name, no password. Seen by no one.</p>
+  </div>
+
+  <span class="beam" aria-hidden="true"></span>
+
+  <div class="lens">
+    <svg viewBox={`0 0 ${box.width} ${box.height}`} aria-hidden="true">
+      <defs>
+        <linearGradient id="lens-glass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop>
+          <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.06"></stop>
+          <stop offset="1" stop-color="#a78bff" stop-opacity="0.22"></stop>
+        </linearGradient>
+        <linearGradient id="lens-edge" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"></stop>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0.25"></stop>
+        </linearGradient>
+        <linearGradient id="lens-hollow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#05060a" stop-opacity="0.55"></stop>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0.1"></stop>
+        </linearGradient>
+        <radialGradient id="lens-sheen">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.4"></stop>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+        </radialGradient>
+        <radialGradient id="lens-pool">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.9"></stop>
+          <stop offset="0.4" stop-color="#fff3df" stop-opacity="0.35"></stop>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
+        </radialGradient>
+        <linearGradient
+          id="lens-wedge"
+          x1={first.x}
+          y1="0"
+          x2={last.x}
+          y2="0"
+          gradientUnits="userSpaceOnUse"
+        >
+          {rays.map((r, index) => (
+            <stop offset={index / 3} stop-color={r.color} />
+          ))}
+        </linearGradient>
+        <linearGradient
+          id="lens-fade"
+          x1="0"
+          y1={pool.y}
+          x2="0"
+          y2={rays[1].y}
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stop-color="#fff" stop-opacity="0"></stop>
+          <stop offset="1" stop-color="#fff" stop-opacity="1"></stop>
+        </linearGradient>
+        <mask id="lens-wedge-mask">
+          <rect
+            x="0"
+            y="0"
+            width={box.width}
+            height={box.height}
+            fill="url(#lens-fade)"
+          ></rect>
+        </mask>
+        {rays.map((r) => (
+          <linearGradient
+            id={`lens-ray-${r.hue}`}
+            x1={pool.x}
+            y1={pool.y}
+            x2={r.x}
+            y2={r.y}
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0" stop-color="#ffffff" />
+            <stop offset="0.55" stop-color={r.tint} />
+            <stop offset="1" stop-color={r.color} />
+          </linearGradient>
+        ))}
+      </defs>
+
+      <!-- The glass: its rounded under side, then the hollow and its rim. -->
+      <path
+        d={bowl}
+        fill="url(#lens-glass)"
+        stroke="url(#lens-edge)"
+        stroke-width="1.5"
+        stroke-linejoin="round"
+      ></path>
+      <ellipse
+        cx={middle - 38}
+        cy={rim.y + 24}
+        rx="20"
+        ry="5"
+        fill="url(#lens-sheen)"
+        transform={`rotate(24 ${middle - 38} ${rim.y + 24})`}
+      ></ellipse>
+      <ellipse
+        cx={middle}
+        cy={rim.y}
+        rx={rim.rx}
+        ry={rim.ry}
+        fill="url(#lens-hollow)"
+        stroke="url(#lens-edge)"
+        stroke-width="1.5"
+      ></ellipse>
+      <ellipse
+        cx={middle}
+        cy={rim.y + 1.5}
+        rx={rim.rx - 7}
+        ry={rim.ry - 3.5}
+        stroke="#ffffff"
+        stroke-opacity="0.12"
+      ></ellipse>
+
+      <!-- White light lands in the hollow, and splits. -->
+      <path
+        d={`M${pool.x} ${pool.y}L${rays.map((r) => `${r.x} ${r.y}`).join("L")}Z`}
+        fill="url(#lens-wedge)"
+        opacity="0.3"
+        mask="url(#lens-wedge-mask)"
+      ></path>
+      {rays.map((r) => (
+        <path
+          d={`M${pool.x} ${pool.y}L${r.x} ${r.y}`}
+          stroke={`url(#lens-ray-${r.hue})`}
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      ))}
+
+      <!-- Where each colour leaves the glass. -->
+      {rays.map((r) => (
+        <>
+          <circle cx={r.x} cy={r.y} r="4.2" fill={r.color} opacity="0.28" />
+          <circle cx={r.x} cy={r.y} r="1.5" fill={r.tint} />
+        </>
+      ))}
+      <ellipse
+        cx={pool.x}
+        cy={pool.y}
+        rx="20"
+        ry="6"
+        fill="url(#lens-pool)"
+      ></ellipse>
+      <path
+        d={`M${middle} 0V${pool.y}`}
+        stroke="#ffffff"
+        stroke-width="2"
+        stroke-linecap="round"
+      ></path>
+    </svg>
+    <p class="cap cap-lens">Your brig·id server</p>
+  </div>
+
+  {directions.map((direction) => (
+    <div class:list={["rays", `rays-${direction}`]} aria-hidden="true">
+      {rays.map((r, index) => (
+        <span class:list={["ray", `ray-${index + 1}`]}>
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path class="glow" d={r[direction]} stroke={r.color} />
+            <path class="core" d={r[direction]} stroke={r.color} />
+            <path class="photon" d={r[direction]} pathLength="100" />
+          </svg>
+        </span>
+      ))}
+    </div>
+  ))}
+
+  <ul class="facets">
+    {IDENTITIES.map((identity) => (
+      <li class:list={["facet", "card", `hue-${identity.hue}`]}>
+        <span class="facet-icon">
+          <Icon name={identity.icon} />
+        </span>
+        <h3>{identity.name}</h3>
+        <p>{identity.role}</p>
+        <dl>
+          <div>
+            <dt>Seen by</dt>
+            <dd>{identity.site}</dd>
+          </div>
+          <div>
+            <dt>Known as</dt>
+            <dd>{identity.sample}</dd>
+          </div>
+        </dl>
+      </li>
+    ))}
+  </ul>
+
+  <p class="moral">
+    <Icon name="lock-key-duotone" />
+    Each site meets one identity. None of them can follow the light back.
+  </p>
+</div>
+
+<style>
+  /* The scene stands by default: the self on top, the lens under it, the
+     cards in a row. From 62rem it lies down, further below. */
+  .scene {
+    --lens: 11.5rem;
+    --gap: 1rem; /* the gap of the cards */
+    display: grid;
+    justify-items: center;
+    width: min(100%, 66rem);
+    margin-inline: auto;
+  }
+
+  /* -- The private self ---------------------------------------------------- */
+
+  .self,
+  .lens {
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+
+  .orb {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 4.75rem;
+    height: 4.75rem;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 30%,
+      #fff,
+      var(--self) 55%,
+      #f3c98f
+    );
+    color: #2a1d0a;
+    font-size: 2.2rem;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.7) inset,
+      0 0 1.5rem rgb(255 243 223 / 0.75),
+      0 0 5rem rgb(255 200 130 / 0.55),
+      0 0 11rem rgb(255 182 92 / 0.35);
+  }
+
+  .orb::before,
+  .orb::after {
+    content: "";
+    position: absolute;
+    inset: -0.9rem;
+    border: 1px solid rgb(255 243 223 / 0.35);
+    border-radius: 50%;
+    animation: ring 4s var(--ease) infinite;
+  }
+
+  .orb::after {
+    animation-delay: 2s;
+  }
+
+  @keyframes ring {
+    0% {
+      transform: scale(0.82);
+      opacity: 0.9;
+    }
+    100% {
+      transform: scale(1.75);
+      opacity: 0;
+    }
+  }
+
+  .cap {
+    position: absolute;
+    top: 50%;
+    width: max-content;
+    max-width: min(15rem, 32vw);
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    line-height: 1.45;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+
+  .cap-self {
+    right: calc(100% + 1.6rem);
+    text-align: right;
+    color: var(--self);
+  }
+
+  .cap-facts {
+    left: calc(100% + 1.6rem);
+  }
+
+  .beam {
+    width: 2px;
+    height: 3.25rem;
+    margin-top: 0.35rem;
+    background: linear-gradient(180deg, #fff, var(--self));
+    box-shadow:
+      0 0 0.6rem 1px rgb(255 243 223 / 0.9),
+      0 0 2.2rem 0.3rem rgb(255 200 130 / 0.5);
+  }
+
+  /* -- The lens ------------------------------------------------------------- */
+
+  /* The drawing continues the beam from the top of its box down into the
+     hollow. */
+  .lens svg {
+    display: block;
+    width: var(--lens);
+    overflow: visible;
+    fill: none;
+    filter: drop-shadow(0 0 1.6rem rgb(255 255 255 / 0.28));
+  }
+
+  .cap-lens {
+    left: calc(100% + 1.1rem);
+  }
+
+  /* -- The colours ---------------------------------------------------------- */
+
+  /* Each ray is a box stretched between two points: where it leaves the lens
+     (a fixed distance from the middle, since the lens does not follow the
+     width of the page) and the middle of its card (a share of the width).
+     The exits are 46 and 16 units from the middle of the lens, which is 176
+     units wide. The under side curves, so the outer ones leave it 15 units
+     before the end of its box, the inner ones 7.8. */
+  .rays {
+    --out: calc(var(--lens) * 46 / 176);
+    --in: calc(var(--lens) * 16 / 176);
+    --out-lift: calc(var(--lens) * -15 / 176);
+    --in-lift: calc(var(--lens) * -7.8 / 176);
+    position: relative;
+    justify-self: stretch;
+  }
+
+  .rays-down {
+    height: 8.5rem;
+  }
+
+  .rays-across {
+    display: none;
+  }
+
+  .ray {
+    position: absolute;
+  }
+
+  .rays-down .ray {
+    bottom: 0;
+  }
+
+  .rays-down .ray-1 {
+    top: var(--out-lift);
+    left: calc(12.5% - 0.375 * var(--gap));
+    right: calc(50% + var(--out));
+  }
+
+  .rays-down .ray-2 {
+    top: var(--in-lift);
+    left: calc(37.5% - 0.125 * var(--gap));
+    right: calc(50% + var(--in));
+  }
+
+  .rays-down .ray-3 {
+    top: var(--in-lift);
+    left: calc(50% + var(--in));
+    right: calc(37.5% - 0.125 * var(--gap));
+  }
+
+  .rays-down .ray-4 {
+    top: var(--out-lift);
+    left: calc(50% + var(--out));
+    right: calc(12.5% - 0.375 * var(--gap));
+  }
+
+  .ray svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+  }
+
+  .ray path {
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+  }
+
+  .glow {
+    stroke-width: 9;
+    opacity: 0.3;
+    filter: blur(7px);
+  }
+
+  .core {
+    stroke-width: 1.5;
+    opacity: 0.95;
+  }
+
+  .photon {
+    stroke: #fff;
+    stroke-width: 2.4;
+    stroke-dasharray: 5 95;
+    stroke-dashoffset: 100;
+    animation: travel 3.6s linear infinite;
+    filter: drop-shadow(0 0 5px #fff);
+  }
+
+  .ray-2 .photon {
+    animation-delay: -0.9s;
+  }
+
+  .ray-3 .photon {
+    animation-delay: -1.8s;
+  }
+
+  .ray-4 .photon {
+    animation-delay: -2.7s;
+  }
+
+  @keyframes travel {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* -- The identities ------------------------------------------------------- */
+
+  .facets {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--gap);
+    width: 100%;
+  }
+
+  .facet {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.4rem 1.25rem 1.2rem;
+    overflow: visible;
+    text-align: left;
+    box-shadow: 0 -1.5rem 3.5rem -2rem var(--hue);
+  }
+
+  /* Where the ray lands. */
+  .facet::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    width: 44%;
+    height: 2px;
+    transform: translateX(-50%);
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--hue), transparent);
+    box-shadow: 0 0 1.2rem 1px var(--hue);
+  }
+
+  .facet-icon {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    margin-bottom: 0.3rem;
+    border: 1px solid color-mix(in srgb, var(--hue) 40%, transparent);
+    border-radius: 0.8rem;
+    background: color-mix(in srgb, var(--hue) 14%, transparent);
+    color: var(--hue);
+    font-size: 1.4rem;
+  }
+
+  .facet h3 {
+    font-size: 1.12rem;
+    letter-spacing: -0.02em;
+  }
+
+  .facet p {
+    margin-bottom: 0.55rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text-2);
+  }
+
+  .facet dl {
+    display: grid;
+    gap: 0.3rem;
+    margin: auto 0 0;
+    padding-top: 0.8rem;
+    border-top: 1px dashed var(--line-2);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .facet dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .facet dt {
+    color: var(--text-3);
+  }
+
+  .facet dd {
+    margin: 0;
+    color: var(--hue);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .moral {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: var(--text-2);
+    text-align: left;
+  }
+
+  .moral :global(.icon) {
+    font-size: 1.25rem;
+    color: var(--self);
+  }
+
+  /* -- Lying down ----------------------------------------------------------- */
+
+  /* With room for it, the scene reads from left to right: the self, the
+     beam, the lens with its hollow towards the self, then the colours
+     fanning out to a column of cards. */
+  @media (min-width: 62rem) {
+    .scene {
+      --gap: 0.75rem;
+      grid-template-columns:
+        auto auto auto minmax(7rem, 1fr)
+        minmax(0, 30rem);
+      align-items: center;
+      justify-items: stretch;
+      /* The captions of the self are wider than its circle. */
+      padding-left: 3.5rem;
+    }
+
+    .self {
+      grid-area: 1 / 1;
+    }
+
+    .cap-self,
+    .cap-facts,
+    .cap-lens {
+      left: 50%;
+      right: auto;
+      max-width: 11.5rem;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    .cap-self {
+      top: auto;
+      bottom: calc(100% + 1.6rem);
+    }
+
+    .cap-facts {
+      top: calc(100% + 1.6rem);
+    }
+
+    .cap-lens {
+      top: calc(100% + 1rem);
+    }
+
+    .beam {
+      grid-area: 1 / 2;
+      width: 3.25rem;
+      height: 2px;
+      margin: 0 0 0 0.35rem;
+      background: linear-gradient(90deg, #fff, var(--self));
+    }
+
+    /* The drawing is 176 by 64 units. Mirrored along its diagonal it takes a
+       box of 64 by 176, and what pointed down points right. */
+    .lens {
+      grid-area: 1 / 3;
+      width: calc(var(--lens) * 64 / 176);
+      height: var(--lens);
+    }
+
+    .lens svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: matrix(0, 1, 1, 0, 0, 0);
+      transform-origin: 0 0;
+    }
+
+    .rays-down {
+      display: none;
+    }
+
+    /* The same boxes, turned: from the lens (a fixed distance from the
+       middle of the row) to the middle of a card (a share of the height). */
+    .rays-across {
+      display: block;
+      grid-area: 1 / 4;
+      align-self: stretch;
+    }
+
+    .rays-across .ray {
+      right: 0;
+    }
+
+    .rays-across .ray-1 {
+      top: calc(12.5% - 0.375 * var(--gap));
+      bottom: calc(50% + var(--out));
+      left: var(--out-lift);
+    }
+
+    .rays-across .ray-2 {
+      top: calc(37.5% - 0.125 * var(--gap));
+      bottom: calc(50% + var(--in));
+      left: var(--in-lift);
+    }
+
+    .rays-across .ray-3 {
+      top: calc(50% + var(--in));
+      bottom: calc(37.5% - 0.125 * var(--gap));
+      left: var(--in-lift);
+    }
+
+    .rays-across .ray-4 {
+      top: calc(50% + var(--out));
+      bottom: calc(12.5% - 0.375 * var(--gap));
+      left: var(--out-lift);
+    }
+
+    /* One card per line, of equal heights, so that each ray finds the
+       middle of its card. */
+    .facets {
+      grid-area: 1 / 5;
+      grid-template-columns: minmax(0, 1fr);
+      grid-auto-rows: 1fr;
+    }
+
+    .facet {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        "icon name seen"
+        "icon role seen";
+      align-items: center;
+      gap: 0.15rem 0.9rem;
+      padding: 0.85rem 1.1rem 0.85rem 1rem;
+      box-shadow: -1.5rem 0 3.5rem -2rem var(--hue);
+    }
+
+    .facet::after {
+      top: 50%;
+      left: -1px;
+      width: 2px;
+      height: 54%;
+      transform: translateY(-50%);
+      background: linear-gradient(180deg, transparent, var(--hue), transparent);
+    }
+
+    .facet-icon {
+      grid-area: icon;
+      margin-bottom: 0;
+    }
+
+    .facet h3 {
+      grid-area: name;
+      align-self: end;
+      font-size: 1.02rem;
+    }
+
+    .facet p {
+      grid-area: role;
+      align-self: start;
+      margin-bottom: 0;
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    /* One width for all four, so that their dashed rules line up. */
+    .facet dl {
+      grid-area: seen;
+      width: 12.5rem;
+      margin: 0;
+      padding: 0 0 0 0.9rem;
+      border-top: 0;
+      border-left: 1px dashed var(--line-2);
+      font-size: 0.68rem;
+    }
+
+    .facet dl div {
+      gap: 0.9rem;
+    }
+
+    .moral {
+      grid-area: 2 / 1 / auto / -1;
+      justify-self: center;
+    }
+  }
+
+  /* -- Narrow --------------------------------------------------------------- */
+
+  @media (max-width: 52rem) {
+    .scene {
+      --lens: 9.5rem;
+      --gap: 0.75rem;
+    }
+
+    /* Two columns, filled one after the other: the two left rays feed the
+       left column, the two right rays the right one, without crossing. */
+    .facets {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, auto);
+      grid-auto-flow: column;
+    }
+
+    .facet:nth-child(even) {
+      box-shadow: none;
+    }
+
+    .facet:nth-child(even)::after {
+      display: none;
+    }
+
+    .rays-down {
+      --spread: 0.55rem;
+      height: 6rem;
+    }
+
+    .rays-down .ray-1 {
+      left: calc(25% - 0.25 * var(--gap) - var(--spread));
+    }
+
+    .rays-down .ray-2 {
+      left: calc(25% - 0.25 * var(--gap) + var(--spread));
+    }
+
+    .rays-down .ray-3 {
+      right: calc(25% - 0.25 * var(--gap) + var(--spread));
+    }
+
+    .rays-down .ray-4 {
+      right: calc(25% - 0.25 * var(--gap) - var(--spread));
+    }
+
+    /* What is left between the orb, or the lens, and the edge of the page. */
+    .cap {
+      max-width: calc(50vw - 3.5rem - var(--gutter));
+      font-size: 0.64rem;
+    }
+
+    .cap-self {
+      right: calc(100% + 1.1rem);
+    }
+
+    .cap-facts {
+      left: calc(100% + 1.1rem);
+    }
+
+    .cap-lens {
+      left: calc(100% + 0.6rem);
+      max-width: calc(50vw - var(--lens) / 2 - 0.6rem - var(--gutter));
+    }
+  }
+
+  @media (max-width: 26rem) {
+    .facet {
+      padding: 1.1rem 0.9rem 1rem;
+    }
+
+    .facet dl div {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+</style>
