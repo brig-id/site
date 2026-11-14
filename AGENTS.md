@@ -40,7 +40,7 @@ there.
 | `src/data/competitors.ts` | The products brig·id is compared with, their facts and sources                                                                                                          |
 | `src/data/editions.ts`    | leaf, grove and forest: what is decided about each                                                                                                                      |
 | `src/data/nav.ts`         | Navigation, and `CONTACT`: where "Contact us" leads                                                                                                                     |
-| `src/components/`         | Header, footer, icons, the hero's prism scene                                                                                                                           |
+| `src/components/`         | Header, footer, icons, the hero's lens scene                                                                                                                            |
 | `src/lib/derive.ts`       | The per-site identifier demo of `/identities/`                                                                                                                          |
 | `worker/`                 | The Cloudflare Worker: security headers, `www` redirect, `/api/status`                                                                                                  |
 | `scripts/check-dist.mjs`  | Fails the build if a page needs an inline script or style                                                                                                               |
