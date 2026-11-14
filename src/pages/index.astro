@@ -20,7 +20,7 @@ const stages: {
   {
     status: "available",
     title: "Works today",
-    text: `In leaf ${RELEASE.version}, the light edition.`,
+    text: `In seedling ${RELEASE.version}, the smallest edition.`,
     items: [
       "Sign-in with a gesture, on each of your devices",
       "A private account with several identities",
@@ -53,9 +53,9 @@ const stages: {
 ];
 
 const tiers = [
-  { id: "leaf", size: "A few people" },
-  { id: "grove", size: "An organisation" },
-  { id: "forest", size: "A company, at scale" },
+  { id: "seedling", size: "You and yours" },
+  { id: "grove", size: "A community" },
+  { id: "forest", size: "A company" },
 ] as const;
 
 const layers = [
@@ -319,12 +319,12 @@ const layers = [
       <header class="section-head center rise">
         <p class="eyebrow">Your own server</p>
         <h2>
-          Start with a <span class="accent">leaf.</span>
+          Start with a <span class="accent">seedling.</span>
         </h2>
         <p class="lead">
           No company holds the accounts: brig·id is software. Its three editions
-          differ in how many people they carry, and in how they fit into what
-          you already run.
+          differ by who looks after them and by what it costs when the machine
+          stops, not by what they can do. All three are free software.
         </p>
       </header>
       <ol class="tiers">
@@ -342,7 +342,7 @@ const layers = [
       </ol>
       <p class="after links rise">
         <a class="link-arrow" href="/editions/">
-          Compare leaf, grove and forest
+          Compare seedling, grove and forest
           <Icon name="arrow-right" />
         </a>
         <a class="link-arrow" href="/pricing/">

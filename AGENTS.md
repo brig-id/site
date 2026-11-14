@@ -38,7 +38,7 @@ there.
 | `src/pages/`              | One file per page: home, `features`, `identities`, `pricing`, `editions`, `compare/` (hub and one page per product), `manifesto`, `history`, `status`, `servers`, `404` |
 | `src/data/features.ts`    | Every feature, its group and its status                                                                                                                                 |
 | `src/data/competitors.ts` | The products brig·id is compared with, their facts and sources                                                                                                          |
-| `src/data/editions.ts`    | leaf, grove and forest: what is decided about each                                                                                                                      |
+| `src/data/editions.ts`    | seedling, grove and forest: what is decided about each                                                                                                                  |
 | `src/data/nav.ts`         | Navigation, and `CONTACT`: where "Contact us" leads                                                                                                                     |
 | `src/components/`         | Header, footer, icons, the hero's prism scene                                                                                                                           |
 | `src/lib/derive.ts`       | The per-site identifier demo of `/identities/`                                                                                                                          |
@@ -81,11 +81,14 @@ Nothing is sold yet. `/pricing/` and `/editions/` describe the intended model.
 - **Hosted (brig·id Cloud), shown first:** Personal is free for ever, with
   limits stated as a safeguard (1 account per person, 5 identities, 10 connected
   websites) and not enforced at the start; Team and Enterprise on quotation.
-- **Self-hosted:** the editions differ in the volume they carry and in how they
-  fit into existing infrastructure. leaf is light, for private use and a few
-  users; grove is for non-profits, on **one** dedicated server; forest is the
-  paid edition for companies, integrated into their own cloud. leaf and grove
-  are free and open source.
+- **Self-hosted:** three editions, **all free software (AGPL-3.0)**: seedling
+  for oneself or a family, grove for a community or an association on **one**
+  machine of its own, forest for a company. They differ by who runs them and by
+  what an outage costs, not by features. **No volumes and no test figures on
+  the site**: an edition is presented by the situation it is for.
+- **What is paid**, for any edition: support with guaranteed updates, hosting
+  by the project, and modules that are separate programs. No security feature
+  is ever paid, and there is no commercial licence.
 
 Everything that does not exist carries a `Planned` tag, and an undecided detail
 reads "To be defined". Only the offers above are public: do not add others to

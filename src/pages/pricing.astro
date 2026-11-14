@@ -64,19 +64,19 @@ const cloud = [
 const questions = [
   {
     q: "Can I buy something today?",
-    a: "No. brig·id is pre-beta and nothing is for sale. The only thing that exists is leaf, the free single-server edition. This page describes the model brig·id is being built towards, so that you know it before you rely on anything.",
+    a: "No. brig·id is pre-beta and nothing is for sale. The only thing that exists is seedling, the smallest edition of the server, and it is free. This page describes the model brig·id is being built towards, so that you know it before you rely on anything.",
   },
   {
-    q: "Is leaf really free?",
-    a: "Yes. It is open source under the LGPL-3.0: the code is public, and the licence sets no limit on users or on who may run it. grove is planned under the same terms.",
+    q: "Is seedling really free?",
+    a: "Yes, and grove and forest will be too. The server is free software under the AGPL-3.0: the code is public, the licence sets no limit on users or on who may run it, and there is no other licence to buy. Nobody, the project included, can take it closed.",
   },
   {
     q: "We are a non-profit. What do we pay?",
-    a: "Nothing for the software. An association or a community is what grove is for, on a server of its own; a small one can start on a leaf. If you would rather not run a server, ask about the Team plan of brig·id Cloud.",
+    a: "Nothing for the software. A community or an association is what grove is for, on a machine of its own; a small one can start on a seedling. If you would rather not run a server, ask about the Team plan of brig·id Cloud.",
   },
   {
-    q: "We are a company. Why forest?",
-    a: "Because a company needs sign-in that fits into its own cloud, carries large volumes and comes with someone accountable. forest is the edition built for that, under a paid licence, and it is meant to fund the free editions.",
+    q: "We are a company. What would we pay for?",
+    a: "Not for the software: forest is free software like the others. A company pays for what it would otherwise do itself: support with guaranteed updates, a server run for it, or extra modules that work next to the server. Nothing that protects an account or an identity is ever a paid option.",
   },
   {
     q: "Why would Personal stay free for ever?",
@@ -95,7 +95,7 @@ const questions = [
 
 <Base
   title="Pricing"
-  description="brig·id is free to self-host for people and non-profits (leaf, grove), paid for companies (forest), and plans a hosted Cloud that is free forever for personal use."
+  description="brig·id is free software to run yourself, whatever the size (seedling, grove, forest). What can be paid for is help: support, hosting, and a planned Cloud that stays free for personal use."
 >
   <section class="page-hero">
     <div class="shell">
@@ -179,8 +179,8 @@ const questions = [
         <span>
           <strong>The honest trade.</strong> A hosted server knows which
           identities are yours, exactly as your own server would. Websites still
-          learn nothing more. If answering to no one matters to you, run a leaf:
-          that is what it is for.
+          learn nothing more. If answering to no one matters to you, run a
+          seedling: that is what it is for.
           <a href="/identities/">What a server sees.</a>
         </span>
       </p>
@@ -196,8 +196,9 @@ const questions = [
           Run it <span class="accent">yourself.</span>
         </h2>
         <p class="lead">
-          The software is yours to run. leaf for private use, grove for
-          non-profits, both free. Companies get forest, under a paid licence.
+          The software is yours to run, whatever the size: seedling for you and
+          yours, grove for a community, forest for a company. All three are free
+          software. What can be paid for is help running them.
         </p>
       </header>
 
@@ -209,7 +210,7 @@ const questions = [
               "plan",
               "hue-green",
               "rise",
-              { featured: plan.id === "leaf" },
+              { featured: plan.id === "seedling" },
             ]}
           >
             <header>
@@ -233,9 +234,9 @@ const questions = [
             ) : plan.status === "available" ? (
               <a
                 class="btn btn-primary"
-                href="https://github.com/brig-id/server-leaf"
+                href="https://github.com/brig-id/server-seedling"
               >
-                Get leaf
+                Get seedling
                 <Icon name="arrow-up-right" />
               </a>
             ) : (
@@ -246,7 +247,7 @@ const questions = [
       </ol>
       <p class="after rise">
         <a class="link-arrow" href="/editions/">
-          Compare leaf, grove and forest
+          Compare seedling, grove and forest
           <Icon name="arrow-right" />
         </a>
       </p>
