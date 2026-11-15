@@ -66,7 +66,7 @@ export default {
       url.pathname,
     );
 
-    // Pull request Previews (<name>.brig.id) are public: keep them out of
+    // Pull request Previews (<name>.preview.brig.id) are public: keep them out of
     // search results. Cloudflare only does this for workers.dev Previews.
     if (url.hostname !== PRODUCTION_HOST) {
       response.headers.set("X-Robots-Tag", "noindex, nofollow");

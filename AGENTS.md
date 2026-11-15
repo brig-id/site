@@ -120,10 +120,14 @@ Worker `brigid-site` with `brig.id` and `www.brig.id` as its custom domains
 connection for this Worker.
 
 `.github/workflows/preview.yml` publishes each pull request from this
-repository as a Worker Preview at `https://pr-<number>.brig.id` (the `brig.id`
-custom domain is enabled for Production and Preview in the dashboard, which
-added a proxied `*.brig.id` DNS record), comments the URL on the pull request
-and deletes the Preview when the pull request is closed. The Worker sends
+repository as a Worker Preview at `https://pr-<number>.preview.brig.id`, comments
+the URL on the pull request and deletes the Preview when the pull request is
+closed. The custom domain `preview.brig.id` is attached to the Worker **for
+Previews only**, which adds a proxied `*.preview.brig.id` DNS record. **Never
+enable Previews on `brig.id` itself**: the wildcard `*.brig.id` it creates makes
+Cloudflare answer "error code: 1053" to every Worker of the zone that calls
+`helm.brig.id` (the status page then shows the server down, and a site signing
+in through it cannot reach it). The Worker sends
 `X-Robots-Tag: noindex, nofollow` on every host but `brig.id`.
 
 Both workflows read two repository secrets, whose values are in OpenBao's `kv/orgs/brig-id`:

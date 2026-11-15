@@ -95,12 +95,17 @@ export const SERVICES: Service[] = [
           isJsonWith(response, (body) => hasNonEmptyArray(body, "keys")),
       },
       {
-        id: "did",
-        label: "Server DID document",
-        url: "https://helm.brig.id/.well-known/did.json",
+        id: "discovery",
+        label: "Sign-in for websites (OpenID configuration)",
+        url: "https://helm.brig.id/.well-known/openid-configuration",
         accept: (response) =>
-          isJsonWith(response, (body) =>
-            hasNonEmptyArray(body, "verificationMethod"),
+          isJsonWith(
+            response,
+            (body) =>
+              typeof body === "object" &&
+              body !== null &&
+              (body as Record<string, unknown>).issuer ===
+                "https://helm.brig.id",
           ),
       },
     ],
