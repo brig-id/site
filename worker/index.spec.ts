@@ -28,8 +28,8 @@ const healthyServer: typeof fetch = async (input) => {
   const url = String(input instanceof Request ? input.url : input);
   if (url.endsWith("/health")) return json({ status: "ok" });
   if (url.endsWith("/jwks.json")) return json({ keys: [{ kid: "v1" }] });
-  if (url.endsWith("/did.json")) {
-    return json({ verificationMethod: [{ id: "did:web:helm.brig.id#key-1" }] });
+  if (url.endsWith("/openid-configuration")) {
+    return json({ issuer: "https://helm.brig.id" });
   }
   return new Response("not found", { status: 404 });
 };
@@ -59,7 +59,7 @@ describe("static pages", () => {
 
   it("keeps a pull request Preview out of search results", async () => {
     const response = await worker.fetch(
-      new Request("https://pr-13.brig.id/"),
+      new Request("https://pr-13.preview.brig.id/"),
       envServing("<!doctype html>", {
         headers: { "Content-Type": "text/html" },
       }),

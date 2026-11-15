@@ -1,8 +1,14 @@
 name: Preview
 
-# Publishes each pull request as a Worker Preview at https://pr-<number>.brig.id
-# and comments that URL on the pull request; the Preview is deleted when the
-# pull request is closed. Production is not touched: see deploy.yml.
+# Publishes each pull request as a Worker Preview at
+# https://pr-<number>.preview.brig.id and comments that URL on the pull
+# request; the Preview is deleted when the pull request is closed. Production
+# is not touched: see deploy.yml.
+#
+# Previews live under preview.brig.id, never directly under brig.id: with the
+# apex enabled for Previews, Cloudflare creates the wildcard *.brig.id, and
+# every Worker of the zone that then calls helm.brig.id is answered "error
+# code: 1053" by Cloudflare instead of reaching the server.
 
 on:
   pull_request:

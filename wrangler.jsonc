@@ -9,9 +9,11 @@
   "workers_dev": false,
   "preview_urls": false,
   // Worker Previews (`wrangler preview`, run for each pull request by
-  // .github/workflows/preview.yml) are served at <name>.brig.id: the brig.id
-  // custom domain is enabled for Production and Preview in the dashboard.
-  // They take no setting from production; the site needs none.
+  // .github/workflows/preview.yml) are served at <name>.preview.brig.id: the
+  // custom domain preview.brig.id is attached to this Worker for Previews
+  // only. Not the apex: its wildcard would catch helm.brig.id for every
+  // Worker of the zone. They take no setting from production; the site
+  // needs none.
   "previews": {},
   "compatibility_date": "2026-11-01",
   "main": "worker/index.ts",
