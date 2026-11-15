@@ -171,6 +171,7 @@ export const FEATURES: Feature[] = [
       "For websites registered on the server. The demonstration site shows what one of them receives: an identifier, and nothing else.",
     status: "available",
     icon: "sign-in-duotone",
+    ref: { label: "Try the demonstration site", href: "https://demo.brig.id" },
   },
   {
     id: "identity-choice",
@@ -381,7 +382,7 @@ export function feature(id: string): Feature {
 }
 
 export const RELEASE = {
-  version: "0.4.0",
-  date: "2026-11-14",
+  version: "0.4.1",
+  date: "2026-11-15",
   url: "https://github.com/brig-id/server-seedling/releases",
 };
