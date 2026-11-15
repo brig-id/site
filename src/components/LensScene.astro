@@ -1,12 +1,8 @@
 ---
 // The picture of the whole idea: the private self is white light, the server
 // is a contact lens, and every identity is one colour that leaves it. The
-// hollow of the lens faces the self and shelters it; the rounded face sends
-// the colours out. A colour does not tell you what the white light was.
-//
-// The lens is drawn once, with the light coming down. On a wide screen the
-// stylesheet lays the scene on its side and mirrors the drawing along its
-// diagonal, so that down becomes right and the first colour stays first.
+// self rests in the hollow of the lens, which shelters it; the rounded face
+// sends the colours out. A colour does not tell you what the white light was.
 import Icon from "./Icon.astro";
 import { IDENTITIES } from "~/data/identities";
 
@@ -51,8 +47,7 @@ const face = (dx: number) => {
 
 // One ray per identity. Each leaves the under side from its own point (`dx`
 // units from the middle) and lands on the middle of a card. The outer rays
-// leave the glass more aslant than the inner ones (`lean`). `down` is its
-// path when the scene stands, `across` when it lies.
+// leave the glass more aslant than the inner ones (`lean`).
 const ray = (
   hue: string,
   tint: string,
@@ -65,14 +60,10 @@ const ray = (
   color,
   x: middle + dx,
   y: face(dx),
-  down:
+  path:
     dx < 0
       ? `M100 0C${100 - lean} 30 0 38 0 100`
       : `M0 0C${lean} 30 100 38 100 100`,
-  across:
-    dx < 0
-      ? `M0 100C30 ${100 - lean} 38 0 100 0`
-      : `M0 0C30 ${lean} 38 100 100 100`,
 });
 
 const rays = [
@@ -82,14 +73,13 @@ const rays = [
   ray("violet", "#ddd2ff", "#a78bff", 46, 9),
 ] as const;
 
-// Where the white light lands in the hollow, and splits.
+// Where the self touches the glass: the white light splits from there.
 const pool = { x: middle, y: rim.y + 9 };
 const first = rays[0];
 const last = rays[3];
 const bowl =
   `M${under[0].join(" ")}C${under[1].join(" ")} ${under[2].join(" ")} ${under[3].join(" ")}` +
   `A${rim.rx} ${rim.ry} 0 0 0 ${under[0].join(" ")}Z`;
-const directions = ["down", "across"] as const;
 ---
 
 <div class="scene">
@@ -98,10 +88,11 @@ const directions = ["down", "across"] as const;
     <span class="orb">
       <Icon name="fingerprint" />
     </span>
-    <p class="cap cap-facts">No name, no password. Seen by no one.</p>
+    <p class="cap cap-facts">
+      <span>No name, no password.</span>
+      <span>Seen by no one.</span>
+    </p>
   </div>
-
-  <span class="beam" aria-hidden="true"></span>
 
   <div class="lens">
     <svg viewBox={`0 0 ${box.width} ${box.height}`} aria-hidden="true">
@@ -210,7 +201,7 @@ const directions = ["down", "across"] as const;
         stroke-opacity="0.12"
       ></ellipse>
 
-      <!-- White light lands in the hollow, and splits. -->
+      <!-- Under the self, the white light splits. -->
       <path
         d={`M${pool.x} ${pool.y}L${rays.map((r) => `${r.x} ${r.y}`).join("L")}Z`}
         fill="url(#lens-wedge)"
@@ -240,29 +231,21 @@ const directions = ["down", "across"] as const;
         ry="6"
         fill="url(#lens-pool)"
       ></ellipse>
-      <path
-        d={`M${middle} 0V${pool.y}`}
-        stroke="#ffffff"
-        stroke-width="2"
-        stroke-linecap="round"
-      ></path>
     </svg>
     <p class="cap cap-lens">Your brig·id server</p>
   </div>
 
-  {directions.map((direction) => (
-    <div class:list={["rays", `rays-${direction}`]} aria-hidden="true">
-      {rays.map((r, index) => (
-        <span class:list={["ray", `ray-${index + 1}`]}>
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-            <path class="glow" d={r[direction]} stroke={r.color} />
-            <path class="core" d={r[direction]} stroke={r.color} />
-            <path class="photon" d={r[direction]} pathLength="100" />
-          </svg>
-        </span>
-      ))}
-    </div>
-  ))}
+  <div class="rays" aria-hidden="true">
+    {rays.map((r, index) => (
+      <span class:list={["ray", `ray-${index + 1}`]}>
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path class="glow" d={r.path} stroke={r.color} />
+          <path class="core" d={r.path} stroke={r.color} />
+          <path class="photon" d={r.path} pathLength="100" />
+        </svg>
+      </span>
+    ))}
+  </div>
 
   <ul class="facets">
     {IDENTITIES.map((identity) => (
@@ -293,8 +276,6 @@ const directions = ["down", "across"] as const;
 </div>
 
 <style>
-  /* The scene stands by default: the self on top, the lens under it, the
-     cards in a row. From 62rem it lies down, further below. */
   .scene {
     --lens: 11.5rem;
     --gap: 1rem; /* the gap of the cards */
@@ -311,6 +292,11 @@ const directions = ["down", "across"] as const;
     position: relative;
     display: grid;
     place-items: center;
+  }
+
+  /* The self is in front of the lens it rests in. */
+  .self {
+    z-index: 1;
   }
 
   .orb {
@@ -382,32 +368,34 @@ const directions = ["down", "across"] as const;
 
   .cap-facts {
     left: calc(100% + 1.6rem);
+    text-align: left;
   }
 
-  .beam {
-    width: 2px;
-    height: 3.25rem;
-    margin-top: 0.35rem;
-    background: linear-gradient(180deg, #fff, var(--self));
-    box-shadow:
-      0 0 0.6rem 1px rgb(255 243 223 / 0.9),
-      0 0 2.2rem 0.3rem rgb(255 200 130 / 0.5);
+  /* One sentence per line, as long as the width allows. */
+  .cap-facts span {
+    display: block;
   }
 
   /* -- The lens ------------------------------------------------------------- */
 
-  /* The drawing continues the beam from the top of its box down into the
-     hollow. */
+  /* The orb is 4.75rem tall. The middle of the rim, 24 units down a drawing
+     176 units wide, sits 1.55rem under the middle of the orb: far enough for
+     the front of the rim to pass under it, so that the self rests in the
+     hollow and hides the back of the rim. */
   .lens svg {
     display: block;
     width: var(--lens);
+    margin-top: calc(-0.825rem - var(--lens) * 24 / 176);
     overflow: visible;
     fill: none;
     filter: drop-shadow(0 0 1.6rem rgb(255 255 255 / 0.28));
   }
 
+  /* Beside the rounded side of the glass. */
   .cap-lens {
+    top: 62%;
     left: calc(100% + 1.1rem);
+    text-align: left;
   }
 
   /* -- The colours ---------------------------------------------------------- */
@@ -425,43 +413,33 @@ const directions = ["down", "across"] as const;
     --in-lift: calc(var(--lens) * -7.8 / 176);
     position: relative;
     justify-self: stretch;
-  }
-
-  .rays-down {
     height: 8.5rem;
-  }
-
-  .rays-across {
-    display: none;
   }
 
   .ray {
     position: absolute;
-  }
-
-  .rays-down .ray {
     bottom: 0;
   }
 
-  .rays-down .ray-1 {
+  .ray-1 {
     top: var(--out-lift);
     left: calc(12.5% - 0.375 * var(--gap));
     right: calc(50% + var(--out));
   }
 
-  .rays-down .ray-2 {
+  .ray-2 {
     top: var(--in-lift);
     left: calc(37.5% - 0.125 * var(--gap));
     right: calc(50% + var(--in));
   }
 
-  .rays-down .ray-3 {
+  .ray-3 {
     top: var(--in-lift);
     left: calc(50% + var(--in));
     right: calc(37.5% - 0.125 * var(--gap));
   }
 
-  .rays-down .ray-4 {
+  .ray-4 {
     top: var(--out-lift);
     left: calc(50% + var(--out));
     right: calc(12.5% - 0.375 * var(--gap));
@@ -619,183 +597,6 @@ const directions = ["down", "across"] as const;
     color: var(--self);
   }
 
-  /* -- Lying down ----------------------------------------------------------- */
-
-  /* With room for it, the scene reads from left to right: the self, the
-     beam, the lens with its hollow towards the self, then the colours
-     fanning out to a column of cards. */
-  @media (min-width: 62rem) {
-    .scene {
-      --gap: 0.75rem;
-      grid-template-columns:
-        auto auto auto minmax(7rem, 1fr)
-        minmax(0, 30rem);
-      align-items: center;
-      justify-items: stretch;
-      /* The captions of the self are wider than its circle. */
-      padding-left: 3.5rem;
-    }
-
-    .self {
-      grid-area: 1 / 1;
-    }
-
-    .cap-self,
-    .cap-facts,
-    .cap-lens {
-      left: 50%;
-      right: auto;
-      max-width: 11.5rem;
-      transform: translateX(-50%);
-      text-align: center;
-    }
-
-    .cap-self {
-      top: auto;
-      bottom: calc(100% + 1.6rem);
-    }
-
-    .cap-facts {
-      top: calc(100% + 1.6rem);
-    }
-
-    .cap-lens {
-      top: calc(100% + 1rem);
-    }
-
-    .beam {
-      grid-area: 1 / 2;
-      width: 3.25rem;
-      height: 2px;
-      margin: 0 0 0 0.35rem;
-      background: linear-gradient(90deg, #fff, var(--self));
-    }
-
-    /* The drawing is 176 by 64 units. Mirrored along its diagonal it takes a
-       box of 64 by 176, and what pointed down points right. */
-    .lens {
-      grid-area: 1 / 3;
-      width: calc(var(--lens) * 64 / 176);
-      height: var(--lens);
-    }
-
-    .lens svg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform: matrix(0, 1, 1, 0, 0, 0);
-      transform-origin: 0 0;
-    }
-
-    .rays-down {
-      display: none;
-    }
-
-    /* The same boxes, turned: from the lens (a fixed distance from the
-       middle of the row) to the middle of a card (a share of the height). */
-    .rays-across {
-      display: block;
-      grid-area: 1 / 4;
-      align-self: stretch;
-    }
-
-    .rays-across .ray {
-      right: 0;
-    }
-
-    .rays-across .ray-1 {
-      top: calc(12.5% - 0.375 * var(--gap));
-      bottom: calc(50% + var(--out));
-      left: var(--out-lift);
-    }
-
-    .rays-across .ray-2 {
-      top: calc(37.5% - 0.125 * var(--gap));
-      bottom: calc(50% + var(--in));
-      left: var(--in-lift);
-    }
-
-    .rays-across .ray-3 {
-      top: calc(50% + var(--in));
-      bottom: calc(37.5% - 0.125 * var(--gap));
-      left: var(--in-lift);
-    }
-
-    .rays-across .ray-4 {
-      top: calc(50% + var(--out));
-      bottom: calc(12.5% - 0.375 * var(--gap));
-      left: var(--out-lift);
-    }
-
-    /* One card per line, of equal heights, so that each ray finds the
-       middle of its card. */
-    .facets {
-      grid-area: 1 / 5;
-      grid-template-columns: minmax(0, 1fr);
-      grid-auto-rows: 1fr;
-    }
-
-    .facet {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      grid-template-areas:
-        "icon name seen"
-        "icon role seen";
-      align-items: center;
-      gap: 0.15rem 0.9rem;
-      padding: 0.85rem 1.1rem 0.85rem 1rem;
-      box-shadow: -1.5rem 0 3.5rem -2rem var(--hue);
-    }
-
-    .facet::after {
-      top: 50%;
-      left: -1px;
-      width: 2px;
-      height: 54%;
-      transform: translateY(-50%);
-      background: linear-gradient(180deg, transparent, var(--hue), transparent);
-    }
-
-    .facet-icon {
-      grid-area: icon;
-      margin-bottom: 0;
-    }
-
-    .facet h3 {
-      grid-area: name;
-      align-self: end;
-      font-size: 1.02rem;
-    }
-
-    .facet p {
-      grid-area: role;
-      align-self: start;
-      margin-bottom: 0;
-      font-size: 0.84rem;
-      line-height: 1.4;
-    }
-
-    /* One width for all four, so that their dashed rules line up. */
-    .facet dl {
-      grid-area: seen;
-      width: 12.5rem;
-      margin: 0;
-      padding: 0 0 0 0.9rem;
-      border-top: 0;
-      border-left: 1px dashed var(--line-2);
-      font-size: 0.68rem;
-    }
-
-    .facet dl div {
-      gap: 0.9rem;
-    }
-
-    .moral {
-      grid-area: 2 / 1 / auto / -1;
-      justify-self: center;
-    }
-  }
-
   /* -- Narrow --------------------------------------------------------------- */
 
   @media (max-width: 52rem) {
@@ -820,24 +621,24 @@ const directions = ["down", "across"] as const;
       display: none;
     }
 
-    .rays-down {
+    .rays {
       --spread: 0.55rem;
       height: 6rem;
     }
 
-    .rays-down .ray-1 {
+    .ray-1 {
       left: calc(25% - 0.25 * var(--gap) - var(--spread));
     }
 
-    .rays-down .ray-2 {
+    .ray-2 {
       left: calc(25% - 0.25 * var(--gap) + var(--spread));
     }
 
-    .rays-down .ray-3 {
+    .ray-3 {
       right: calc(25% - 0.25 * var(--gap) + var(--spread));
     }
 
-    .rays-down .ray-4 {
+    .ray-4 {
       right: calc(25% - 0.25 * var(--gap) - var(--spread));
     }
 
@@ -851,7 +652,9 @@ const directions = ["down", "across"] as const;
       right: calc(100% + 1.1rem);
     }
 
+    /* Higher, clear of the rim of the lens. */
     .cap-facts {
+      top: 30%;
       left: calc(100% + 1.1rem);
     }
 
