@@ -289,6 +289,17 @@ export const FEATURES: Feature[] = [
     ref: { label: "Compare the editions", href: "/editions/" },
   },
   {
+    id: "administration",
+    group: "hosting",
+    title: "You decide who gets an account",
+    summary:
+      "Open to anyone, by invitation only, or closed: whoever runs the server chooses, and invites with a link that works as many times as they say.",
+    detail:
+      "An administrator sees that accounts exist, never what they hold: no identity, no name, no website. They can suspend an account, and nobody, not even they, can get into it or reset it.",
+    status: "available",
+    icon: "user-gear-duotone",
+  },
+  {
     id: "operations",
     group: "hosting",
     title: "Built to be operated",
@@ -404,7 +415,7 @@ export function feature(id: string): Feature {
 }
 
 export const RELEASE = {
-  version: "0.5.0",
-  date: "2026-11-15",
+  version: "0.6.0",
+  date: "2026-11-16",
   url: "https://github.com/brig-id/server-seedling/releases",
 };
