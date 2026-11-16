@@ -195,6 +195,17 @@ export const FEATURES: Feature[] = [
     status: "available",
     icon: "arrows-split-duotone",
   },
+  {
+    id: "shared-on-your-word",
+    group: "identities",
+    title: "A website gets what you agree to, nothing more",
+    summary:
+      "When a website asks for a first name or an e-mail address, you see the exact value, piece by piece, and nothing is ticked for you. Refuse what is optional and you are signed in all the same.",
+    detail:
+      "What you put on an identity stays on it until you accept to share it with one website. Change a value, and that website has to ask again. You can see what each website received, and withdraw it.",
+    status: "available",
+    icon: "check-square-duotone",
+  },
 
   // -- Privacy by construction -------------------------------------------------
   {
@@ -251,6 +262,17 @@ export const FEATURES: Feature[] = [
       "ML-KEM-768 + X25519 and ML-DSA-65 + Ed25519 are implemented, tested and fuzzed in the crypto library. Signing tokens with them comes next.",
     status: "progress",
     icon: "atom-duotone",
+  },
+  {
+    id: "leave-with-your-data",
+    group: "privacy",
+    title: "Leave when you want, with your data",
+    summary:
+      "Download everything your identities hold in a file you can read, and delete your account yourself. Nothing of it stays on the server.",
+    detail:
+      "The file is made on your device. Deleting asks for your sign-in gesture once more, and removes the account, its identities and what was recorded about the websites they signed in to. What a website already received stays with it.",
+    status: "available",
+    icon: "door-open-duotone",
   },
 
   // -- Your own server -----------------------------------------------------------
@@ -382,7 +404,7 @@ export function feature(id: string): Feature {
 }
 
 export const RELEASE = {
-  version: "0.4.1",
+  version: "0.5.0",
   date: "2026-11-15",
   url: "https://github.com/brig-id/server-seedling/releases",
 };
