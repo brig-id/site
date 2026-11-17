@@ -281,9 +281,9 @@ export const FEATURES: Feature[] = [
     group: "hosting",
     title: "seedling: the smallest, for you and yours",
     summary:
-      "Needs very little: a single container with its own database inside, happy in a corner of a small machine. For yourself or a family.",
+      "Needs very little: one program with its own database inside, happy in a corner of a small machine. For yourself or a family.",
     detail:
-      "One master key, your domain and a reverse proxy for TLS. This is what runs on helm.brig.id. It was called leaf until version 0.4.",
+      "One file to download for any Linux, one command to prepare the machine, your domain and a reverse proxy for TLS. A guide goes from download to a first sign-in. This is what runs on helm.brig.id.",
     status: "available",
     icon: "plant-duotone",
     ref: { label: "Compare the editions", href: "/editions/" },
@@ -415,7 +415,7 @@ export function feature(id: string): Feature {
 }
 
 export const RELEASE = {
-  version: "0.6.0",
-  date: "2026-11-16",
+  version: "0.7.0",
+  date: "2026-11-17",
   url: "https://github.com/brig-id/server-seedling/releases",
 };
