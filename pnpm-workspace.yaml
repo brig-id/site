@@ -4,3 +4,12 @@ allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
+
+auditConfig:
+  ignoreGhsas:
+    # picomatch: a crafted glob pattern takes exponential time (ReDoS). No
+    # fixed version exists (every one up to 4.0.7, the latest, is affected).
+    # Here picomatch only matches the build tools' own patterns, written in
+    # this repository: nothing a visitor sends ever reaches it, and what is
+    # served is static files. Remove this line once a fixed version is out.
+    - GHSA-fc5q-39xc-vjpf
