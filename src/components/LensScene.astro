@@ -1,25 +1,24 @@
 ---
 // The picture of the whole idea: the private self is white light, the server
 // is a lens worn by the self, and every identity is one colour that leaves it.
-// The lens is a band of glass bent around the self: its hollow side shelters
-// the self, its rounded side sends the colours out. A colour does not tell you
-// what the white light was.
+// The lens is a band bent around the self: its hollow side shelters the self,
+// its rounded side sends the colours out. A colour does not tell you what the
+// white light was.
 //
-// The band is drawn like the cards below it (the same dark glass, the same
-// hairline), and a ray leaves it the way it lands on its card: from a short
-// lit stretch of the edge.
+// The band is drawn with two hairlines, like the rings that leave the self,
+// and almost nothing between them: a fence one can see the light through. Its
+// two ends fade out instead of stopping.
 import Icon from "./Icon.astro";
 import { IDENTITIES } from "~/data/identities";
 
-// Ten units to the rem, on a box of 120 by 43 units. The band turns around
+// Ten units to the rem, on a box of 120 by 40.5 units. The band turns around
 // the middle of the orb, which is 14 units above the box. The stylesheet
 // below places the rays from these numbers, so change them together.
-const box = { width: 120, height: 43 };
+const box = { width: 120, height: 40.5 };
 const centre = { x: box.width / 2, y: -14 };
-const hollow = 36; // from the middle of the orb to the near side of the band
-const rounded = 51; // and to its far side
-const half = 57; // how far the band reaches each way, in degrees from straight down
-const corner = 4.5;
+const hollow = 37; // from the middle of the orb to the near hairline
+const rounded = 48.5; // and to the far one
+const half = 62; // how far the band reaches each way, in degrees from straight down
 const turn = Math.PI / 180;
 const round = (value: number) => Math.round(value * 10) / 10;
 
@@ -34,19 +33,18 @@ const spot = (r: number, deg: number) => `${at(r, deg).x} ${at(r, deg).y}`;
 const arc = (r: number, from: number, to: number) =>
   `M${spot(r, from)}A${r} ${r} 0 0 0 ${spot(r, to)}`;
 
-// The outline of the band, its four corners eased like those of a card.
-const ease = { far: corner / rounded / turn, near: corner / hollow / turn };
-const band =
-  `M${spot(rounded, -half + ease.far)}A${rounded} ${rounded} 0 0 0 ${spot(rounded, half - ease.far)}` +
-  `Q${spot(rounded, half)} ${spot(rounded - corner, half)}L${spot(hollow + corner, half)}` +
-  `Q${spot(hollow, half)} ${spot(hollow, half - ease.near)}` +
-  `A${hollow} ${hollow} 0 0 1 ${spot(hollow, -half + ease.near)}` +
-  `Q${spot(hollow, -half)} ${spot(hollow + corner, -half)}L${spot(rounded - corner, -half)}` +
-  `Q${spot(rounded, -half)} ${spot(rounded, -half + ease.far)}Z`;
+const near = arc(hollow, -half, half);
+const far = arc(rounded, -half, half);
+// What lies between the two hairlines.
+const glass =
+  `${far}L${spot(hollow, half)}` +
+  `A${hollow} ${hollow} 0 0 1 ${spot(hollow, -half)}Z`;
+// The ends fade over the first and the last fifth of the width of the band.
+const ends = { left: at(rounded, -half).x, right: at(rounded, half).x };
 
 // One ray per identity, `deg` from straight down. White light crosses from
-// the self to the hollow side; the colour is born on the rounded side, from a
-// lit stretch of its edge, and goes on to the middle of a card. The outer rays
+// the self to the near hairline; the colour is born on the far one, from a
+// short lit stretch, and goes on to the middle of a card. The outer rays
 // leave more aslant than the inner ones (`lean`).
 const ray = (
   hue: string,
@@ -62,7 +60,7 @@ const ray = (
   enter: at(hollow, deg),
   inside: at((hollow + rounded) / 2 + 1.5, deg),
   leave: at(rounded, deg),
-  port: arc(rounded, deg - 6, deg + 6),
+  port: arc(rounded, deg - 7.5, deg + 7.5),
   path:
     deg < 0
       ? `M100 0C${100 - lean} 30 0 38 0 100`
@@ -75,36 +73,59 @@ const rays = [
   ray("cyan", "#c6f1fa", "#5ad7f0", 15, 11),
   ray("violet", "#ddd2ff", "#a78bff", 45, 13),
 ] as const;
-
-// The side that receives the white light, a little short of the corners.
-const lit = arc(hollow, -half + 9, half - 9);
 ---
 
 <div class="scene">
   <div class="self">
-    <p class="cap cap-self">Your private self</p>
-    <span class="orb">
-      <Icon name="fingerprint" />
-    </span>
-    <p class="cap cap-facts">
+    <p class="cap cap-self">
+      <span class="cap-name">Your private self</span>
       <span>No name, no password.</span>
       <span>Seen by no one.</span>
     </p>
+    <span class="orb">
+      <Icon name="fingerprint" />
+    </span>
   </div>
 
   <div class="lens">
     <svg viewBox={`0 0 ${box.width} ${box.height}`} aria-hidden="true">
       <defs>
-        <filter id="lens-soft" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="1.7"></feGaussianBlur>
-        </filter>
-        <filter id="lens-softer" x="-80%" y="-80%" width="260%" height="260%">
+        <filter id="lens-soft" x="-80%" y="-80%" width="260%" height="260%">
           <feGaussianBlur stdDeviation="3.2"></feGaussianBlur>
         </filter>
-        <linearGradient id="lens-glass" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.09"></stop>
-          <stop offset="1" stop-color="#ffffff" stop-opacity="0.02"></stop>
+        <linearGradient
+          id="lens-glass"
+          x1="0"
+          y1={centre.y + hollow}
+          x2="0"
+          y2={centre.y + rounded}
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stop-color="#fff3df" stop-opacity="0.24"></stop>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0.05"></stop>
         </linearGradient>
+        <linearGradient
+          id="lens-fade"
+          x1={ends.left}
+          y1="0"
+          x2={ends.right}
+          y2="0"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stop-color="#fff" stop-opacity="0"></stop>
+          <stop offset="0.2" stop-color="#fff" stop-opacity="1"></stop>
+          <stop offset="0.8" stop-color="#fff" stop-opacity="1"></stop>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+        </linearGradient>
+        <mask id="lens-ends">
+          <rect
+            x="0"
+            y="-10"
+            width={box.width}
+            height="60"
+            fill="url(#lens-fade)"
+          ></rect>
+        </mask>
         {rays.map((r) => (
           <linearGradient
             id={`lens-white-${r.hue}`}
@@ -120,31 +141,12 @@ const lit = arc(hollow, -half + 9, half - 9);
         ))}
       </defs>
 
-      <!-- The glass of the cards, bent around the self. -->
-      <path d={band} fill="#0a0c12" fill-opacity="0.86"></path>
-      <path
-        d={band}
-        fill="url(#lens-glass)"
-        stroke="#ffffff"
-        stroke-opacity="0.2"
-      ></path>
-
-      <!-- Its hollow side, lit by the self. -->
-      <path
-        d={lit}
-        stroke="#fff3df"
-        stroke-width="3.5"
-        stroke-linecap="round"
-        opacity="0.6"
-        filter="url(#lens-soft)"
-      ></path>
-      <path
-        d={lit}
-        stroke="#fff3df"
-        stroke-opacity="0.85"
-        stroke-width="1.1"
-        stroke-linecap="round"
-      ></path>
+      <!-- Two hairlines and a breath of glass between them. -->
+      <g mask="url(#lens-ends)">
+        <path d={glass} fill="url(#lens-glass)"></path>
+        <path d={near} stroke="#fff3df" stroke-opacity="0.75"></path>
+        <path d={far} stroke="#ffffff" stroke-opacity="0.42"></path>
+      </g>
 
       <!-- White light comes in; inside, a hint of the colour to come. -->
       {rays.map((r) => (
@@ -155,7 +157,7 @@ const lit = arc(hollow, -half + 9, half - 9);
             r="5.5"
             fill={r.color}
             opacity="0.32"
-            filter="url(#lens-softer)"
+            filter="url(#lens-soft)"
           />
           <path
             d={`M${r.from.x} ${r.from.y}L${r.enter.x} ${r.enter.y}`}
@@ -167,28 +169,31 @@ const lit = arc(hollow, -half + 9, half - 9);
         </>
       ))}
 
-      <!-- Where each colour leaves: a lit stretch of the rounded side. -->
+      <!-- Where each colour leaves: a lit stretch of the far hairline. -->
       {rays.map((r) => (
         <>
           <path
             d={r.port}
             stroke={r.color}
-            stroke-width="5.3"
+            stroke-width="5"
             stroke-linecap="round"
             opacity="0.75"
-            filter="url(#lens-softer)"
+            filter="url(#lens-soft)"
           />
           <path
             d={r.port}
             stroke={r.color}
-            stroke-width="1.8"
+            stroke-width="1.5"
             stroke-linecap="round"
           />
           <circle cx={r.leave.x} cy={r.leave.y} r="1.3" fill={r.tint} />
         </>
       ))}
     </svg>
-    <p class="cap cap-lens">Your brig·id server</p>
+    <p class="cap cap-lens">
+      <span class="cap-name">Your brig·id server</span>
+      <span>Keeps your identities apart.</span>
+    </p>
   </div>
 
   <div class="rays" aria-hidden="true">
@@ -297,34 +302,36 @@ const lit = arc(hollow, -half + 9, half - 9);
     }
   }
 
+  /* Two captions, one on each side: a name, then what there is to know. */
   .cap {
     position: absolute;
     top: 50%;
     width: max-content;
-    max-width: min(15rem, 32vw);
+    max-width: min(17rem, 32vw);
     transform: translateY(-50%);
     font-family: var(--font-mono);
     font-size: 0.72rem;
     letter-spacing: 0.1em;
-    line-height: 1.45;
+    line-height: 1.5;
     text-transform: uppercase;
     color: var(--text-2);
+  }
+
+  .cap span {
+    display: block;
   }
 
   .cap-self {
     right: calc(100% + 1.6rem);
     text-align: right;
+  }
+
+  .cap-self .cap-name {
     color: var(--self);
   }
 
-  .cap-facts {
-    left: calc(100% + 1.6rem);
-    text-align: left;
-  }
-
-  /* One sentence per line, as long as the width allows. */
-  .cap-facts span {
-    display: block;
+  .cap-lens .cap-name {
+    color: var(--text);
   }
 
   /* -- The lens ------------------------------------------------------------- */
@@ -340,10 +347,11 @@ const lit = arc(hollow, -half + 9, half - 9);
     fill: none;
   }
 
-  /* Beside the right end of the band, under the other caption. */
+  /* Beside the right end of the band, lower than the caption of the self:
+     the eye goes from one to the other the way the light does. */
   .cap-lens {
-    top: -0.1rem;
-    left: calc(100% - 0.9rem);
+    top: -0.85rem;
+    left: calc(100% - 1rem);
     text-align: left;
   }
 
@@ -352,13 +360,13 @@ const lit = arc(hollow, -half + 9, half - 9);
   /* Each ray is a box stretched between two points: where it leaves the lens
      (a fixed distance from the middle, since the lens does not follow the
      width of the page) and the middle of its card (a share of the width).
-     The exits are 36.1 and 13.2 units from the middle of the lens, which is
-     120 units wide. The band curves, so the outer ones leave it 20.9 units
+     The exits are 34.3 and 12.6 units from the middle of the lens, which is
+     120 units wide. The band curves, so the outer ones leave it 20.2 units
      before the end of its box, the inner ones 7.7. */
   .rays {
-    --out: calc(var(--lens) * 36.1 / 120);
-    --in: calc(var(--lens) * 13.2 / 120);
-    --out-lift: calc(var(--lens) * -20.9 / 120);
+    --out: calc(var(--lens) * 34.3 / 120);
+    --in: calc(var(--lens) * 12.6 / 120);
+    --out-lift: calc(var(--lens) * -20.2 / 120);
     --in-lift: calc(var(--lens) * -7.7 / 120);
     position: relative;
     justify-self: stretch;
@@ -600,16 +608,10 @@ const lit = arc(hollow, -half + 9, half - 9);
       right: calc(100% + 1.1rem);
     }
 
-    /* Higher, clear of the end of the band. */
-    .cap-facts {
-      top: 30%;
-      left: calc(100% + 1.1rem);
-    }
-
+    /* Beside the orb as well, on the other side: there is no room lower. */
     .cap-lens {
-      top: 1.5rem;
-      left: calc(100% - 0.7rem);
-      max-width: calc(50vw - var(--lens) / 2 + 0.7rem - var(--gutter));
+      top: -2.375rem;
+      left: calc(50% + 3.475rem);
     }
   }
 
