@@ -1,85 +1,83 @@
 ---
 // The picture of the whole idea: the private self is white light, the server
-// is a contact lens, and every identity is one colour that leaves it. The
-// self rests in the hollow of the lens, which shelters it; the rounded face
-// sends the colours out. A colour does not tell you what the white light was.
+// is a lens worn by the self, and every identity is one colour that leaves it.
+// The lens is a band of glass bent around the self: its hollow side shelters
+// the self, its rounded side sends the colours out. A colour does not tell you
+// what the white light was.
+//
+// The band is drawn like the cards below it (the same dark glass, the same
+// hairline), and a ray leaves it the way it lands on its card: from a short
+// lit stretch of the edge.
 import Icon from "./Icon.astro";
 import { IDENTITIES } from "~/data/identities";
 
-// A shallow bowl seen from above at an angle, on a box of 176 by 64 units:
-// the rim is an ellipse, the under side a curve hanging from its two ends.
-// The stylesheet below places the rays from these numbers, so change them
-// together.
-const box = { width: 176, height: 64 };
-const middle = box.width / 2;
-const rim = { y: 24, rx: 72, ry: 18 };
-const under = [
-  [middle - rim.rx, rim.y],
-  [middle - rim.rx + 10, rim.y + 44],
-  [middle + rim.rx - 10, rim.y + 44],
-  [middle + rim.rx, rim.y],
-] as const;
+// Ten units to the rem, on a box of 120 by 43 units. The band turns around
+// the middle of the orb, which is 14 units above the box. The stylesheet
+// below places the rays from these numbers, so change them together.
+const box = { width: 120, height: 43 };
+const centre = { x: box.width / 2, y: -14 };
+const hollow = 36; // from the middle of the orb to the near side of the band
+const rounded = 51; // and to its far side
+const half = 57; // how far the band reaches each way, in degrees from straight down
+const corner = 4.5;
+const turn = Math.PI / 180;
 const round = (value: number) => Math.round(value * 10) / 10;
 
-/** The point of the under side reached after a share `t` of its length. */
-const along = (t: number) => {
-  const u = 1 - t;
-  const weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
-  const sum = (axis: 0 | 1) =>
-    under.reduce(
-      (total, point, index) => total + (weights[index] ?? 0) * point[axis],
-      0,
-    );
-  return { x: sum(0), y: sum(1) };
-};
+/** The point `r` units from the middle of the orb, `deg` from straight down. */
+const at = (r: number, deg: number) => ({
+  x: round(centre.x + r * Math.sin(deg * turn)),
+  y: round(centre.y + r * Math.cos(deg * turn)),
+});
+const spot = (r: number, deg: number) => `${at(r, deg).x} ${at(r, deg).y}`;
 
-/** How low the under side is, `dx` units from the middle. */
-const face = (dx: number) => {
-  let low = 0;
-  let high = 1;
-  for (let step = 0; step < 40; step++) {
-    const half = (low + high) / 2;
-    if (along(half).x < middle + dx) low = half;
-    else high = half;
-  }
-  return round(along(low).y);
-};
+/** A stretch of the circle of radius `r`, from left to right. */
+const arc = (r: number, from: number, to: number) =>
+  `M${spot(r, from)}A${r} ${r} 0 0 0 ${spot(r, to)}`;
 
-// One ray per identity. Each leaves the under side from its own point (`dx`
-// units from the middle) and lands on the middle of a card. The outer rays
-// leave the glass more aslant than the inner ones (`lean`).
+// The outline of the band, its four corners eased like those of a card.
+const ease = { far: corner / rounded / turn, near: corner / hollow / turn };
+const band =
+  `M${spot(rounded, -half + ease.far)}A${rounded} ${rounded} 0 0 0 ${spot(rounded, half - ease.far)}` +
+  `Q${spot(rounded, half)} ${spot(rounded - corner, half)}L${spot(hollow + corner, half)}` +
+  `Q${spot(hollow, half)} ${spot(hollow, half - ease.near)}` +
+  `A${hollow} ${hollow} 0 0 1 ${spot(hollow, -half + ease.near)}` +
+  `Q${spot(hollow, -half)} ${spot(hollow + corner, -half)}L${spot(rounded - corner, -half)}` +
+  `Q${spot(rounded, -half)} ${spot(rounded, -half + ease.far)}Z`;
+
+// One ray per identity, `deg` from straight down. White light crosses from
+// the self to the hollow side; the colour is born on the rounded side, from a
+// lit stretch of its edge, and goes on to the middle of a card. The outer rays
+// leave more aslant than the inner ones (`lean`).
 const ray = (
   hue: string,
   tint: string,
   color: string,
-  dx: number,
+  deg: number,
   lean: number,
 ) => ({
   hue,
   tint,
   color,
-  x: middle + dx,
-  y: face(dx),
+  from: at(27, deg),
+  enter: at(hollow, deg),
+  inside: at((hollow + rounded) / 2 + 1.5, deg),
+  leave: at(rounded, deg),
+  port: arc(rounded, deg - 6, deg + 6),
   path:
-    dx < 0
+    deg < 0
       ? `M100 0C${100 - lean} 30 0 38 0 100`
       : `M0 0C${lean} 30 100 38 100 100`,
 });
 
 const rays = [
-  ray("amber", "#ffe2b8", "#ffb65c", -46, 9),
-  ray("rose", "#ffd0ea", "#ff86c8", -16, 3),
-  ray("cyan", "#c6f1fa", "#5ad7f0", 16, 3),
-  ray("violet", "#ddd2ff", "#a78bff", 46, 9),
+  ray("amber", "#ffe2b8", "#ffb65c", -45, 13),
+  ray("rose", "#ffd0ea", "#ff86c8", -15, 11),
+  ray("cyan", "#c6f1fa", "#5ad7f0", 15, 11),
+  ray("violet", "#ddd2ff", "#a78bff", 45, 13),
 ] as const;
 
-// Where the self touches the glass: the white light splits from there.
-const pool = { x: middle, y: rim.y + 9 };
-const first = rays[0];
-const last = rays[3];
-const bowl =
-  `M${under[0].join(" ")}C${under[1].join(" ")} ${under[2].join(" ")} ${under[3].join(" ")}` +
-  `A${rim.rx} ${rim.ry} 0 0 0 ${under[0].join(" ")}Z`;
+// The side that receives the white light, a little short of the corners.
+const lit = arc(hollow, -half + 9, half - 9);
 ---
 
 <div class="scene">
@@ -97,140 +95,98 @@ const bowl =
   <div class="lens">
     <svg viewBox={`0 0 ${box.width} ${box.height}`} aria-hidden="true">
       <defs>
-        <linearGradient id="lens-glass" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.3"></stop>
-          <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.06"></stop>
-          <stop offset="1" stop-color="#a78bff" stop-opacity="0.22"></stop>
+        <filter id="lens-soft" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="1.7"></feGaussianBlur>
+        </filter>
+        <filter id="lens-softer" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="3.2"></feGaussianBlur>
+        </filter>
+        <linearGradient id="lens-glass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.09"></stop>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0.02"></stop>
         </linearGradient>
-        <linearGradient id="lens-edge" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"></stop>
-          <stop offset="1" stop-color="#ffffff" stop-opacity="0.25"></stop>
-        </linearGradient>
-        <linearGradient id="lens-hollow" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#05060a" stop-opacity="0.55"></stop>
-          <stop offset="1" stop-color="#ffffff" stop-opacity="0.1"></stop>
-        </linearGradient>
-        <radialGradient id="lens-sheen">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.4"></stop>
-          <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
-        </radialGradient>
-        <radialGradient id="lens-pool">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.9"></stop>
-          <stop offset="0.4" stop-color="#fff3df" stop-opacity="0.35"></stop>
-          <stop offset="1" stop-color="#ffffff" stop-opacity="0"></stop>
-        </radialGradient>
-        <linearGradient
-          id="lens-wedge"
-          x1={first.x}
-          y1="0"
-          x2={last.x}
-          y2="0"
-          gradientUnits="userSpaceOnUse"
-        >
-          {rays.map((r, index) => (
-            <stop offset={index / 3} stop-color={r.color} />
-          ))}
-        </linearGradient>
-        <linearGradient
-          id="lens-fade"
-          x1="0"
-          y1={pool.y}
-          x2="0"
-          y2={rays[1].y}
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop offset="0" stop-color="#fff" stop-opacity="0"></stop>
-          <stop offset="1" stop-color="#fff" stop-opacity="1"></stop>
-        </linearGradient>
-        <mask id="lens-wedge-mask">
-          <rect
-            x="0"
-            y="0"
-            width={box.width}
-            height={box.height}
-            fill="url(#lens-fade)"
-          ></rect>
-        </mask>
         {rays.map((r) => (
           <linearGradient
-            id={`lens-ray-${r.hue}`}
-            x1={pool.x}
-            y1={pool.y}
-            x2={r.x}
-            y2={r.y}
+            id={`lens-white-${r.hue}`}
+            x1={r.from.x}
+            y1={r.from.y}
+            x2={r.enter.x}
+            y2={r.enter.y}
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0" stop-color="#ffffff" />
-            <stop offset="0.55" stop-color={r.tint} />
-            <stop offset="1" stop-color={r.color} />
+            <stop offset="0" stop-color="#ffffff" stop-opacity="0" />
+            <stop offset="1" stop-color="#ffffff" stop-opacity="0.95" />
           </linearGradient>
         ))}
       </defs>
 
-      <!-- The glass: its rounded under side, then the hollow and its rim. -->
+      <!-- The glass of the cards, bent around the self. -->
+      <path d={band} fill="#0a0c12" fill-opacity="0.86"></path>
       <path
-        d={bowl}
+        d={band}
         fill="url(#lens-glass)"
-        stroke="url(#lens-edge)"
-        stroke-width="1.5"
-        stroke-linejoin="round"
-      ></path>
-      <ellipse
-        cx={middle - 38}
-        cy={rim.y + 24}
-        rx="20"
-        ry="5"
-        fill="url(#lens-sheen)"
-        transform={`rotate(24 ${middle - 38} ${rim.y + 24})`}
-      ></ellipse>
-      <ellipse
-        cx={middle}
-        cy={rim.y}
-        rx={rim.rx}
-        ry={rim.ry}
-        fill="url(#lens-hollow)"
-        stroke="url(#lens-edge)"
-        stroke-width="1.5"
-      ></ellipse>
-      <ellipse
-        cx={middle}
-        cy={rim.y + 1.5}
-        rx={rim.rx - 7}
-        ry={rim.ry - 3.5}
         stroke="#ffffff"
-        stroke-opacity="0.12"
-      ></ellipse>
-
-      <!-- Under the self, the white light splits. -->
-      <path
-        d={`M${pool.x} ${pool.y}L${rays.map((r) => `${r.x} ${r.y}`).join("L")}Z`}
-        fill="url(#lens-wedge)"
-        opacity="0.3"
-        mask="url(#lens-wedge-mask)"
+        stroke-opacity="0.2"
       ></path>
-      {rays.map((r) => (
-        <path
-          d={`M${pool.x} ${pool.y}L${r.x} ${r.y}`}
-          stroke={`url(#lens-ray-${r.hue})`}
-          stroke-width="1.8"
-          stroke-linecap="round"
-        />
-      ))}
 
-      <!-- Where each colour leaves the glass. -->
+      <!-- Its hollow side, lit by the self. -->
+      <path
+        d={lit}
+        stroke="#fff3df"
+        stroke-width="3.5"
+        stroke-linecap="round"
+        opacity="0.6"
+        filter="url(#lens-soft)"
+      ></path>
+      <path
+        d={lit}
+        stroke="#fff3df"
+        stroke-opacity="0.85"
+        stroke-width="1.1"
+        stroke-linecap="round"
+      ></path>
+
+      <!-- White light comes in; inside, a hint of the colour to come. -->
       {rays.map((r) => (
         <>
-          <circle cx={r.x} cy={r.y} r="4.2" fill={r.color} opacity="0.28" />
-          <circle cx={r.x} cy={r.y} r="1.5" fill={r.tint} />
+          <circle
+            cx={r.inside.x}
+            cy={r.inside.y}
+            r="5.5"
+            fill={r.color}
+            opacity="0.32"
+            filter="url(#lens-softer)"
+          />
+          <path
+            d={`M${r.from.x} ${r.from.y}L${r.enter.x} ${r.enter.y}`}
+            stroke={`url(#lens-white-${r.hue})`}
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <circle cx={r.enter.x} cy={r.enter.y} r="1.2" fill="#ffffff" />
         </>
       ))}
-      <ellipse
-        cx={pool.x}
-        cy={pool.y}
-        rx="20"
-        ry="6"
-        fill="url(#lens-pool)"
-      ></ellipse>
+
+      <!-- Where each colour leaves: a lit stretch of the rounded side. -->
+      {rays.map((r) => (
+        <>
+          <path
+            d={r.port}
+            stroke={r.color}
+            stroke-width="5.3"
+            stroke-linecap="round"
+            opacity="0.75"
+            filter="url(#lens-softer)"
+          />
+          <path
+            d={r.port}
+            stroke={r.color}
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+          <circle cx={r.leave.x} cy={r.leave.y} r="1.3" fill={r.tint} />
+        </>
+      ))}
     </svg>
     <p class="cap cap-lens">Your brig·id server</p>
   </div>
@@ -277,7 +233,7 @@ const bowl =
 
 <style>
   .scene {
-    --lens: 11.5rem;
+    --lens: 12rem;
     --gap: 1rem; /* the gap of the cards */
     display: grid;
     justify-items: center;
@@ -292,11 +248,6 @@ const bowl =
     position: relative;
     display: grid;
     place-items: center;
-  }
-
-  /* The self is in front of the lens it rests in. */
-  .self {
-    z-index: 1;
   }
 
   .orb {
@@ -378,23 +329,21 @@ const bowl =
 
   /* -- The lens ------------------------------------------------------------- */
 
-  /* The orb is 4.75rem tall. The middle of the rim, 24 units down a drawing
-     176 units wide, sits 1.55rem under the middle of the orb: far enough for
-     the front of the rim to pass under it, so that the self rests in the
-     hollow and hides the back of the rim. */
+  /* The orb is 4.75rem tall and the drawing starts 1.4rem below its middle,
+     so that the band turns around the self. Its size follows the orb, not the
+     width of the page. */
   .lens svg {
     display: block;
     width: var(--lens);
-    margin-top: calc(-0.825rem - var(--lens) * 24 / 176);
+    margin-top: -0.975rem;
     overflow: visible;
     fill: none;
-    filter: drop-shadow(0 0 1.6rem rgb(255 255 255 / 0.28));
   }
 
-  /* Beside the rounded side of the glass. */
+  /* Beside the right end of the band, under the other caption. */
   .cap-lens {
-    top: 62%;
-    left: calc(100% + 1.1rem);
+    top: -0.1rem;
+    left: calc(100% - 0.9rem);
     text-align: left;
   }
 
@@ -403,14 +352,14 @@ const bowl =
   /* Each ray is a box stretched between two points: where it leaves the lens
      (a fixed distance from the middle, since the lens does not follow the
      width of the page) and the middle of its card (a share of the width).
-     The exits are 46 and 16 units from the middle of the lens, which is 176
-     units wide. The under side curves, so the outer ones leave it 15 units
-     before the end of its box, the inner ones 7.8. */
+     The exits are 36.1 and 13.2 units from the middle of the lens, which is
+     120 units wide. The band curves, so the outer ones leave it 20.9 units
+     before the end of its box, the inner ones 7.7. */
   .rays {
-    --out: calc(var(--lens) * 46 / 176);
-    --in: calc(var(--lens) * 16 / 176);
-    --out-lift: calc(var(--lens) * -15 / 176);
-    --in-lift: calc(var(--lens) * -7.8 / 176);
+    --out: calc(var(--lens) * 36.1 / 120);
+    --in: calc(var(--lens) * 13.2 / 120);
+    --out-lift: calc(var(--lens) * -20.9 / 120);
+    --in-lift: calc(var(--lens) * -7.7 / 120);
     position: relative;
     justify-self: stretch;
     height: 8.5rem;
@@ -601,7 +550,6 @@ const bowl =
 
   @media (max-width: 52rem) {
     .scene {
-      --lens: 9.5rem;
       --gap: 0.75rem;
     }
 
@@ -652,15 +600,16 @@ const bowl =
       right: calc(100% + 1.1rem);
     }
 
-    /* Higher, clear of the rim of the lens. */
+    /* Higher, clear of the end of the band. */
     .cap-facts {
       top: 30%;
       left: calc(100% + 1.1rem);
     }
 
     .cap-lens {
-      left: calc(100% + 0.6rem);
-      max-width: calc(50vw - var(--lens) / 2 - 0.6rem - var(--gutter));
+      top: 1.5rem;
+      left: calc(100% - 0.7rem);
+      max-width: calc(50vw - var(--lens) / 2 + 0.7rem - var(--gutter));
     }
   }
 
