@@ -1,11 +1,17 @@
 ---
-// The brig·id mark: one disc, cut in two. The left half is white, the private
-// self; the right half is three colours fanned from the middle, one per
-// identity. It is the scene of the home page, gathered into a circle.
+// The brig·id mark: one disc, cut in two, and the lens of the home page in
+// the cut. The left half is white, the private self. The right half is three
+// colours fanned from the middle, one per identity. Between them stand the
+// two hairlines of the lens, bent around the white half: they run on past
+// the disc and fade, and a breath of each colour shows between them.
+import { freshId } from "~/lib/ids";
+
 interface Props {
   class?: string;
 }
 const { class: className } = Astro.props;
+// The two gradients that fade the hairlines are reached by name.
+const id = freshId("mark", Astro.url.pathname);
 ---
 
 <svg
@@ -14,17 +20,75 @@ const { class: className } = Astro.props;
   fill="none"
   aria-hidden="true"
 >
-  <path d="M15.15 2.53a13.5 13.5 0 0 0 0 26.94Z" fill="#fff3df"></path>
+  <defs>
+    <linearGradient
+      id={`${id}-near`}
+      x1="0"
+      y1="0.3"
+      x2="0"
+      y2="31.7"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop offset="0" stop-color="#fff3df" stop-opacity="0"></stop>
+      <stop offset="0.15" stop-color="#fff3df" stop-opacity="0.95"></stop>
+      <stop offset="0.85" stop-color="#fff3df" stop-opacity="0.95"></stop>
+      <stop offset="1" stop-color="#fff3df" stop-opacity="0"></stop>
+    </linearGradient>
+    <linearGradient
+      id={`${id}-far`}
+      x1="0"
+      y1="0.3"
+      x2="0"
+      y2="31.7"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop offset="0" stop-color="#fff" stop-opacity="0"></stop>
+      <stop offset="0.15" stop-color="#fff" stop-opacity="0.62"></stop>
+      <stop offset="0.85" stop-color="#fff" stop-opacity="0.62"></stop>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
   <path
-    d="M16.85 2.53a13.5 13.5 0 0 1 10.46 6.09l-10.46 2.05Z"
+    d="M11.4 4.27A12.6 12.6 0 0 0 11.4 27.73A31.65 31.65 0 0 0 11.4 4.27Z"
+    fill="#fff3df"
+  ></path>
+  <path
+    d="M16.1 3.4A12.6 12.6 0 0 1 26.38 8.86L17.93 10.51A36.35 36.35 0 0 0 16.1 3.4Z"
     fill="#ffb65c"
   ></path>
   <path
-    d="M16.85 12.4l11.33-2.21a13.5 13.5 0 0 1 0 11.62L16.85 19.6Z"
+    d="M18.14 12.1L27.25 10.32A12.6 12.6 0 0 1 27.25 21.68L18.14 19.9A36.35 36.35 0 0 0 18.14 12.1Z"
     fill="#ff86c8"
   ></path>
   <path
-    d="M16.85 21.33l10.46 2.05a13.5 13.5 0 0 1-10.46 6.09Z"
+    d="M17.93 21.49L26.38 23.14A12.6 12.6 0 0 1 16.1 28.6A36.35 36.35 0 0 0 17.93 21.49Z"
     fill="#5ad7f0"
+  ></path>
+  <path
+    d="M12.73 3.83A12.6 12.6 0 0 1 14.63 3.47A34.95 34.95 0 0 1 16.67 11.57L14.8 11.93A33.05 33.05 0 0 0 12.73 3.83Z"
+    fill="#ffb65c"
+    fill-opacity="0.34"
+  ></path>
+  <path
+    d="M14.8 11.93L16.67 11.57A34.95 34.95 0 0 1 16.67 20.43L14.8 20.07A33.05 33.05 0 0 0 14.8 11.93Z"
+    fill="#ff86c8"
+    fill-opacity="0.34"
+  ></path>
+  <path
+    d="M14.8 20.07L16.67 20.43A34.95 34.95 0 0 1 14.63 28.53A12.6 12.6 0 0 1 12.73 28.17A33.05 33.05 0 0 0 14.8 20.07Z"
+    fill="#5ad7f0"
+    fill-opacity="0.34"
+  ></path>
+  <path
+    d="M11.08 0.3A33.05 33.05 0 0 1 11.08 31.7"
+    stroke={`url(#${id}-near)`}
+    stroke-width="0.8"
+    stroke-linecap="round"
+  ></path>
+  <path
+    d="M13.23 0.3A34.95 34.95 0 0 1 13.23 31.7"
+    stroke={`url(#${id}-far)`}
+    stroke-width="0.8"
+    stroke-linecap="round"
   ></path>
 </svg>
