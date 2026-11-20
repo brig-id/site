@@ -1,0 +1,440 @@
+---
+import Base from "~/layouts/Base.astro";
+import Icon from "~/components/Icon.astro";
+import StatusTag from "~/components/StatusTag.astro";
+import { feature } from "~/data/features";
+import { GITHUB, SPEC } from "~/data/nav";
+
+const DEMO = "https://demo.brig.id";
+const DEMO_SOURCE = "https://github.com/brig-id/demo";
+const INSTALL =
+  "https://github.com/brig-id/server-seedling/blob/main/docs/install.md";
+const PROTOCOL = `${SPEC}/blob/main/protocol.md`;
+const TRUST = `${SPEC}/blob/main/security-model.md`;
+
+const noRegistration = feature("no-registration");
+
+const documentExample = `{
+  "client_id": "https://shop.example/oauth-client-metadata.json",
+  "client_name": "Example Shop",
+  "client_uri": "https://shop.example",
+  "logo_uri": "https://shop.example/logo.png",
+  "application_type": "web",
+  "redirect_uris": ["https://shop.example/callback"],
+  "grant_types": ["authorization_code"],
+  "response_types": ["code"],
+  "scope": "openid email profile",
+  "token_endpoint_auth_method": "private_key_jwt",
+  "jwks_uri": "https://shop.example/jwks.json",
+  "brigid_attributes": { "email": "required", "given_name": "optional" }
+}`;
+
+const authorizeExample = `https://id.example.org/authorize
+  ?response_type=code
+  &client_id=https%3A%2F%2Fshop.example%2Foauth-client-metadata.json
+  &redirect_uri=https%3A%2F%2Fshop.example%2Fcallback
+  &scope=openid%20email
+  &state=…&nonce=…
+  &code_challenge=…&code_challenge_method=S256`;
+
+const fields = [
+  [
+    "client_id",
+    "The address of the document itself, exactly. It is your site's identifier on every server.",
+  ],
+  [
+    "client_name",
+    "Shown to people beside your domain, never instead of it: anyone could write any name.",
+  ],
+  [
+    "redirect_uris",
+    "Where people come back. https, on the same origin as client_id, compared exactly.",
+  ],
+  [
+    "token_endpoint_auth_method",
+    "private_key_jwt for a site with a server, none for a page in the browser or an app. There is never a client secret.",
+  ],
+  [
+    "jwks_uri or jwks",
+    "With private_key_jwt: your public keys (Ed25519 or P-256), at an address or in the document, not both.",
+  ],
+  [
+    "brigid_attributes",
+    "What you ask people to share, each attribute required or optional. Without it, you receive an identifier and nothing else.",
+  ],
+  [
+    "application_type",
+    "web (the default), or native for a desktop or mobile application.",
+  ],
+];
+
+const endpoints = [
+  ["Discovery", "/.well-known/openid-configuration"],
+  ["Keys of the ID tokens", "/.well-known/jwks.json"],
+  ["Authorization", "/authorize"],
+  ["Token", "/token"],
+];
+
+const claims = [
+  ["iss", "The server. Always read it with sub."],
+  ["sub", "An identifier made for this identity and your site only."],
+  ["aud", "Your client_id."],
+  ["auth_time, nonce, iat, exp, jti", "As in OpenID Connect."],
+  [
+    "email, email_verified",
+    "Only if asked and accepted. email_verified is false: the server does not check addresses.",
+  ],
+  [
+    "given_name, family_name, preferred_username, locale, zoneinfo",
+    "Only if asked (scope profile) and accepted, one by one.",
+  ],
+];
+
+const errors = [
+  ["invalid_scope", "You asked for something your document does not declare."],
+  ["access_denied", "The person went back, or refused a required attribute."],
+  [
+    "login_required, interaction_required, consent_required",
+    "prompt=none, and the person has something to do on the server.",
+  ],
+  ["invalid_client (token)", "The signature, or the document, did not check."],
+  [
+    "invalid_grant (token)",
+    "The code is used, expired, or not for this redirect URI and verifier.",
+  ],
+];
+---
+
+<Base
+  title="Developers"
+  description="Add sign-in with brig·id to a website or an application: publish one document, use OpenID Connect, register on no server."
+>
+  <section class="page-hero">
+    <div class="shell">
+      <p class="eyebrow">Developers</p>
+      <h1>
+        Sign in with <span class="accent spectrum">any brig·id server.</span>
+      </h1>
+      <p class="lead">
+        brig·id speaks OpenID Connect. Your site publishes one small document
+        that describes it, and the people of any brig·id server can sign in to
+        it. You register nowhere, and you keep no secret for anyone.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow">
+      <div class="note rise">
+        <Icon name="info-duotone" />
+        <p>
+          <StatusTag status={noRegistration.status} />
+          <strong> Sites with no registration</strong> arrive with seedling 0.8.
+          Until a server runs it, a site is registered on that server by its
+          operator (<a href={INSTALL}>the install guide</a>, step 7), with the
+          same flow below and a client secret.
+        </p>
+      </div>
+
+      <div class="prose rise">
+        <h2>What your site receives</h2>
+        <p>
+          A person signs in with one of their <strong>identities</strong>, the
+          one they choose for your site. You receive an identifier made for that
+          identity and your site only (<code>sub</code>), the server that
+          vouches for it (<code>iss</code>), and the attributes you asked for
+          that the person accepted to share, value by value. Nothing else: not
+          their other identities, not where else they sign in.
+        </p>
+        <p>
+          <strong>
+            Know a person by <code>iss</code> and <code>sub</code> together
+          </strong>
+          , never by <code>sub</code> alone and never by an e-mail address. A
+          server can only speak for its own people: with this rule, no server
+          can sign in to your site as someone from another one.
+        </p>
+
+        <h2>1. Publish a document that describes your site</h2>
+        <p>
+          Put a JSON document on your own domain, at an https address with a
+          path. We suggest <code>/oauth-client-metadata.json</code>. Its address
+          is your
+          <code>client_id</code>. This is the OAuth Client ID Metadata Document,
+          the same mechanism Bluesky and the Model Context Protocol use.
+        </p>
+      </div>
+
+      <pre class="code rise"><code>{documentExample}</code></pre>
+
+      <dl class="fields rise">
+        {fields.map(([name, text]) => (
+          <div>
+            <dt>
+              <code>{name}</code>
+            </dt>
+            <dd>{text}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div class="prose rise">
+        <p>
+          <strong>Choose the address once.</strong> The identifier each person
+          gets is made from it: changing it changes everyone's identifier. The
+          document itself can change at any time; servers keep it at most a day,
+          or what your
+          <code>Cache-Control</code> header says, and no less than five minutes.
+          Keep it under 5 KiB, and serve it without redirects.
+        </p>
+
+        <h2>2. Find the person's server</h2>
+        <p>
+          Ask for the domain of their server, the way an e-mail service asks for
+          an address: <code>id.example.org</code>. Read
+          <code>https://id.example.org/.well-known/openid-configuration</code>:
+          it gives the endpoints, and{" "}
+          <code>client_id_metadata_document_supported: true</code> when the
+          server accepts sites that describe themselves. Its operator decides
+          which: any (the default), only some, or only the ones registered
+          there.
+        </p>
+
+        <h2>3. The Authorization Code flow, with PKCE</h2>
+        <p>
+          Send the person to the server's authorization endpoint, as with any
+          OpenID Connect provider. PKCE with <code>S256</code> is required for
+          every site;
+          <code>state</code> and <code>nonce</code> as usual. Ask for{" "}
+          <code>openid</code>, and for <code>email</code> or{" "}
+          <code>profile</code> to ask for what your document declares.
+        </p>
+      </div>
+
+      <pre class="code rise"><code>{authorizeExample}</code></pre>
+
+      <div class="prose rise">
+        <p>
+          The person comes back with a <code>code</code>, your{" "}
+          <code>state</code> and the server's <code>iss</code>: check both.
+          Exchange the code at the token endpoint with the PKCE verifier, and
+          authenticate:
+        </p>
+        <ul>
+          <li>
+            <strong>A site with a server</strong> (<code>private_key_jwt</code>
+            ): a JWT signed with your key, EdDSA or ES256, with <code>
+              iss
+            </code>{" "}
+            and
+            <code>sub</code> set to your <code>client_id</code>,{" "}
+            <code>aud</code> the server's issuer, a fresh <code>jti</code>,
+            valid a few minutes. Most OpenID Connect libraries do this for you.
+            You rotate keys by changing your document.
+          </li>
+          <li>
+            <strong>A page in the browser</strong> (<code>none</code>): send
+            only your
+            <code>client_id</code>. PKCE is what proves the page that asked is
+            the one asking.
+          </li>
+        </ul>
+        <p>
+          You receive an ID token signed with EdDSA. Check it against the
+          server's keys: signature, <code>iss</code>, <code>aud</code>,{" "}
+          <code>nonce</code>, expiry.
+        </p>
+
+        <h2>Desktop and mobile applications</h2>
+        <p>
+          An application cannot keep a secret or a key: declare
+          <code>application_type: "native"</code> and
+          <code>token_endpoint_auth_method: "none"</code>, and host the document
+          on your domain all the same. It comes back through one of:
+        </p>
+        <ul>
+          <li>
+            the loopback address, <code>http://127.0.0.1/callback</code> or
+            <code>http://[::1]/callback</code>, on any port;
+          </li>
+          <li>
+            your domain reversed as a scheme:{" "}
+            <code>example.shop:/callback</code> for
+            <code>shop.example</code>;
+          </li>
+          <li>an https link on your domain that the application opens.</li>
+        </ul>
+        <p>
+          Open the system's browser, never a view inside the application: the
+          passkey needs the real address of the server. Devices without a
+          browser come later.
+        </p>
+
+        <h2>What you can trust of a server</h2>
+        <p>
+          You accept people from servers you have never seen. Nothing proves
+          that a server runs brig·id unmodified, or honestly. What holds is
+          narrower, and enough: a token is signed by the key its{" "}
+          <code>iss</code> publishes, and a server can only speak for its own
+          people. A server made up for the purpose can create as many people as
+          it likes, as any e-mail provider can: if your site needs real people,
+          it needs its own checks. <a href={TRUST}>The security model</a> says
+          it in full.
+        </p>
+
+        <h2>A working example</h2>
+        <p>
+          <a href={DEMO}>demo.brig.id</a> is a site that does all of the above,
+          in a few hundred lines with a standard library, in both forms: with a
+          server and a key, and entirely in the browser.{" "}
+          <a href={DEMO_SOURCE}>Its source</a> is meant to be read.
+        </p>
+
+        <h2>Run your own server</h2>
+        <p>
+          A server is one file to download, on any Linux machine.
+          <a href={INSTALL}>The install guide</a> takes it from download to a
+          first sign-in; <a href="/editions/">the editions</a> say which one
+          fits.
+        </p>
+
+        <h2>Reference</h2>
+        <h3>Endpoints of a server</h3>
+      </div>
+
+      <table class="ref rise">
+        <tbody>
+          {endpoints.map(([what, path]) => (
+            <tr>
+              <th scope="row">{what}</th>
+              <td>
+                <code>{path}</code>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div class="prose rise">
+        <h3>In the ID token</h3>
+      </div>
+      <table class="ref rise">
+        <tbody>
+          {claims.map(([what, text]) => (
+            <tr>
+              <th scope="row">
+                <code>{what}</code>
+              </th>
+              <td>{text}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div class="prose rise">
+        <h3>Errors you may meet</h3>
+      </div>
+      <table class="ref rise">
+        <tbody>
+          {errors.map(([what, text]) => (
+            <tr>
+              <th scope="row">
+                <code>{what}</code>
+              </th>
+              <td>{text}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div class="prose rise">
+        <p>
+          The protocol, its rules and the reasons behind them are in
+          <a href={PROTOCOL}>the specification</a>; the code is on
+          <a href={GITHUB}>GitHub</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shell-narrow {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .code {
+    overflow-x: auto;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    background: rgb(255 255 255 / 0.03);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .fields {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .fields div {
+    display: grid;
+    grid-template-columns: minmax(10rem, 14rem) 1fr;
+    gap: 1rem;
+  }
+
+  .fields dd {
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  .ref {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.98rem;
+  }
+
+  .ref th,
+  .ref td {
+    padding: 0.7rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .ref th {
+    width: 40%;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .ref td {
+    color: var(--text-2);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    overflow-wrap: anywhere;
+  }
+
+  .note a {
+    color: var(--text);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 36rem) {
+    .fields div {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+
+    .ref th {
+      width: auto;
+    }
+  }
+</style>

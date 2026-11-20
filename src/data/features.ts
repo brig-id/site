@@ -174,6 +174,18 @@ export const FEATURES: Feature[] = [
     ref: { label: "Try the demonstration site", href: "https://demo.brig.id" },
   },
   {
+    id: "no-registration",
+    group: "identities",
+    title: "Websites need no registration",
+    summary:
+      "A website describes itself in a small file on its own domain, and the people of any brig·id server can sign in to it. Nobody registers it anywhere.",
+    detail:
+      "The server shows you the website's address before its name, and its operator decides which websites it accepts: any, some, or only its own.",
+    status: "progress",
+    icon: "globe-hemisphere-west-duotone",
+    ref: { label: "For developers", href: "/developers/" },
+  },
+  {
     id: "identity-choice",
     group: "identities",
     title: "Choose who you are, site by site",
