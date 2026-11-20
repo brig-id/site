@@ -33,18 +33,18 @@ there.
 
 ### Layout
 
-| Path                      | Content                                                                                                                                                                 |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/pages/`              | One file per page: home, `features`, `identities`, `pricing`, `editions`, `compare/` (hub and one page per product), `manifesto`, `history`, `status`, `servers`, `404` |
-| `src/data/features.ts`    | Every feature, its group and its status                                                                                                                                 |
-| `src/data/competitors.ts` | The products brig·id is compared with, their facts and sources                                                                                                          |
-| `src/data/editions.ts`    | seedling, grove and forest: what is decided about each                                                                                                                  |
-| `src/data/nav.ts`         | Navigation, and `CONTACT`: where "Contact us" leads                                                                                                                     |
-| `src/components/`         | Header, footer, icons, the hero's lens scene                                                                                                                            |
-| `src/lib/derive.ts`       | The per-site identifier demo of `/identities/`                                                                                                                          |
-| `worker/`                 | The Cloudflare Worker: security headers, `www` redirect, `/api/status`                                                                                                  |
-| `scripts/check-dist.mjs`  | Fails the build if a page needs an inline script or style                                                                                                               |
-| `scripts/og/og.html`      | Source of `public/og.png`                                                                                                                                               |
+| Path                      | Content                                                                                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/`              | One file per page: home, `features`, `identities`, `pricing`, `editions`, `compare/` (hub and one page per product), `manifesto`, `history`, `status`, `servers`, `developers`, `404` |
+| `src/data/features.ts`    | Every feature, its group and its status                                                                                                                                               |
+| `src/data/competitors.ts` | The products brig·id is compared with, their facts and sources                                                                                                                        |
+| `src/data/editions.ts`    | seedling, grove and forest: what is decided about each                                                                                                                                |
+| `src/data/nav.ts`         | Navigation, and `CONTACT`: where "Contact us" leads                                                                                                                                   |
+| `src/components/`         | Header, footer, icons, the hero's lens scene                                                                                                                                          |
+| `src/lib/derive.ts`       | The per-site identifier demo of `/identities/`                                                                                                                                        |
+| `worker/`                 | The Cloudflare Worker: security headers, `www` redirect, `/api/status`                                                                                                                |
+| `scripts/check-dist.mjs`  | Fails the build if a page needs an inline script or style                                                                                                                             |
+| `scripts/og/og.html`      | Source of `public/og.png`                                                                                                                                                             |
 
 ### Voice
 
@@ -54,7 +54,9 @@ there.
   belongs to an identity.
 - The pages that present the product (`features`, `identities`, `history`,
   `pricing`, `editions`) do not link to GitHub for their evidence, and never to
-  decision records. Links to the source belong in the footer.
+  decision records. Links to the source belong in the footer, and on
+  `/developers/`, which is written for people who integrate or run brig·id and
+  links to the specification, the install guide and the demo's source.
 - The origin story is told on `/history/`. Elsewhere, say that brig·id follows
   from work between human-computer interaction and the social sciences on a
   semiotic model of digital identity; the idea of brig·id itself is its
