@@ -1,0 +1,227 @@
+---
+import Developers from "~/layouts/Developers.astro";
+import { DEMO, DEMO_SOURCE } from "~/data/developers";
+
+const documentExample = `{
+  "client_id": "https://shop.example/oauth-client-metadata.json",
+  "client_name": "Example Shop",
+  "client_uri": "https://shop.example",
+  "logo_uri": "https://shop.example/logo.png",
+  "application_type": "web",
+  "redirect_uris": ["https://shop.example/callback"],
+  "grant_types": ["authorization_code"],
+  "response_types": ["code"],
+  "scope": "openid email profile",
+  "token_endpoint_auth_method": "private_key_jwt",
+  "jwks_uri": "https://shop.example/jwks.json",
+  "brigid_attributes": { "email": "required", "given_name": "optional" }
+}`;
+
+const authorizeExample = `https://id.example.org/authorize
+  ?response_type=code
+  &client_id=https%3A%2F%2Fshop.example%2Foauth-client-metadata.json
+  &redirect_uri=https%3A%2F%2Fshop.example%2Fcallback
+  &scope=openid%20email
+  &state=…&nonce=…
+  &code_challenge=…&code_challenge_method=S256`;
+
+const tokenExample = `POST https://id.example.org/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=authorization_code
+&code=…
+&redirect_uri=https://shop.example/callback
+&code_verifier=…
+&client_id=https://shop.example/oauth-client-metadata.json
+&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+&client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6InNob3AtMSJ9…`;
+
+const assertionExample = `header  { "alg": "ES256", "kid": "shop-1" }
+payload {
+  "iss": "https://shop.example/oauth-client-metadata.json",
+  "sub": "https://shop.example/oauth-client-metadata.json",
+  "aud": "https://id.example.org",
+  "jti": "a fresh random value",
+  "iat": 1795212000,
+  "exp": 1795212060
+}`;
+
+const fields = [
+  [
+    "client_id",
+    "The address of the document itself, exactly. It is your site's identifier on every server.",
+  ],
+  [
+    "client_name",
+    "Shown to people beside your domain, never instead of it: anyone could write any name.",
+  ],
+  [
+    "redirect_uris",
+    "Where people come back. https, on the same origin as client_id, compared exactly.",
+  ],
+  [
+    "token_endpoint_auth_method",
+    "private_key_jwt for a site with a server, none for a page in the browser. Never a client secret.",
+  ],
+  [
+    "jwks_uri or jwks",
+    "With private_key_jwt: your public keys (Ed25519 or P-256), at an address or in the document, not both.",
+  ],
+  [
+    "brigid_attributes",
+    "What you ask people to share, each attribute required or optional. Without it, you receive an identifier and nothing else.",
+  ],
+  ["logo_uri, client_uri", "Optional. https only."],
+];
+---
+
+<Developers
+  title="Sign in on a website · Developers"
+  description="Add sign-in with brig·id to a website: publish a document that describes it, find the person's server, run the code flow with PKCE."
+  lead="Sign in on a website,"
+  accent="registered nowhere."
+  intro="Three steps: publish a document that describes your site, find the person's server, run the Authorization Code flow. Most OpenID Connect libraries do the third for you."
+>
+  <div class="prose rise">
+    <h2>What your site receives</h2>
+    <p>
+      A person signs in with one of their <strong>identities</strong>, the one
+      they choose for your site. You receive an identifier made for that
+      identity and your site only (<code>sub</code>), the server that vouches
+      for it (<code>iss</code>), and the attributes you asked for that the
+      person accepted to share, value by value. Nothing else: not their other
+      identities, not where else they sign in.
+    </p>
+    <p>
+      <strong>
+        Know a person by <code>iss</code> and <code>sub</code> together
+      </strong>
+      , never by <code>sub</code> alone and never by an e-mail address. A server
+      can only speak for its own people: with this rule, no server can sign in
+      to your site as someone from another one.
+    </p>
+
+    <h2>1. Publish a document that describes your site</h2>
+    <p>
+      Put a JSON document on your own domain, at an https address with a path.
+      We suggest <code>/oauth-client-metadata.json</code>. Its address is your
+      <code>client_id</code>. This is the OAuth Client ID Metadata Document, the
+      same mechanism Bluesky and the Model Context Protocol use.
+    </p>
+  </div>
+
+  <pre class="code rise"><code>{documentExample}</code></pre>
+
+  <dl class="fields rise">
+    {fields.map(([name, text]) => (
+      <div>
+        <dt>
+          <code>{name}</code>
+        </dt>
+        <dd>{text}</dd>
+      </div>
+    ))}
+  </dl>
+
+  <div class="prose rise">
+    <p>
+      <strong>Choose the address once.</strong> The identifier each person gets
+      is made from it: changing it changes everyone's identifier. The document
+      itself can change at any time; servers keep it at most a day, or what your
+      <code>Cache-Control</code> header says, and no less than five minutes.
+      Keep it under 5 KiB, serve it over https without redirects, as
+      <code>application/json</code>.
+    </p>
+    <p>
+      A server's operator decides which documents it accepts: any (the default),
+      only the ones they accept, or only the sites registered on it. They can
+      also cap what any such site may ask for. A request beyond the cap is
+      refused with <code>invalid_scope</code>, as one beyond your document.
+    </p>
+
+    <h2>2. Find the person's server</h2>
+    <p>
+      Ask for the domain of their server, the way an e-mail service asks for an
+      address: <code>id.example.org</code>. Read
+      <code>https://id.example.org/.well-known/openid-configuration</code>: it
+      gives the endpoints, and{" "}
+      <code>client_id_metadata_document_supported: true</code>
+      when the server accepts sites that describe themselves. Remember which
+      server each sign-in went to: the answer must come from it.
+    </p>
+
+    <h2>3. The Authorization Code flow, with PKCE</h2>
+    <p>
+      Send the person to the server's authorization endpoint. PKCE with
+      <code>S256</code> is required for every site; <code>state</code> and
+      <code>nonce</code> as usual. Ask for <code>openid</code>, and for
+      <code>email</code> or <code>profile</code> to ask for what your document
+      declares. <code>prompt=select_account</code> asks the server to show the
+      choice of identity even when one is remembered.
+    </p>
+  </div>
+
+  <pre class="code rise"><code>{authorizeExample}</code></pre>
+
+  <div class="prose rise">
+    <p>
+      The person comes back with a <code>code</code>, your <code>state</code>
+      and the server's <code>iss</code> (RFC 9207): check both. Exchange the
+      code at the token endpoint with the PKCE verifier, and prove who you are.
+    </p>
+    <h3>
+      A site with a server: <code>private_key_jwt</code>
+    </h3>
+    <p>
+      Sign a short JWT with your private key, EdDSA (Ed25519) or ES256 (P-256),
+      whose public half your document publishes. <code>iss</code> and
+      <code>sub</code> are your <code>client_id</code>, <code>aud</code> the
+      server's issuer (its token endpoint works too), a fresh <code>jti</code>,
+      valid a few minutes, ten at most. A server refuses an assertion it has
+      seen before. To rotate keys, publish the new one, then sign with it: a
+      server that does not know a <code>kid</code> reads your keys again.
+    </p>
+  </div>
+
+  <pre class="code rise"><code>{assertionExample}</code></pre>
+  <pre class="code rise"><code>{tokenExample}</code></pre>
+
+  <div class="prose rise">
+    <h3>
+      A page in the browser: <code>none</code>
+    </h3>
+    <p>
+      Declare <code>token_endpoint_auth_method: "none"</code> and send only your
+      <code>client_id</code>. PKCE is what proves the page that asked is the one
+      asking. The token endpoint and the keys answer any origin.
+    </p>
+
+    <h3>Then</h3>
+    <p>
+      You receive an ID token signed with EdDSA. Check it against the server's
+      keys (<code>jwks_uri</code>): signature, <code>iss</code> (the server you
+      sent the person to), <code>aud</code> (your <code>client_id</code>),
+      <code>nonce</code>, expiry. A declined optional attribute and one the
+      identity does not have look the same: absent.
+    </p>
+
+    <h2>Libraries</h2>
+    <p>
+      Nothing here is specific to brig·id. The demo uses
+      <a href="https://github.com/panva/oauth4webapi">oauth4webapi</a> for both
+      forms; any library that supports a URL as <code>client_id</code>,
+      <code>private_key_jwt</code> and PKCE does the same.
+      <a href={DEMO}>demo.brig.id</a> shows it running, and
+      <a href={DEMO_SOURCE}>its source</a> is the shortest complete example.
+    </p>
+  </div>
+
+  <div class="next rise">
+    <a class="btn btn-ghost" href="/developers/apps/">
+      Desktop and mobile apps
+    </a>
+    <a class="btn btn-ghost" href="/developers/reference/">
+      Reference
+    </a>
+  </div>
+</Developers>

@@ -1,0 +1,98 @@
+---
+import Developers from "~/layouts/Developers.astro";
+
+const nativeExample = `{
+  "client_id": "https://shop.example/desktop/oauth-client-metadata.json",
+  "client_name": "Example Shop for desktop",
+  "application_type": "native",
+  "redirect_uris": [
+    "http://127.0.0.1/callback",
+    "example.shop:/callback"
+  ],
+  "token_endpoint_auth_method": "none",
+  "brigid_attributes": { "email": "optional" }
+}`;
+
+const ways = [
+  [
+    "The loopback address",
+    "http://127.0.0.1/callback or http://[::1]/callback. The port is not compared: open any free one when the sign-in starts. Not localhost, which a machine can resolve elsewhere.",
+  ],
+  [
+    "Your domain, reversed, as a scheme",
+    "example.shop:/callback for shop.example. Being derived from your domain, no other application can claim it.",
+  ],
+  [
+    "An https link on your domain",
+    "https://shop.example/app/callback, opened by your application as a claimed link (App Links, Universal Links).",
+  ],
+];
+---
+
+<Developers
+  title="Desktop and mobile apps · Developers"
+  description="Sign in with brig·id from an application people install: a public client, the system's browser, PKCE, a document on your domain."
+  lead="Desktop and mobile apps,"
+  accent="no secret inside."
+  intro="An installed application is a public client (RFC 8252): anything shipped inside it can be read, so it carries no secret and no key. PKCE protects the exchange; the system's browser protects the passkey."
+>
+  <div class="prose rise">
+    <h2>A document all the same</h2>
+    <p>
+      Publish a document on your domain, as a website does, with
+      <code>application_type: "native"</code> and
+      <code>token_endpoint_auth_method: "none"</code>. One domain can publish
+      several documents: one for the website, one for each application.
+    </p>
+  </div>
+
+  <pre class="code rise"><code>{nativeExample}</code></pre>
+
+  <div class="prose rise">
+    <h2>Coming back to the application</h2>
+    <p>Its redirect URIs are one of:</p>
+  </div>
+  <dl class="fields rise">
+    {ways.map(([name, text]) => (
+      <div>
+        <dt>{name}</dt>
+        <dd>{text}</dd>
+      </div>
+    ))}
+  </dl>
+
+  <div class="prose rise">
+    <h2>The system's browser, always</h2>
+    <p>
+      Open the sign-in in the browser of the system (or an in-app browser tab
+      that is the system's: <code>ASWebAuthenticationSession</code>, Custom
+      Tabs), never in a web view your application draws itself. The passkey
+      ceremony needs the real address of the server, and the person needs to see
+      it.
+    </p>
+
+    <h2>The rest is the website's flow</h2>
+    <p>
+      Find the person's server from the domain they type, run the Authorization
+      Code flow with PKCE <code>S256</code>, exchange the code with your{" "}
+      <code>client_id</code> and the verifier, check the ID token. Know the
+      person by <code>iss</code> and <code>sub</code> together. The details are
+      on <a href="/developers/websites/">the website guide</a>.
+    </p>
+
+    <h2>Without a browser</h2>
+    <p>
+      A command line or a television, with no browser to open, would use the
+      device flow (RFC 8628). It is planned for after the first version.
+    </p>
+  </div>
+
+  <div class="next rise">
+    <a class="btn btn-ghost" href="/developers/websites/">
+      Website guide
+    </a>
+    <a class="btn btn-ghost" href="/developers/reference/">
+      Reference
+    </a>
+  </div>
+</Developers>

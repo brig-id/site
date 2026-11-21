@@ -1,0 +1,138 @@
+---
+import Developers from "~/layouts/Developers.astro";
+import { SECURITY_MODEL, SECURITY_POLICY } from "~/data/developers";
+
+const servers = [
+  [
+    "Made up for the purpose",
+    "Create as many people as it wants, like any e-mail provider. A site that needs real people needs its own checks.",
+  ],
+  [
+    "Compromised",
+    "Sign in as any of its own people. It never holds their passkeys, but it can sign a token without one.",
+  ],
+  [
+    "Run by a hostile operator",
+    "The same. Choosing one's server is choosing whom to trust; the project says so to people.",
+  ],
+];
+
+const guards = [
+  ["https only, a domain name", "Never an address literal, never plain http."],
+  [
+    "Public addresses only",
+    "Loopback, private, shared and link-local ranges (the cloud metadata address included) are dropped by the resolver itself, so the address checked is the one connected to: DNS rebinding included.",
+  ],
+  ["No redirect, no proxy", "A document that moved is not followed."],
+  ["5 KiB, 10 seconds", "Larger or slower: refused."],
+  [
+    "Errors never cached",
+    "A valid document is kept 5 minutes to a day, and used while a new read fails.",
+  ],
+];
+---
+
+<Developers
+  title="Security and trust · Developers"
+  description="What a site can trust of a brig·id server it has never seen, what a server does when it reads a site's document, and how to report a vulnerability."
+  lead="Security and trust,"
+  accent="stated plainly."
+  intro="Accepting people from servers you have never seen is the point of brig·id, and it has limits. Here is what holds, what does not, and what a server does to protect itself."
+>
+  <div class="prose rise">
+    <h2>What a site can trust of a server</h2>
+    <p>
+      Nothing a site can check proves that a server runs brig·id unmodified, is
+      not compromised, or is not a server made to look like one: a server can
+      claim any edition and version. What holds is narrower, and it covers the
+      main threat:
+    </p>
+    <ul>
+      <li>
+        <strong>
+          A token is signed by the key its <code>iss</code> publishes over TLS.
+        </strong>{" "}
+        Its <code>iss</code> is the server the person named, its
+        <code>aud</code> your <code>client_id</code>.
+      </li>
+      <li>
+        <strong>A server speaks only for its own people.</strong> Know a person
+        by <code>iss</code> and <code>sub</code> together: a false or
+        compromised server signs with its own <code>iss</code>, so it can never
+        sign in as someone from another server.
+      </li>
+    </ul>
+    <h3>What remains</h3>
+  </div>
+  <table class="ref rise">
+    <thead>
+      <tr>
+        <th scope="col">A server that is…</th>
+        <th scope="col">Can</th>
+      </tr>
+    </thead>
+    <tbody>
+      {servers.map(([who, can]) => (
+        <tr>
+          <th scope="row">{who}</th>
+          <td>{can}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <div class="prose rise">
+    <p>
+      Lists signed by brig.id (OpenID Federation trust marks: servers whose
+      operator is known, sites reported for abuse) are planned for after the
+      first version. They will say who answers for a server, never that it is
+      honest, and following them will always be a choice.
+    </p>
+
+    <h2>What a server does with a site's document</h2>
+    <p>
+      Reading a document is a request a server makes to an address anyone
+      chooses. A brig·id server makes it narrow:
+    </p>
+  </div>
+  <table class="ref rise">
+    <tbody>
+      {guards.map(([rule, text]) => (
+        <tr>
+          <th scope="row">{rule}</th>
+          <td>{text}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <div class="prose rise">
+    <p>
+      The person always sees the site's host first: its declared name only
+      beside it, its logo never fetched from it. The operator decides which
+      sites are accepted and caps what they may ask for.
+    </p>
+
+    <h2>What a site should do</h2>
+    <ul>
+      <li>
+        Identify people by <code>iss</code> and <code>sub</code>, never by
+        e-mail.
+      </li>
+      <li>
+        Check <code>state</code>, <code>iss</code> in the answer, then the ID
+        token: signature, issuer, audience, nonce, expiry.
+      </li>
+      <li>Keep your private key on your server; a page or an app has none.</li>
+      <li>
+        Ask only for what you need, and say which attributes are optional.
+      </li>
+    </ul>
+
+    <h2>Report a vulnerability</h2>
+    <p>
+      Privately, through GitHub's security advisories:
+      <a href={SECURITY_POLICY}>the security policy</a> says how and what to
+      expect. Please do not open a public issue for a flaw. The full threat
+      model is in <a href={SECURITY_MODEL}>the security model</a>.
+    </p>
+  </div>
+</Developers>

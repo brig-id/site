@@ -181,7 +181,7 @@ export const FEATURES: Feature[] = [
       "A website describes itself in a small file on its own domain, and the people of any brig·id server can sign in to it. Nobody registers it anywhere.",
     detail:
       "The server shows you the website's address before its name, and its operator decides which websites it accepts: any, some, or only its own.",
-    status: "progress",
+    status: "available",
     icon: "globe-hemisphere-west-duotone",
     ref: { label: "For developers", href: "/developers/" },
   },
@@ -328,8 +328,9 @@ export const FEATURES: Feature[] = [
     title: "grove: for a community",
     summary:
       "For a community or an association: the same server as seedling, on a machine of its own, with its data copied elsewhere as it changes.",
-    detail: "Not started; seedling comes first. Free software, like seedling.",
-    status: "planned",
+    detail:
+      "Its first release runs our own server. Next: the defaults of a server open to many people. Free software, like seedling.",
+    status: "progress",
     icon: "tree-duotone",
     ref: { label: "Compare the editions", href: "/editions/" },
   },
@@ -427,7 +428,7 @@ export function feature(id: string): Feature {
 }
 
 export const RELEASE = {
-  version: "0.7.0",
-  date: "2026-11-17",
+  version: "0.8.0",
+  date: "2026-11-20",
   url: "https://github.com/brig-id/server-seedling/releases",
 };
