@@ -1,0 +1,148 @@
+---
+import Developers from "~/layouts/Developers.astro";
+import Icon from "~/components/Icon.astro";
+import { DEMO, DEMO_SOURCE, DEV_PAGES, PROTOCOL } from "~/data/developers";
+import { GITHUB } from "~/data/nav";
+
+const quick = `GET https://id.example.org/.well-known/openid-configuration
+
+→ authorization_endpoint, token_endpoint, jwks_uri
+→ client_id_metadata_document_supported: true
+
+GET https://id.example.org/authorize
+  ?response_type=code
+  &client_id=https://shop.example/oauth-client-metadata.json
+  &redirect_uri=https://shop.example/callback
+  &scope=openid email
+  &state=…&nonce=…
+  &code_challenge=…&code_challenge_method=S256`;
+
+const facts = [
+  {
+    title: "Standard OpenID Connect",
+    text: "The Authorization Code flow with PKCE, an ID token signed with EdDSA. Any OpenID Connect library works.",
+  },
+  {
+    title: "No registration",
+    text: "A site publishes a document that describes it. Every server that accepts it reads it there.",
+  },
+  {
+    title: "No secret to keep",
+    text: "A site with a server signs with its own key; a page or an app relies on PKCE alone.",
+  },
+  {
+    title: "An identifier per site",
+    text: "Each identity gets a different identifier on each site. Know a person by the server and that identifier together.",
+  },
+];
+---
+
+<Developers
+  title="Developers"
+  description="Add sign-in with brig·id to a website or an application, or run a server: guides and reference."
+  lead="Build with"
+  accent="any brig·id server."
+  intro="brig·id speaks OpenID Connect. Your site publishes one small document that describes it, and the people of any brig·id server can sign in to it. You register nowhere, and you keep no secret for anyone."
+>
+  <div class="facts rise">
+    {facts.map((fact) => (
+      <div class="card fact">
+        <h2>{fact.title}</h2>
+        <p>{fact.text}</p>
+      </div>
+    ))}
+  </div>
+
+  <div class="prose rise">
+    <h2>In one minute</h2>
+    <p>
+      The person types the domain of their server. Your site reads its discovery
+      document, then sends the person to it with the address of your own
+      document as <code>client_id</code>. They come back with a code you
+      exchange for an ID token.
+    </p>
+  </div>
+  <pre class="code rise"><code>{quick}</code></pre>
+
+  <div class="prose rise">
+    <h2>The guides</h2>
+  </div>
+  <ul class="tracks rise">
+    {DEV_PAGES.slice(1).map((page) => (
+      <li>
+        <a class="card track" href={page.href}>
+          <Icon name={page.icon} />
+          <span class="track-title">{page.title}</span>
+          <span class="track-text">{page.summary}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <div class="prose rise">
+    <h2>See it work</h2>
+    <p>
+      <a href={DEMO}>demo.brig.id</a> signs in with brig·id in both forms, with
+      a server and a key, and entirely in the browser, and shows exactly what it
+      receives. It is registered on no server.{" "}
+      <a href={DEMO_SOURCE}>Its source</a> is a few hundred lines with a
+      standard library, meant to be read.
+    </p>
+    <p>
+      The rules and their reasons are in{" "}
+      <a href={PROTOCOL}>the specification</a>; everything else is on{" "}
+      <a href={GITHUB}>GitHub</a>.
+    </p>
+  </div>
+</Developers>
+
+<style>
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+  }
+
+  .fact {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.25rem;
+  }
+
+  .fact h2 {
+    font-size: 1.05rem;
+  }
+
+  .fact p {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+
+  .tracks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+  }
+
+  .track {
+    display: grid;
+    gap: 0.4rem;
+    height: 100%;
+    padding: 1.25rem;
+  }
+
+  .track :global(.icon) {
+    font-size: 1.5rem;
+    color: var(--amber);
+  }
+
+  .track-title {
+    font-weight: 560;
+    color: var(--text);
+  }
+
+  .track-text {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+</style>

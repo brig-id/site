@@ -1,0 +1,217 @@
+---
+import Base from "~/layouts/Base.astro";
+import { DEV_PAGES } from "~/data/developers";
+
+interface Props {
+  /** Page title, without the site name. */
+  title: string;
+  description: string;
+  /** The heading's words before the accent, then the accent. */
+  lead: string;
+  accent: string;
+  /** The text under the heading. */
+  intro: string;
+}
+
+const { title, description, lead, accent, intro } = Astro.props;
+const here = Astro.url.pathname.endsWith("/")
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
+---
+
+<Base title={title} description={description}>
+  <section class="page-hero">
+    <div class="shell">
+      <p class="eyebrow">Developers</p>
+      <h1>
+        {lead} <span class="accent spectrum">{accent}</span>
+      </h1>
+      <p class="lead">{intro}</p>
+    </div>
+  </section>
+
+  <section class="section devdocs">
+    <div class="shell dev-grid">
+      <nav class="dev-nav" aria-label="Developer pages">
+        <ul>
+          {DEV_PAGES.map((page) => (
+            <li>
+              <a
+                href={page.href}
+                aria-current={page.href === here ? "page" : undefined}
+              >
+                {page.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div class="dev-body">
+        <slot />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style is:global>
+  .dev-grid {
+    display: grid;
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .dev-nav {
+    position: sticky;
+    top: 6rem;
+  }
+
+  .dev-nav ul {
+    display: grid;
+    gap: 0.2rem;
+    border-left: 1px solid var(--line);
+  }
+
+  .dev-nav a {
+    display: block;
+    margin-left: -1px;
+    padding: 0.45rem 0 0.45rem 1rem;
+    border-left: 2px solid transparent;
+    color: var(--text-2);
+    font-size: 0.95rem;
+  }
+
+  .dev-nav a:hover {
+    color: var(--text);
+  }
+
+  .dev-nav a[aria-current="page"] {
+    border-left-color: var(--amber);
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .dev-body {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 46rem;
+  }
+
+  .devdocs .code {
+    overflow-x: auto;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    background: rgb(255 255 255 / 0.03);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .devdocs code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    overflow-wrap: anywhere;
+  }
+
+  .devdocs .fields {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .devdocs .fields div {
+    display: grid;
+    grid-template-columns: minmax(10rem, 14rem) 1fr;
+    gap: 1rem;
+  }
+
+  .devdocs .fields dd {
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  .devdocs .ref {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.98rem;
+  }
+
+  .devdocs .ref th,
+  .devdocs .ref td {
+    padding: 0.7rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .devdocs .ref thead th {
+    color: var(--text-3);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .devdocs .ref tbody th {
+    width: 38%;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .devdocs .ref td {
+    color: var(--text-2);
+  }
+
+  .devdocs .note a,
+  .devdocs .prose a {
+    color: var(--text);
+    text-decoration: underline;
+  }
+
+  .devdocs .next {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  @media (max-width: 52rem) {
+    .dev-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .dev-nav {
+      position: static;
+    }
+
+    .dev-nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      border-left: 0;
+    }
+
+    .dev-nav a {
+      margin-left: 0;
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+    }
+
+    .dev-nav a[aria-current="page"] {
+      border-color: var(--amber);
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .devdocs .fields div {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+
+    .devdocs .ref tbody th {
+      width: auto;
+    }
+  }
+</style>

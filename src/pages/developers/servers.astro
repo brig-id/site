@@ -1,0 +1,194 @@
+---
+import Developers from "~/layouts/Developers.astro";
+import { GROVE, INSTALL } from "~/data/developers";
+
+const seedlingInstall = `URL=https://github.com/brig-id/server-seedling/releases/latest/download
+FILE=seedling-linux-$(uname -m)
+curl -fsSLO "$URL/$FILE" && curl -fsSL "$URL/SHA256SUMS" | grep " $FILE\\$" | sha256sum --check
+sudo install -m 755 "$FILE" /usr/local/bin/seedling
+sudo seedling init --domain id.example.org --systemd   # configuration, key, service
+sudo systemd-sysusers && sudo systemctl daemon-reload
+sudo systemctl enable --now seedling`;
+
+const groveInstall = `git clone https://github.com/brig-id/server-grove && cd server-grove
+cp deploy/grove.env.example deploy/grove.env    # domain, image, bucket of the replica
+# the four secrets: see the top of deploy/compose.yaml
+docker compose -f deploy/compose.yaml --env-file deploy/grove.env up -d`;
+
+const commands = [
+  [
+    "signup [open | invitation | closed]",
+    "Who may create an account. By invitation until changed.",
+  ],
+  [
+    "admin link",
+    "A link that makes an administrator: the first one, or again after every administrator lost their passkeys.",
+  ],
+  [
+    "client policy [open | listed | registered]",
+    "Which websites that describe themselves are accepted. open by default.",
+  ],
+  [
+    "client accept | refuse | unlist <url>",
+    "The two lists, by the address of a website's document.",
+  ],
+  [
+    "client limit --allow <attribute> … | --all | --none",
+    "What such websites may ask for, at most (in the next release).",
+  ],
+  [
+    "client add --name … --redirect-uri … [--public]",
+    "Register a website of your own, or one under development on your machine (http on localhost).",
+  ],
+  [
+    "client list | attributes | remove",
+    "The applications: registered, and those that describe themselves.",
+  ],
+  [
+    "rotate-key --old … --new …",
+    "Re-encrypt everything under a new master key.",
+  ],
+  [
+    "rotate-oidc-key",
+    "A new key to sign ID tokens; the old one keeps verifying for a while.",
+  ],
+  ["--version", "What runs. The About page of the server says it too."],
+];
+
+const settings = [
+  [
+    "BRIGID_SERVER__DOMAIN",
+    "The domain of the server. It cannot change later: passkeys are bound to it.",
+  ],
+  ["BRIGID_SERVER__PUBLIC_URL", "Its address as people reach it, https."],
+  ["BRIGID_DATABASE__PATH", "The SQLite database."],
+  [
+    "BRIGID_MASTER_KEY_FILE",
+    "The file holding the master key (a Docker secret, a systemd credential).",
+  ],
+  [
+    "BRIGID_SECURITY__TRUST_FORWARDED_FOR",
+    "true only behind a reverse proxy that replaces X-Forwarded-For.",
+  ],
+  ["BRIGID_SERVER__METRICS_PORT", "Prometheus metrics, on an internal port."],
+];
+---
+
+<Developers
+  title="Run a server · Developers"
+  description="Run a brig·id server: seedling on one machine, grove in a container with its database replicated. Installation, settings, operator commands."
+  lead="Run a server,"
+  accent="yours."
+  intro="Two editions run today, on the same engine: seedling, one file on one machine, for you and yours; grove, a container with its database copied elsewhere as it changes, for a community. What an account or an identity is does not depend on the edition."
+>
+  <div class="prose rise">
+    <h2>seedling: one file</h2>
+    <p>
+      A static binary for any Linux, x86_64 or aarch64, with the interface
+      inside. It links nothing and needs nothing installed beside it.
+      <code>seedling init</code> writes the configuration, makes the master key
+      and installs the systemd service.
+    </p>
+  </div>
+  <pre class="code rise"><code>{seedlingInstall}</code></pre>
+  <div class="prose rise">
+    <p>
+      <a href={INSTALL}>The install guide</a> takes it step by step, from the
+      download to a first sign-in: the certificate, the first administrator,
+      connecting a website, updating, backing up.
+    </p>
+
+    <h2>grove: a container, replicated</h2>
+    <p>
+      The same server as an image (<code>ghcr.io/brig-id/grove</code>), with a
+      compose file that runs it beside Litestream: every change of the database
+      reaches an S3-compatible bucket within a minute (Cloudflare R2, Backblaze
+      B2, MinIO), encrypted with a key the bucket never keeps, with a week of
+      history. A reverse proxy in front holds the certificate. grove is
+      configured by its environment alone.
+    </p>
+  </div>
+  <pre class="code rise"><code>{groveInstall}</code></pre>
+  <div class="prose rise">
+    <p>
+      <a href={GROVE}>Its repository</a> holds the compose file and what each
+      secret is. The project's own server, helm.brig.id, runs grove.
+    </p>
+
+    <h2>The operator's commands</h2>
+    <p>
+      The same for both editions: <code>seedling …</code> on a machine,
+      <code>docker compose exec grove /grove …</code> in a container. They work
+      on the database, with the server running or not, and need the master key
+      like the server.
+    </p>
+  </div>
+  <table class="ref rise">
+    <tbody>
+      {commands.map(([command, text]) => (
+        <tr>
+          <th scope="row">
+            <code>{command}</code>
+          </th>
+          <td>{text}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <div class="prose rise">
+    <p>
+      An administrator does most of it from the interface too: accounts,
+      applications, which websites are accepted, sign-up and invitations, and a
+      log of every change. An administrator sees that accounts exist, never what
+      they hold.
+    </p>
+
+    <h2>Settings</h2>
+    <p>
+      Every setting is an environment variable, <code>BRIGID_</code> then the
+      section and the name; seedling also reads them from its configuration
+      file. The ones that matter most:
+    </p>
+  </div>
+  <table class="ref rise">
+    <tbody>
+      {settings.map(([name, text]) => (
+        <tr>
+          <th scope="row">
+            <code>{name}</code>
+          </th>
+          <td>{text}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <div class="prose rise">
+    <h2>Keep it running</h2>
+    <ul>
+      <li>
+        <strong>The master key is the one thing to keep offline.</strong>{" "}
+        Without it the database, and grove's replica, cannot be read; nobody can
+        give it back.
+      </li>
+      <li>
+        <code>GET /health</code> answers 200 while the server works; metrics are
+        on their internal port.
+      </li>
+      <li>
+        A new release is a new file (seedling) or a new image (grove): the
+        database is upgraded in place at start.
+      </li>
+    </ul>
+  </div>
+
+  <div class="next rise">
+    <a class="btn btn-ghost" href="/editions/">
+      Which edition
+    </a>
+    <a class="btn btn-ghost" href="/developers/trust/">
+      Security and trust
+    </a>
+  </div>
+</Developers>

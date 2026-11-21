@@ -20,6 +20,7 @@ export const SECONDARY: NavLink[] = [
   { href: "/history/", label: "History" },
   { href: "/status/", label: "Status" },
   { href: "/servers/", label: "Servers" },
+  { href: "/developers/", label: "Developers" },
 ];
 
 /**

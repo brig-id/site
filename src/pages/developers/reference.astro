@@ -1,0 +1,257 @@
+---
+import Developers from "~/layouts/Developers.astro";
+import { PROTOCOL } from "~/data/developers";
+
+type Row = [string, string];
+
+const endpoints: Row[] = [
+  [
+    "/.well-known/openid-configuration",
+    "Discovery (OpenID Connect Discovery 1.0).",
+  ],
+  ["/.well-known/jwks.json", "The keys of the ID tokens: Ed25519, EdDSA."],
+  ["/authorize", "The authorization endpoint, GET or POST."],
+  ["/token", "The token endpoint."],
+  ["/health", "200 while the server works."],
+];
+
+const discovery: Row[] = [
+  ["response_types_supported", "code"],
+  ["grant_types_supported", "authorization_code"],
+  ["scopes_supported", "openid, profile, email"],
+  [
+    "subject_types_supported",
+    "pairwise: an identifier per identity and per site",
+  ],
+  ["id_token_signing_alg_values_supported", "EdDSA"],
+  [
+    "token_endpoint_auth_methods_supported",
+    "private_key_jwt, none (and client_secret_basic, client_secret_post for registered sites)",
+  ],
+  ["token_endpoint_auth_signing_alg_values_supported", "EdDSA, ES256"],
+  ["code_challenge_methods_supported", "S256"],
+  ["authorization_response_iss_parameter_supported", "true (RFC 9207)"],
+  [
+    "client_id_metadata_document_supported",
+    "true unless the operator accepts registered sites only",
+  ],
+];
+
+const authorize: Row[] = [
+  ["response_type", "code. Required."],
+  [
+    "client_id",
+    "The address of your document (or the identifier a registration gave). Required.",
+  ],
+  ["redirect_uri", "One your document lists, exactly. Required."],
+  [
+    "scope",
+    "openid, plus email and profile for attributes your document declares. Required.",
+  ],
+  ["code_challenge, code_challenge_method", "PKCE, S256. Required."],
+  ["state", "Returned as is. Recommended."],
+  ["nonce", "Put in the ID token. Recommended."],
+  [
+    "prompt",
+    "login (a new passkey ceremony), select_account or consent (show the choice of identity), none (no page: answer or fail).",
+  ],
+  ["max_age", "The passkey ceremony must be at most this many seconds old."],
+];
+
+const document: Row[] = [
+  [
+    "client_id",
+    "The document's own address: https, a path other than /, no query or fragment.",
+  ],
+  ["client_name", "1 to 100 characters. Shown beside the host, never instead."],
+  ["application_type", "web (default) or native."],
+  [
+    "redirect_uris",
+    "web: https on the origin of client_id. native: http://127.0.0.1 or http://[::1] with any port, the reversed host as a scheme, or https on the origin.",
+  ],
+  [
+    "token_endpoint_auth_method",
+    "private_key_jwt (web only) or none. Required.",
+  ],
+  [
+    "jwks_uri | jwks",
+    "With private_key_jwt, one of the two: Ed25519 or P-256 keys.",
+  ],
+  [
+    "grant_types, response_types",
+    "If present, must include authorization_code and code.",
+  ],
+  ["brigid_attributes", 'Attribute name to "required" or "optional".'],
+  ["client_uri, logo_uri", "Optional, https."],
+  ["client_secret", "Never: a document holding one is refused."],
+];
+
+const attributes: Row[] = [
+  [
+    "given_name, family_name, preferred_username, locale, zoneinfo",
+    "Scope profile.",
+  ],
+  [
+    "email (with email_verified: false)",
+    "Scope email. The server does not check addresses.",
+  ],
+];
+
+const claims: Row[] = [
+  ["iss", "The server's issuer. Read it with sub, always."],
+  [
+    "sub",
+    "The identifier of this identity for this site: a pairwise value, different on every site.",
+  ],
+  ["aud", "Your client_id."],
+  ["iat, exp", "Issued now, valid five minutes."],
+  ["auth_time", "When the person last used their passkey with this server."],
+  ["nonce", "The one you sent."],
+  ["jti", "Unique per token."],
+  [
+    "attributes",
+    "Only those asked for and accepted, with the value the person saw.",
+  ],
+];
+
+const errors: Row[] = [
+  ["invalid_request", "A parameter is missing or wrong (PKCE above all)."],
+  [
+    "invalid_scope",
+    "openid is missing, or you asked for something your document does not declare, or beyond the operator's cap.",
+  ],
+  ["unsupported_response_type", "Anything but code."],
+  ["access_denied", "The person went back, or refused a required attribute."],
+  [
+    "login_required, interaction_required, consent_required",
+    "prompt=none, and the person has something to do on the server.",
+  ],
+  ["temporarily_unavailable", "Too many requests are waiting: try again."],
+  [
+    "invalid_client (token, 401)",
+    "Unknown site, a document that does not check, a signature that does not, an assertion already used.",
+  ],
+  [
+    "invalid_grant (token)",
+    "The code is used, expired (one minute), or not for this redirect URI, verifier or site.",
+  ],
+];
+
+const sections: {
+  id: string;
+  title: string;
+  head?: Row;
+  rows: Row[];
+  text?: string;
+}[] = [
+  { id: "endpoints", title: "Endpoints", rows: endpoints },
+  {
+    id: "discovery",
+    title: "Discovery document",
+    head: ["Field", "Value"],
+    rows: discovery,
+  },
+  {
+    id: "authorize",
+    title: "Authorization request",
+    head: ["Parameter", "Meaning"],
+    rows: authorize,
+  },
+  {
+    id: "document",
+    title: "The client document",
+    head: ["Field", "Rule"],
+    rows: document,
+  },
+  {
+    id: "attributes",
+    title: "Attributes and scopes",
+    head: ["Claim", "Asked with"],
+    rows: attributes,
+  },
+  {
+    id: "claims",
+    title: "The ID token",
+    head: ["Claim", "Meaning"],
+    rows: claims,
+  },
+  { id: "errors", title: "Errors", head: ["Error", "When"], rows: errors },
+];
+---
+
+<Developers
+  title="Reference · Developers"
+  description="brig·id for developers: endpoints, discovery, authorization parameters, the client document, attributes, the ID token and the errors."
+  lead="The reference,"
+  accent="on one page."
+  intro="What a brig·id server publishes and accepts. The rules and the reasons behind them are in the specification; this page is the short form."
+>
+  <nav class="toc rise" aria-label="On this page">
+    {sections.map((section) => (
+      <a href={`#${section.id}`}>{section.title}</a>
+    ))}
+  </nav>
+
+  {sections.map((section) => (
+    <section class="rise ref-section" id={section.id}>
+      <h2>{section.title}</h2>
+      <table class="ref">
+        {section.head && (
+          <thead>
+            <tr>
+              <th scope="col">{section.head[0]}</th>
+              <th scope="col">{section.head[1]}</th>
+            </tr>
+          </thead>
+        )}
+        <tbody>
+          {section.rows.map(([name, text]) => (
+            <tr>
+              <th scope="row">
+                <code>{name}</code>
+              </th>
+              <td>{text}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  ))}
+
+  <div class="prose rise">
+    <p>
+      In full: <a href={PROTOCOL}>protocol.md</a>, sections 6 (sites) and 8
+      (discovery).
+    </p>
+  </div>
+</Developers>
+
+<style>
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .toc a {
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--text-2);
+    font-size: 0.9rem;
+  }
+
+  .toc a:hover {
+    color: var(--text);
+  }
+
+  .ref-section {
+    display: grid;
+    gap: 0.75rem;
+    scroll-margin-top: 6rem;
+  }
+
+  .ref-section h2 {
+    font-size: 1.35rem;
+  }
+</style>
