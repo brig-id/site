@@ -428,7 +428,7 @@ export function feature(id: string): Feature {
 }
 
 export const RELEASE = {
-  version: "0.8.0",
-  date: "2026-11-20",
+  version: "0.9.0",
+  date: "2026-11-23",
   url: "https://github.com/brig-id/server-seedling/releases",
 };
