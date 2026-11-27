@@ -389,7 +389,11 @@ export const COMPETITORS: Competitor[] = [
       short: "Passkeys + passwords",
       note: "Kratos offers passwords, passkeys and other methods; the application chooses which to enable.",
     },
-    identities: ONE_USER,
+    identities: {
+      verdict: "no",
+      short: "One per account",
+      note: "A Kratos account is one user. Hydra takes the subject of a sign-in from the login page you write, so separate identities could be built on top of it; Ory does not provide them.",
+    },
     perSite: {
       verdict: "option",
       short: "Optional",
@@ -414,6 +418,10 @@ export const COMPETITORS: Competitor[] = [
       {
         label: "Subject identifier algorithms",
         href: "https://www.ory.com/docs/hydra/guides/openid",
+      },
+      {
+        label: "User login and consent flow",
+        href: "https://www.ory.com/docs/oauth2-oidc/custom-login-consent/flow",
       },
       { label: "Ory Kratos", href: "https://github.com/ory/kratos" },
     ],
