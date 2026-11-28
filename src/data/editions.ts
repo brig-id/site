@@ -1,7 +1,7 @@
 // The three editions of the server, and what is decided about each. They do
 // not differ in what an identity is, nor in what they cost: all three are free
-// software. They differ by who runs them and by what an outage costs. grove has
-// a first release; forest does not exist yet: a cell describes what is decided,
+// software. They differ by who runs them and by what an outage costs. The three
+// have a release (forest's first is 0.1.0): a cell describes what is decided,
 // and the page marks each with its status.
 
 export interface Edition {

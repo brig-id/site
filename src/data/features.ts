@@ -341,8 +341,8 @@ export const FEATURES: Feature[] = [
     summary:
       "For a company: several servers that stand in for one another, inside the infrastructure it already runs.",
     detail:
-      "Not started, and designed last. Free software too: what a company pays for is help, never the right to run it.",
-    status: "planned",
+      "Its first release is out: several servers on one database, replaced one by one without sign-in stopping. Still to come: the packaging for a company's cluster, and a test under load. Free software too: what a company pays for is help, never the right to run it.",
+    status: "progress",
     icon: "tree-evergreen-duotone",
     ref: { label: "Compare the editions", href: "/editions/" },
   },
